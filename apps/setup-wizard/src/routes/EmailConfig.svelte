@@ -10,7 +10,7 @@
 - Clear explanation of why SMTP is needed
 -->
 <script lang="ts">
-	import { setupStore } from '@stores/setupStore.svelte';
+	import { setupStore } from '../stores/setupStore.svelte';
 	import * as m from '@src/paraglide/messages';
 	import { showToast } from '@utils/toast';
 

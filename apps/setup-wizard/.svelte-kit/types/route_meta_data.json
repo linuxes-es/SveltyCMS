@@ -1,0 +1,20 @@
+{
+	"/": [
+		"src/routes/+page.server.ts"
+	],
+	"/api/setup/complete": [
+		"src/routes/api/setup/complete/+server.ts"
+	],
+	"/api/setup/email-test": [
+		"src/routes/api/setup/email-test/+server.ts"
+	],
+	"/api/setup/install-driver": [
+		"src/routes/api/setup/install-driver/+server.ts"
+	],
+	"/api/setup/seed": [
+		"src/routes/api/setup/seed/+server.ts"
+	],
+	"/api/setup/test-database": [
+		"src/routes/api/setup/test-database/+server.ts"
+	]
+}

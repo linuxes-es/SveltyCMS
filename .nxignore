@@ -1,0 +1,12 @@
+# Ignore heavy directories for NX dependency analysis
+node_modules
+.svelte-kit
+build
+dist
+.vite
+.cache
+coverage
+logs
+mediaFolder
+compiledCollections
+static/docs

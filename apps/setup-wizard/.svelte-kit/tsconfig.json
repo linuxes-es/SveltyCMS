@@ -1,0 +1,112 @@
+{
+	"compilerOptions": {
+		"paths": {
+			"@setup": [
+				"../src"
+			],
+			"@setup/*": [
+				"../src/*"
+			],
+			"@setup-components": [
+				"../src/components"
+			],
+			"@setup-components/*": [
+				"../src/components/*"
+			],
+			"@setup-stores": [
+				"../src/stores"
+			],
+			"@setup-stores/*": [
+				"../src/stores/*"
+			],
+			"@setup-utils": [
+				"../src/utils"
+			],
+			"@setup-utils/*": [
+				"../src/utils/*"
+			],
+			"@sveltycms/types": [
+				"../../../packages/types/src"
+			],
+			"@sveltycms/types/*": [
+				"../../../packages/types/src/*"
+			],
+			"@sveltycms/ui": [
+				"../../../packages/ui/src"
+			],
+			"@sveltycms/ui/*": [
+				"../../../packages/ui/src/*"
+			],
+			"@sveltycms/utils": [
+				"../../../packages/utils/src"
+			],
+			"@sveltycms/utils/*": [
+				"../../../packages/utils/src/*"
+			],
+			"@src": [
+				"../../../src"
+			],
+			"@src/*": [
+				"../../../src/*"
+			],
+			"@root": [
+				"../../.."
+			],
+			"@root/*": [
+				"../../../*"
+			],
+			"@utils": [
+				"../../../src/utils"
+			],
+			"@utils/*": [
+				"../../../src/utils/*"
+			],
+			"@databases": [
+				"../../../src/databases"
+			],
+			"@databases/*": [
+				"../../../src/databases/*"
+			],
+			"$app/types": [
+				"./types/index.d.ts"
+			]
+		},
+		"rootDirs": [
+			"..",
+			"./types"
+		],
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"lib": [
+			"esnext",
+			"DOM",
+			"DOM.Iterable"
+		],
+		"moduleResolution": "bundler",
+		"module": "esnext",
+		"noEmit": true,
+		"target": "esnext"
+	},
+	"include": [
+		"ambient.d.ts",
+		"non-ambient.d.ts",
+		"./types/**/$types.d.ts",
+		"../vite.config.js",
+		"../vite.config.ts",
+		"../src/**/*.js",
+		"../src/**/*.ts",
+		"../src/**/*.svelte",
+		"../tests/**/*.js",
+		"../tests/**/*.ts",
+		"../tests/**/*.svelte"
+	],
+	"exclude": [
+		"../node_modules/**",
+		"../src/service-worker.js",
+		"../src/service-worker/**/*.js",
+		"../src/service-worker.ts",
+		"../src/service-worker/**/*.ts",
+		"../src/service-worker.d.ts",
+		"../src/service-worker/**/*.d.ts"
+	]
+}

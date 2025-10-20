@@ -1,0 +1,30 @@
+{
+    "name": "setup",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "src",
+    "projectType": "application",
+    "targets": {
+        "dev": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "vite dev",
+                "cwd": "setup"
+            }
+        },
+        "build": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "vite build",
+                "cwd": "setup"
+            }
+        },
+        "preview": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "vite preview",
+                "cwd": "setup"
+            }
+        }
+    },
+    "tags": []
+}

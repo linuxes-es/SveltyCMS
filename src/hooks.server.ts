@@ -66,7 +66,7 @@ const middleware: Handle[] = [
 	// 1. System state validation (enterprise gatekeeper with metrics)
 	handleSystemState,
 
-	// 2. Setup completion enforcement (installation gate with tracking)
+	// 2. Setup completion enforcement (redirects to standalone setup-wizard app if needed)
 	handleSetup,
 
 	// 3. Language preferences (i18n)

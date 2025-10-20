@@ -1,0 +1,30 @@
+{
+    "name": "@sveltycms/setup-wizard",
+    "version": "0.0.5",
+    "description": "SveltyCMS Setup Wizard - One-time installation application",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "dev": "vite dev --port 5174",
+        "build": "vite build",
+        "preview": "vite preview",
+        "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+    },
+    "dependencies": {
+        "@sveltejs/kit": "workspace:*",
+        "@sveltycms/theme-v4": "workspace:*",
+        "svelte": "workspace:*",
+        "valibot": "workspace:*"
+    },
+    "devDependencies": {
+        "@skeletonlabs/skeleton": "^4.1.0",
+        "@skeletonlabs/skeleton-svelte": "^4.1.0",
+        "@sveltejs/adapter-node": "workspace:*",
+        "@sveltejs/vite-plugin-svelte": "workspace:*",
+        "@tailwindcss/forms": "^4.0.0-beta.3",
+        "@tailwindcss/typography": "^4.0.0-beta.3",
+        "@tailwindcss/vite": "^4.0.0-beta.3",
+        "tailwindcss": "^4.0.0-beta.3",
+        "vite": "workspace:*"
+    }
+}

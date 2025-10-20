@@ -31,7 +31,7 @@ Interactive Tiptap editor with toolbar and title input
 	import type { Editor } from '@tiptap/core';
 	import { onDestroy, onMount } from 'svelte';
 	import type { FieldType } from './';
-	import { createEditor } from './tiptap';
+	import { createEditorAsync } from './tiptap.lazy';
 	import type { RichTextData } from './types';
 	// Import the decoupled editor config
 	import { contentLanguage } from '@src/stores/store.svelte';
@@ -68,24 +68,32 @@ Interactive Tiptap editor with toolbar and title input
 	// Local state for the Tiptap editor instance and its container.
 	let editor: Editor | null = $state(null);
 	let element: HTMLDivElement;
+	let editorLoading = $state(true);
 
-	// Initialize the editor when the component mounts.
-	onMount(() => {
+	// Initialize the editor when the component mounts (lazy loaded).
+	onMount(async () => {
 		const initialContent = value?.[lang]?.content || '';
-		// Pass the element, content, AND language to the createEditor function
-		editor = createEditor(element, initialContent, lang);
 
-		// When Tiptap updates, sync its content back to the parent `value`.
-		editor.on('update', () => {
-			const newContent = editor!.getHTML();
-			value = {
-				...(value || {}),
-				[lang]: {
-					...(value?.[lang] || { title: '' }),
-					content: editor!.isEmpty ? '' : newContent
-				}
-			};
-		});
+		// Lazy load the editor and all dependencies
+		try {
+			editor = await createEditorAsync(element, initialContent, lang);
+			editorLoading = false;
+
+			// When Tiptap updates, sync its content back to the parent `value`.
+			editor.on('update', () => {
+				const newContent = editor!.getHTML();
+				value = {
+					...(value || {}),
+					[lang]: {
+						...(value?.[lang] || { title: '' }),
+						content: editor!.isEmpty ? '' : newContent
+					}
+				};
+			});
+		} catch (err) {
+			console.error('Failed to load rich text editor:', err);
+			editorLoading = false;
+		}
 	});
 
 	// Cleanup the editor instance on destroy.
@@ -108,7 +116,11 @@ Interactive Tiptap editor with toolbar and title input
 <div class="richtext-container" class:invalid={error}>
 	<input type="text" class="title-input" placeholder="Title..." bind:value={titleValue.value} />
 
-	{#if editor}
+	{#if editorLoading}
+		<div class="editor-loading">
+			<p>Loading editor...</p>
+		</div>
+	{:else if editor}
 		<div class="toolbar">
 			{#if show('bold')}
 				<button onclick={() => editor?.chain().focus().toggleBold().run()} class:active={editor.isActive('bold')}> B </button>

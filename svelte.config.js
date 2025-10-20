@@ -32,6 +32,9 @@ const config = {
 			'@content': './src/content',
 			'@databases': './src/databases',
 			'@hooks': './src/hooks',
+			'@packages/utils': './packages/utils/src',
+			'@packages/types': './packages/types/src',
+			'@packages/ui': './packages/ui/src',
 			'@root': '.',
 			'@services': './src/services',
 			'@src': './src',
@@ -52,7 +55,15 @@ const config = {
 				'style-src': ['self', 'unsafe-inline'], // unsafe-inline for faster builds
 				'img-src': ['self', 'data:', 'https://api.iconify.design', 'https://api.unisvg.com', 'https://api.simplesvg.com'],
 				'font-src': ['self', 'data:'],
-				'connect-src': ['self', 'https://api.iconify.design', 'https://raw.githubusercontent.com', 'wss:', 'ws:', 'https://api.simplesvg.com', 'https://api.unisvg.com'],
+				'connect-src': [
+					'self',
+					'https://api.iconify.design',
+					'https://raw.githubusercontent.com',
+					'wss:',
+					'ws:',
+					'https://api.simplesvg.com',
+					'https://api.unisvg.com'
+				],
 				'object-src': ['none'],
 				'base-uri': ['self'],
 				'form-action': ['self']

@@ -20,15 +20,15 @@
 -->
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	// Stores
+	// Stores - now from setup-wizard local stores
 	import { publicEnv } from '@src/stores/globalSettings.svelte';
-	import { setupStore } from '@stores/setupStore.svelte';
-	import { systemLanguage } from '@stores/store.svelte';
-	// Componets
-	import SiteName from '@components/SiteName.svelte';
-	import ThemeToggle from '@components/ThemeToggle.svelte';
+	import { setupStore } from '../stores/setupStore.svelte';
+	import { systemLanguage } from '@src/stores/store.svelte';
+	// Components - from main CMS (shared)
+	import SiteName from '@src/components/SiteName.svelte';
+	import ThemeToggle from '@src/components/ThemeToggle.svelte';
 	import WelcomeModal from './WelcomeModal.svelte';
-	import VersionCheck from '@components/VersionCheck.svelte';
+	import VersionCheck from '@src/components/VersionCheck.svelte';
 
 	// Skeleton
 	import { getModalStore, type ModalSettings, Modal } from '@skeletonlabs/skeleton';

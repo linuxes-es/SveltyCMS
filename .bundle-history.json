@@ -52,5 +52,59 @@
       "chunkCount": 22,
       "largestChunk": 678031
     }
+  },
+  {
+    "timestamp": "2025-10-20T14:47:25.230Z",
+    "stats": {
+      "totalSize": 3154108,
+      "totalGzipSize": 936298,
+      "chunkCount": 26,
+      "largestChunk": 1030648
+    }
+  },
+  {
+    "timestamp": "2025-10-20T15:02:15.066Z",
+    "stats": {
+      "totalSize": 3154200,
+      "totalGzipSize": 936327,
+      "chunkCount": 26,
+      "largestChunk": 1030644
+    }
+  },
+  {
+    "timestamp": "2025-10-20T15:08:49.575Z",
+    "stats": {
+      "totalSize": 3154204,
+      "totalGzipSize": 936342,
+      "chunkCount": 26,
+      "largestChunk": 1030648
+    }
+  },
+  {
+    "timestamp": "2025-10-20T15:13:30.861Z",
+    "stats": {
+      "totalSize": 3154483,
+      "totalGzipSize": 935930,
+      "chunkCount": 30,
+      "largestChunk": 966865
+    }
+  },
+  {
+    "timestamp": "2025-10-20T15:21:17.578Z",
+    "stats": {
+      "totalSize": 3094750,
+      "totalGzipSize": 922469,
+      "chunkCount": 32,
+      "largestChunk": 926418
+    }
+  },
+  {
+    "timestamp": "2025-10-20T15:37:36.967Z",
+    "stats": {
+      "totalSize": 3095969,
+      "totalGzipSize": 922626,
+      "chunkCount": 32,
+      "largestChunk": 926416
+    }
   }
 ]

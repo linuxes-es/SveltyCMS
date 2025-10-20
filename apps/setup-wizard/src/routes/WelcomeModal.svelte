@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getModalStore } from '@skeletonlabs/skeleton';
-	import SiteName from '@components/SiteName.svelte';
+	import SiteName from '@src/components/SiteName.svelte';
 	import * as m from '@src/paraglide/messages';
 
 	// Get the modal store to access modal data and close the modal

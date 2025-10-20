@@ -15,7 +15,7 @@ Features:
 	// Skelton
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	// Types from setupStore
-	import type { AdminUser } from '@stores/setupStore.svelte';
+	import type { AdminUser } from '../stores/setupStore.svelte';
 
 	// Popup settings (click event)
 	const popupAdminUsername: PopupSettings = { event: 'click', target: 'popupAdminUsername', placement: 'top' };

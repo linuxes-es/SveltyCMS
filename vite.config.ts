@@ -1,42 +1,26 @@
 /**
  * @file vite.config.ts
  * @description This file contains the Vite configuration for the SvelteKit project, optimized for performance and developer experience.
- * It employs a unified config structure with conditional plugins for the initial setup wizard vs. normal development mode.
  *
  * Key Features:
  * - Centralized path management and logging utilities.
  * - Efficient, direct Hot Module Replacement (HMR) for roles and content structure without fake HTTP requests.
  * - Dynamic compilation of user-defined collections with real-time feedback.
  * - Seamless integration with Paraglide for i18n and svelte-email-tailwind for email templating.
+ *
+ * @note Setup wizard has been extracted to a separate workspace (apps/setup-wizard)
  */
 
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { existsSync, promises as fs } from 'fs';
+import { promises as fs } from 'fs';
 import { builtinModules } from 'module';
 import path from 'path';
 import svelteEmailTailwind from 'svelte-email-tailwind/vite';
 import type { Plugin, UserConfig, ViteDevServer } from 'vite';
 import { defineConfig, createLogger } from 'vite';
 import { compile } from './src/utils/compilation/compile';
-import { isSetupComplete } from './src/utils/setupCheck';
 import { securityCheckPlugin } from './src/utils/vitePluginSecurityCheck';
-import { exec } from 'node:child_process';
-import { platform } from 'node:os';
-
-// Cross-platform open URL function (replaces 'open' package)
-function openUrl(url: string) {
-	const plat = platform();
-	let cmd;
-	if (plat === 'win32') {
-		cmd = `start "" "${url}"`;
-	} else if (plat === 'darwin') {
-		cmd = `open "${url}"`;
-	} else {
-		cmd = `xdg-open "${url}"`;
-	}
-	exec(cmd);
-}
 
 // --- Constants & Configuration ---
 
@@ -115,92 +99,6 @@ process.on('SIGINT', () => {
 });
 
 // --- Vite Plugins ---
-/**
- * A lightweight plugin to handle the initial setup wizard.
- * It creates a default private.ts and opens the setup page in the browser.
- */
-function setupWizardPlugin(): Plugin {
-	let wasPrivateConfigMissing = false;
-	return {
-		name: 'svelty-cms-setup-wizard',
-		async buildStart() {
-			// Check if private config exists before creating it
-			wasPrivateConfigMissing = !existsSync(paths.privateConfig);
-
-			// Ensure config directory and default private config exist.
-			if (wasPrivateConfigMissing) {
-				const content = `
-/**
- * @file config/private.ts
- * @description Private configuration file containing essential bootstrap variables.
- * These values are required for the server to start and connect to the database.
- * This file will be populated during the initial setup process.
- */
-import { createPrivateConfig } from '@src/databases/schemas';
-
-export const privateEnv = createPrivateConfig({
-	// --- Core Database Connection ---
-	DB_TYPE: 'mongodb',
-	DB_HOST: '',
-	DB_PORT: 27017,
-	DB_NAME: '',
-	DB_USER: '',
-	DB_PASSWORD: '',
-
-	// --- Connection Behavior ---
-	DB_RETRY_ATTEMPTS: 5,
-	DB_RETRY_DELAY: 3000, // 3 seconds
-
-	// --- Core Security Keys ---
-	JWT_SECRET_KEY: '',
-	ENCRYPTION_KEY: '',
-
-	// --- Fundamental Architectural Mode ---
-	MULTI_TENANT: false,
-
-	/* * NOTE: All other settings (SMTP, Google OAuth, feature flags, etc.)
-	 * are loaded dynamically from the database after the application starts.
-	 */
-});
-`;
-				try {
-					await fs.mkdir(paths.configDir, { recursive: true });
-					await fs.writeFile(paths.privateConfig, content);
-					log.info('Created initial private config -> config/private.ts');
-				} catch (e) {
-					log.error('Failed to provision private config:', e);
-				}
-			}
-			// Ensure collections are ready even in setup mode
-			await initializeCollectionsStructure();
-		},
-		config: () => ({
-			define: { __FRESH_INSTALL__: JSON.stringify(wasPrivateConfigMissing) }
-		}),
-		configureServer(server) {
-			const originalListen = server.listen;
-			server.listen = function (port?: number, isRestart?: boolean) {
-				const result = originalListen.apply(this, [port, isRestart]);
-				result.then(() => {
-					setTimeout(async () => {
-						const address = server.httpServer?.address();
-						const resolvedPort = typeof address === 'object' && address ? address.port : 5173;
-						const setupUrl = `http://localhost:${resolvedPort}/setup`;
-
-						try {
-							log.info(`Opening setup wizard in your browser...`);
-							openUrl(setupUrl);
-						} catch {
-							const coloredUrl = useColor ? `\x1b[34m${setupUrl}\x1b[0m` : setupUrl;
-							log.info(`Please open this URL to continue setup: ${coloredUrl}`);
-						}
-					}, 1000);
-				});
-				return result;
-			};
-		}
-	};
-}
 
 /**
  * Plugin to watch for changes in collections, roles, and widgets, triggering
@@ -310,7 +208,6 @@ function cmsWatcherPlugin(): Plugin {
 }
 
 // --- Main Vite Configuration ---
-const setupComplete = isSetupComplete();
 const isBuild = process.env.NODE_ENV === 'production' || process.argv.includes('build');
 
 const customLogger = createLogger();
@@ -325,11 +222,7 @@ customLogger.warn = (msg, options) => {
 export default defineConfig((): UserConfig => {
 	// Only log during dev mode, not during builds
 	if (!isBuild) {
-		if (setupComplete) {
-			log.success('Setup check passed. Initializing full dev environment...');
-		} else {
-			log.info('Starting in setup mode...');
-		}
+		log.success('Initializing SveltyCMS development environment...');
 	}
 
 	return {
@@ -342,7 +235,7 @@ export default defineConfig((): UserConfig => {
 				extensions: ['.svelte', '.ts', '.js']
 			}),
 			sveltekit(),
-			!setupComplete ? setupWizardPlugin() : cmsWatcherPlugin(),
+			cmsWatcherPlugin(), // Always use CMS watcher (setup wizard is separate app)
 			paraglideVitePlugin({
 				project: './project.inlang',
 				outdir: './src/paraglide'
@@ -373,7 +266,6 @@ export default defineConfig((): UserConfig => {
 		},
 
 		define: {
-			__FRESH_INSTALL__: false, // Default, may be overridden by setupWizardPlugin
 			// NOTE: PKG_VERSION is now provided by the server at runtime from package.json
 			// This ensures version always reflects installed package, not build-time snapshot
 			// SUPERFORMS_LEGACY: true, // Uncomment if using older versions of Superforms
@@ -387,6 +279,12 @@ export default defineConfig((): UserConfig => {
 			sourcemap: true,
 			chunkSizeWarningLimit: 600, // Increase from 500KB (after optimizations)
 			rollupOptions: {
+				// Enable aggressive tree-shaking
+				treeshake: {
+					moduleSideEffects: false, // Assume no side effects for better tree-shaking
+					propertyReadSideEffects: false,
+					tryCatchDeoptimization: false
+				},
 				onwarn(warning, warn) {
 					// Suppress circular dependency warnings from third-party libraries
 					// These are internal to the libraries and don't affect functionality
@@ -458,6 +356,21 @@ export default defineConfig((): UserConfig => {
 								return 'skeleton-ui';
 							}
 
+							// Floating UI (popovers, tooltips)
+							if (id.includes('@floating-ui')) {
+								return 'vendor-floating';
+							}
+
+							// Iconify - icons
+							if (id.includes('iconify')) {
+								return 'vendor-icons';
+							}
+
+							// Form validation libraries
+							if (id.includes('valibot') || id.includes('zod')) {
+								return 'vendor-validation';
+							}
+
 							// Svelte ecosystem (including SvelteKit to avoid circular deps)
 							if (id.includes('svelte')) {
 								return 'vendor-svelte';
@@ -472,10 +385,12 @@ export default defineConfig((): UserConfig => {
 						if (id.includes('src/routes/(app)/dashboard')) {
 							return 'route-dashboard';
 						}
+						if (id.includes('src/routes/(app)/config/collectionbuilder')) {
+							return 'route-collection-builder';
+						}
 						if (id.includes('src/routes/(app)/config')) {
 							return 'route-admin-config';
 						}
-
 						if (id.includes('src/routes/(app)/mediagallery')) {
 							return 'route-media';
 						}

@@ -1,0 +1,46 @@
+{
+    "name": "setup-wizard",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "sourceRoot": "apps/setup-wizard/src",
+    "targets": {
+        "build": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "vite build",
+                "cwd": "apps/setup-wizard"
+            },
+            "outputs": [
+                "{projectRoot}/build"
+            ],
+            "dependsOn": [
+                "^build"
+            ]
+        },
+        "dev": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "vite dev --port 5174",
+                "cwd": "apps/setup-wizard"
+            }
+        },
+        "preview": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "vite preview",
+                "cwd": "apps/setup-wizard"
+            }
+        },
+        "check": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+                "cwd": "apps/setup-wizard"
+            }
+        }
+    },
+    "tags": [
+        "type:app",
+        "scope:setup"
+    ]
+}

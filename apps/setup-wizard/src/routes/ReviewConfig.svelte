@@ -19,7 +19,7 @@ Key Features:
 	// ParaglideJS
 	import * as m from '@src/paraglide/messages';
 	// Types from setupStore
-	import type { AdminUser, DbConfig, SystemSettings } from '@stores/setupStore.svelte';
+	import type { AdminUser, DbConfig, SystemSettings } from '../stores/setupStore.svelte';
 
 	// Props passed from parent setup page
 	export let dbConfig: DbConfig;

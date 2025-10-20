@@ -1,0 +1,22 @@
+{
+    "name": "@sveltycms/types",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "packages/types/src",
+    "projectType": "library",
+    "targets": {
+        "build": {
+            "executor": "nx:run-commands",
+            "outputs": [
+                "{projectRoot}/dist"
+            ],
+            "options": {
+                "command": "tsc --project packages/types/tsconfig.json",
+                "cwd": "{workspaceRoot}"
+            }
+        }
+    },
+    "tags": [
+        "type:lib",
+        "scope:types"
+    ]
+}

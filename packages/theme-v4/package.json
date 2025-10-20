@@ -1,0 +1,28 @@
+{
+    "name": "@sveltycms/theme-v4",
+    "version": "0.2.0",
+    "description": "SveltyCMS Enterprise Theme - Tailwind v4 + Skeleton v4 (Blue primary, Green brand accent)",
+    "type": "module",
+    "exports": {
+        "./base": "./base.css",
+        "./theme": "./themes/sveltycms.css",
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "base.css",
+        "themes/*.css"
+    ],
+    "keywords": [
+        "sveltycms",
+        "tailwind-v4",
+        "skeleton-v4",
+        "theme",
+        "enterprise",
+        "oklch",
+        "dark-mode"
+    ],
+    "peerDependencies": {
+        "@skeletonlabs/skeleton": "^4.0.0",
+        "tailwindcss": "^4.0.0"
+    }
+}

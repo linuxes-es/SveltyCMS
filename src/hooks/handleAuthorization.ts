@@ -181,3 +181,13 @@ export function invalidateRolesCache(tenantId?: string): void {
 	cacheService.delete(`roles:${key}`, tenantId).catch((err) => logger.error(`Failed to invalidate roles cache: ${err.message}`));
 	logger.debug(`Roles cache invalidated (tenant: ${tenantId || 'global'})`);
 }
+
+export function invalidateAdminCache(cacheType: 'users' | 'tokens', tenantId?: string): void {
+	// Invalidate the relevant cache type
+	if (cacheType === 'users') {
+		invalidateUserCountCache(tenantId);
+	}
+	// For tokens, invalidate via cache service directly
+	cacheService.delete(cacheType, tenantId).catch((err) => logger.error(`Failed to invalidate ${cacheType} cache: ${err.message}`));
+	logger.debug(`Admin cache invalidated: ${cacheType} (tenant: ${tenantId || 'global'})`);
+}
