@@ -1,3 +1,10 @@
+# [0.1.0-next.2](https://github.com/SveltyCMS/SveltyCMS/compare/v0.1.0-next.1...v0.1.0-next.2) (2025-10-24)
+
+
+### Bug Fixes
+
+* collection save ([adf545a](https://github.com/SveltyCMS/SveltyCMS/commit/adf545a3f6e97a3a1d8f29d49ceb16970d75bcc7))
+
 # [0.1.0-next.1](https://github.com/SveltyCMS/SveltyCMS/compare/v0.0.4...v0.1.0-next.1) (2025-10-17)
 
 ### Bug Fixes
