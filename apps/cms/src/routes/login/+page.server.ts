@@ -39,8 +39,8 @@ import type { ISODateString } from '@src/content/types';
 // Stores
 import type { Locale } from '@src/paraglide/runtime';
 import { getPrivateSettingSync } from '@src/services/settingsService';
-import { publicEnv } from '@src/stores/globalSettings.svelte';
-import { systemLanguage } from '@stores/store.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
+import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 import { get } from 'svelte/store';
 
 // System Logger

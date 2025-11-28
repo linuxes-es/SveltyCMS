@@ -15,7 +15,7 @@
 <script lang="ts">
 	import { logger } from '@utils/logger';
 	import { untrack, onMount, onDestroy } from 'svelte';
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 
@@ -24,7 +24,7 @@
 
 	// Store
 	import { collection, collectionValue, mode } from '@src/stores/collectionStore.svelte';
-	import { contentLanguage, translationProgress } from '@stores/store.svelte';
+	import { contentLanguage, translationProgress } from '@sveltycms/shared-utils/stores/store';
 	import { getFieldName } from '@utils/utils';
 	import * as m from '@src/paraglide/messages';
 	import type { Locale } from '@src/paraglide/runtime';

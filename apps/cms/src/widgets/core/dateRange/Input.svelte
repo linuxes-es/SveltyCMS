@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getFieldName } from '@src/utils/utils';
-	import { validationStore } from '@stores/store.svelte';
+	import { validationStore } from '@sveltycms/shared-utils/stores/store';
 	import type { DateRangeWidgetData, FieldType } from './';
 
 	let { field, value, error }: { field: FieldType; value: DateRangeWidgetData | null | undefined; error?: string | null } = $props();

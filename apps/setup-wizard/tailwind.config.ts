@@ -9,7 +9,7 @@ import type { Config } from 'tailwindcss';
 import forms from '@tailwindcss/forms';
 import typography from '@tailwindcss/typography';
 import { skeleton } from '@skeletonlabs/tw-plugin';
-import { SveltyCMSTheme } from '../cms/src/themes/SveltyCMS/SveltyCMSTheme';
+import { SveltyCMSTheme } from '../../apps/shared-theme/src/themes/SveltyCMS/SveltyCMSTheme';
 
 const config = {
 	darkMode: 'class',

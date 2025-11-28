@@ -28,7 +28,7 @@ User types "1234.56" → displays "1.234,56 €" → stores 1234.56 as number
 -->
 
 <script lang="ts">
-	import { systemLanguage } from '@src/stores/store.svelte';
+	import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 	import type { FieldType } from './';
 	import { tokenTarget } from '@src/services/token/tokenTarget';
 

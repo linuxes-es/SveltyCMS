@@ -9,7 +9,7 @@ It relies entirely on the centralized `themeStore` for its state and logic.
 - Optional tooltip for user guidance
 -->
 <script lang="ts">
-	import { themeStore, setThemePreference, useSystemPreference } from '@stores/themeStore.svelte';
+	import { themeStore, setThemePreference, useSystemPreference } from '@sveltycms/shared-utils/stores/themeStore';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
 	// Props

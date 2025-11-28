@@ -8,6 +8,7 @@
         ".": "./index.ts",
         "./schemas": "./schemas.ts",
         "./writePrivateConfig": "./writePrivateConfig.ts",
+        "./private": "./private.ts",
         "./dbInterface": "./dbInterface.ts",
         "./types": "./types.ts"
     }

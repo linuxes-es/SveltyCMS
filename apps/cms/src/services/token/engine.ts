@@ -17,7 +17,7 @@ import type { Schema } from '@src/content/types';
 import type { User } from '@src/databases/auth/types';
 import { modifierRegistry } from './modifiers';
 import { logger } from '@utils/logger';
-import { publicEnv } from '@src/stores/globalSettings.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 import { browser } from '$app/environment';
 import { resolveRelationToken } from './relationResolver';
 

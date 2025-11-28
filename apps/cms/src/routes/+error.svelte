@@ -19,7 +19,7 @@
 	import SiteName from '@components/SiteName.svelte';
 	import SveltyCMSLogo from '@components/system/icons/SveltyCMS_Logo.svelte';
 	// ParaglideJS
-	import { contentLanguage } from '@stores/store.svelte';
+	import { contentLanguage } from '@sveltycms/shared-utils/stores/store';
 	import * as m from '@src/paraglide/messages';
 
 	const speed = 100;

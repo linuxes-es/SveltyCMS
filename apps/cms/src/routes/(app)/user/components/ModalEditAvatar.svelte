@@ -15,7 +15,7 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 	import { logger } from '@utils/logger';
 
 	// Stores
-	import { avatarSrc } from '@stores/store.svelte';
+	import { avatarSrc } from '@sveltycms/shared-utils/stores/store';
 
 	// ParaglideJS
 	import * as m from '@src/paraglide/messages';

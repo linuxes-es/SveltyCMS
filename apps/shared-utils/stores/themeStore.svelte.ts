@@ -1,14 +1,19 @@
 /**
- * @file src/stores/themeStore.svelte.ts
+ * @file apps/shared-utils/stores/themeStore.svelte.ts
  * @description Centralized, rune-based theme management store.
  * Supports explicit theme preferences: 'system', 'light', 'dark'
- * Pure Tailwind CSS implementation - no Skeleton Labs dependencies
+ * Compatible with Tailwind CSS v3 and Skeleton v2.
  */
 import { browser } from '$app/environment';
-import type { Theme } from '@src/databases/dbInterface';
-import { nowISODateString } from '@src/utils/dateUtils';
-import type { ISODateString } from '@src/content/types';
-import { logger } from '@utils/logger';
+import type { Theme } from '@sveltycms/shared-config/dbInterface';
+import { nowISODateString } from '@sveltycms/shared-utils/dateUtils'; // Assuming dateUtils is in shared-utils
+import type { ISODateString } from '@sveltycms/shared-config/types';
+import { logger } from '../logger.svelte';
+import { setModeCurrent, setModeUserPrefers } from '@skeletonlabs/skeleton';
+
+// --- Theme Helper Functions ---
+// We import these from Skeleton if available, otherwise we use our own logic.
+// Since we are in shared-utils, we assume @skeletonlabs/skeleton is available as a dependency.
 
 // --- Theme Preference Type ---
 export type ThemePreference = 'system' | 'light' | 'dark' | 'unknown';
@@ -147,9 +152,15 @@ export function initializeDarkMode() {
 		logger.debug('[Theme Init] Cleaned up old darkMode cookie');
 	}
 
-	// 7. Listen for system preference changes (only if using 'system' preference)
+	// 7. Sync Skeleton Labs
+	setModeCurrent(currentlyDark);
+	setModeUserPrefers(currentlyDark);
+
+	// 8. Listen for system preference changes (only if using 'system' preference)
 	_setupSystemListener();
-} /**
+}
+
+/**
  * Apply dark mode state to DOM
  */
 function _applyThemeToDOM(isDark: boolean) {
@@ -162,6 +173,10 @@ function _applyThemeToDOM(isDark: boolean) {
 		document.documentElement.classList.remove('dark');
 		logger.debug('[Theme] Removed dark class from DOM');
 	}
+
+	// Sync Skeleton
+	setModeCurrent(isDark);
+	setModeUserPrefers(isDark);
 }
 
 /**
@@ -261,7 +276,8 @@ export function toggleDarkMode(force?: boolean) {
  */
 export function useSystemPreference() {
 	setThemePreference('system');
-} // ... (Rest of your themeStore.svelte.ts file) ...
+}
+
 export async function initializeThemeStore() {
 	state.isLoading = true;
 	state.error = null;
@@ -310,7 +326,7 @@ export function clearError() {
 	state.error = null;
 }
 
-// --- 6. Auto-Refresh Management ---
+// --- Auto-Refresh Management ---
 export function startAutoRefresh() {
 	state.autoRefreshEnabled = true;
 }

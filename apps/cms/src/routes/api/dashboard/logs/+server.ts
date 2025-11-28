@@ -11,7 +11,7 @@
  * - **Memory Efficient:** No longer loads entire files into RAM.
  */
 
-import { publicEnv } from '@src/stores/globalSettings.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 import { error, json } from '@sveltejs/kit';
 import { createReadStream } from 'node:fs';
 import { open, readdir, stat } from 'node:fs/promises';

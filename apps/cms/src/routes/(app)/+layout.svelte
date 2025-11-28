@@ -49,12 +49,12 @@
 
 	// Stores
 	import { setContentStructure } from '@stores/collectionStore.svelte';
-	import { publicEnv } from '@stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	import { globalLoadingStore, loadingOperations } from '@stores/loadingStore.svelte';
 	import { isDesktop, screenSize } from '@stores/screenSizeStore.svelte';
-	import { avatarSrc, systemLanguage } from '@stores/store.svelte';
+	import { avatarSrc, systemLanguage } from '@sveltycms/shared-utils/stores/store';
 	import { uiStateManager } from '@stores/UIStore.svelte';
-	import { initializeDarkMode } from '@stores/themeStore.svelte';
+	import { initializeDarkMode } from '@sveltycms/shared-utils/stores/themeStore';
 
 	// Components
 	import HeaderEdit from '@components/HeaderEdit.svelte';

@@ -9,7 +9,7 @@ component
 	import { page } from '$app/state';
 	import { logger } from '@utils/logger';
 	import { collection, setTargetWidget } from '@src/stores/collectionStore.svelte';
-	import { tabSet } from '@stores/store.svelte';
+	import { tabSet } from '@sveltycms/shared-utils/stores/store';
 	import { asAny, getGuiFields } from '@utils/utils';
 	// Components
 	import VerticalList from '@components/VerticalList.svelte';

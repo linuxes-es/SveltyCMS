@@ -26,10 +26,9 @@
 	import { beforeNavigate, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import { collection, collectionValue, mode, setCollection, setCollectionValue, setMode } from '@stores/collectionStore.svelte';
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	import { globalLoadingStore, loadingOperations } from '@stores/loadingStore.svelte';
-	import { contentLanguage } from '@stores/store.svelte';
-	import { logger } from '@utils/logger.svelte';
+	import { contentLanguage } from '@sveltycms/shared-utils/stores/store';
 	// Components
 	import Loading from '@components/Loading.svelte';
 	import EntryList from '@components/collectionDisplay/EntryList.svelte';

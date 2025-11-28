@@ -27,7 +27,7 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 
 	// Stores
 	import { page } from '$app/state';
-	import { tabSet } from '@stores/store.svelte';
+	import { tabSet } from '@sveltycms/shared-utils/stores/store';
 	import { collection, setCollection } from '@src/stores/collectionStore.svelte';
 
 	// ParaglideJS
@@ -136,7 +136,7 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 	}
 
 	// Import validation store
-	import { validationStore } from '@src/stores/store.svelte';
+	import { validationStore } from '@sveltycms/shared-utils/stores/store';
 
 	// Function to save data by sending a POST request
 	async function handleCollectionSave() {

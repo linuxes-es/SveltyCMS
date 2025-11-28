@@ -30,7 +30,7 @@ Part of the Three Pillars Architecture for wSidget system.
 <script lang="ts">
 	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
 	import { logger } from '@utils/logger';
-	import { contentLanguage } from '@stores/store.svelte';
+	import { contentLanguage } from '@sveltycms/shared-utils/stores/store';
 	import { debounce } from '@utils/utils';
 	import type { FieldType } from './';
 	import { SeoAnalyzer } from './seoAnalyzer';

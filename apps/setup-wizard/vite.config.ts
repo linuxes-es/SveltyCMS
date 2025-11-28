@@ -9,11 +9,11 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [
-		sveltekit(),
 		paraglideVitePlugin({
 			project: './project.inlang',
 			outdir: './src/paraglide'
-		})
+		}),
+		sveltekit()
 	],
 	server: {
 		port: 5173,
@@ -38,5 +38,8 @@ export default defineConfig({
 			strict: false,
 			allow: ['..']
 		}
+	},
+	optimizeDeps: {
+		exclude: ['@sveltycms/shared-utils']
 	}
 });

@@ -25,7 +25,7 @@ Renders: "1.234,56 €" (German) or "$1,234.56" (US) based on system language
 -->
 
 <script lang="ts">
-	import { systemLanguage } from '@src/stores/store.svelte';
+	import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 	import type { FieldType } from './';
 
 	const { field, value }: { field: FieldType; value: number | null | undefined } = $props();

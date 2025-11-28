@@ -44,7 +44,7 @@ This component provides a streamlined interface for managing collection entries 
 	// Stores
 	import { screenSize } from '@stores/screenSizeStore.svelte';
 	import { collection, collectionValue, mode, setCollectionValue, setMode } from '@stores/collectionStore.svelte';
-	import { saveLayerStore, shouldShowNextButton, validationStore, dataChangeStore } from '@stores/store.svelte';
+	import { saveLayerStore, shouldShowNextButton, validationStore, dataChangeStore } from '@sveltycms/shared-utils/stores/store';
 	import { handleUILayoutToggle, uiStateManager } from '@stores/UIStore.svelte';
 
 	// Skeleton

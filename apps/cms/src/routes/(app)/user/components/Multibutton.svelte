@@ -22,7 +22,7 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 	import * as m from '@src/paraglide/messages';
 
 	// Stores
-	import { storeListboxValue } from '@stores/store.svelte';
+	import { storeListboxValue } from '@sveltycms/shared-utils/stores/store';
 
 	// Skeleton
 	import type { ModalComponent, ModalSettings, PopupSettings } from '@skeletonlabs/skeleton';

@@ -12,7 +12,7 @@
 	import { page } from '$app/state';
 	import { collection, collectionValue } from '@src/stores/collectionStore.svelte';
 	import { uiStateManager } from '@src/stores/UIStore.svelte';
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	import { fade, slide } from 'svelte/transition';
 	import { nowISODateString } from '@utils/dateUtils';
 	import type { TokenDefinition, ModifierMetadata } from '@src/services/token/types';

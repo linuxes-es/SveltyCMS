@@ -11,7 +11,7 @@
  * - getSanitizedFileName: Sanitizes a file name to remove special characters
  */
 
-import { publicEnv } from '@src/stores/globalSettings.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 import type { MediaBase, Thumbnail } from '@utils/media/mediaModels';
 import { formatBytes, sanitize } from '@utils/utils';
 import { removeExtension } from '../utils';

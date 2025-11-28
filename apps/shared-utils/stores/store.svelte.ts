@@ -1,11 +1,13 @@
 /**
- * @file src/stores/store.svelte.ts
+ * @file apps/shared-utils/stores/store.svelte.ts
  * @description Global state management
  */
 
-import type { Locale } from '@src/paraglide/runtime';
-import { publicEnv } from '@src/stores/globalSettings.svelte';
+import { publicEnv } from './globalSettings.svelte';
 import { SvelteSet } from 'svelte/reactivity';
+
+// Define Locale as string to avoid dependency on generated code
+export type Locale = string;
 
 // --- Helper Functions & Interfaces ---
 
@@ -24,8 +26,7 @@ export interface TranslationSet {
 }
 
 export type TranslationProgress = {
-	[key in Locale]?: TranslationSet;
-} & {
+	[key: string]: TranslationSet | boolean | undefined;
 	show: boolean;
 };
 
@@ -49,7 +50,7 @@ try {
 	availableLanguages = (publicEnv.AVAILABLE_CONTENT_LANGUAGES as Locale[]) || [];
 } catch {
 	// If not available (e.g., during server initialization), use empty array
-	console.warn('publicEnv not available during store initialization, using empty languages array');
+	// console.warn('publicEnv not available during store initialization, using empty languages array');
 	availableLanguages = [];
 }
 
@@ -216,7 +217,11 @@ export const avatarSrc = {
 
 			// Fallback: if it looks like a relative media path, prefix /files/
 			// Otherwise, keep as-is
-			_avatarSrc = trimmed ? (trimmed.endsWith('.svg') ? `/${trimmed}` : `/files/${trimmed}`) : '/Default_User.svg';
+			_avatarSrc = trimmed
+				? trimmed.endsWith('.svg')
+					? `/${trimmed}`
+					: `/files/${trimmed}`
+				: '/Default_User.svg';
 		} catch {
 			_avatarSrc = newValue || '/Default_User.svg';
 		}
@@ -322,21 +327,6 @@ function createRuneBackedStore<T>(initial: T) {
 
 /**
  * Language Management with ParaglideJS Integration
- *
- * Architecture:
- * - systemLanguage store: UI state management (read/write interface for components)
- * - ParaglideJS: Reads from `systemLanguage` cookie, provides translations via getLocale()
- *
- * Flow:
- * 1. Component calls: systemLanguage.set('de')
- * 2. Store automatically sets cookie: systemLanguage=de
- * 3. ParaglideJS reads cookie and updates translations
- * 4. Components read via: getLocale() or systemLanguage.value
- *
- * Why not use ParaglideJS directly?
- * - ParaglideJS doesn't provide a client-side API to change language
- * - It relies on cookies/URL routing for language detection
- * - Our store provides the reactive bridge between UI and ParaglideJS
  */
 
 // Get initial values from cookies or use defaults (with error handling for server-side)
@@ -344,8 +334,12 @@ let initialSystemLanguage: Locale;
 let initialContentLanguage: Locale;
 
 try {
-	initialSystemLanguage = (getCookie('systemLanguage') as Locale | null) ?? (publicEnv.BASE_LOCALE as Locale) ?? 'en';
-	initialContentLanguage = (getCookie('contentLanguage') as Locale | null) ?? (publicEnv.DEFAULT_CONTENT_LANGUAGE as Locale) ?? 'en';
+	initialSystemLanguage =
+		(getCookie('systemLanguage') as Locale | null) ?? (publicEnv.BASE_LOCALE as Locale) ?? 'en';
+	initialContentLanguage =
+		(getCookie('contentLanguage') as Locale | null) ??
+		(publicEnv.DEFAULT_CONTENT_LANGUAGE as Locale) ??
+		'en';
 } catch {
 	// Fallback values for server-side initialization
 	initialSystemLanguage = 'en' as Locale;
@@ -445,8 +439,9 @@ export const contentLanguage = {
 };
 
 // Simple reactive state for other stores
-let _headerActionButton = $state<ConstructorOfATypedSvelteComponent | string | undefined>(undefined);
-let _headerActionButton2 = $state<ConstructorOfATypedSvelteComponent | string | undefined>(undefined);
+// Note: ConstructorOfATypedSvelteComponent is not easily available here, using any for now
+let _headerActionButton = $state<any | string | undefined>(undefined);
+let _headerActionButton2 = $state<any | string | undefined>(undefined);
 let _pkgBgColor = $state('variant-filled-primary');
 let _file = $state<File | null>(null);
 let _saveEditedImage = $state(false);
@@ -457,8 +452,8 @@ let _saveFunction = $state<SaveFunction>({
 let _validationErrors = $state<ValidationErrors>({});
 
 // Subscriber sets for manual subscription tracking
-const headerActionButtonSubscribers = new SvelteSet<(value: ConstructorOfATypedSvelteComponent | string | undefined) => void>();
-const headerActionButton2Subscribers = new SvelteSet<(value: ConstructorOfATypedSvelteComponent | string | undefined) => void>();
+const headerActionButtonSubscribers = new SvelteSet<(value: any | string | undefined) => void>();
+const headerActionButton2Subscribers = new SvelteSet<(value: any | string | undefined) => void>();
 const pkgBgColorSubscribers = new SvelteSet<(value: string) => void>();
 const fileSubscribers = new SvelteSet<(value: File | null) => void>();
 const saveEditedImageSubscribers = new SvelteSet<(value: boolean) => void>();
@@ -466,7 +461,11 @@ const saveFunctionSubscribers = new SvelteSet<(value: SaveFunction) => void>();
 const validationErrorsSubscribers = new SvelteSet<(value: ValidationErrors) => void>();
 
 // Helper to create simple store wrappers
-function createSimpleStore<T>(getter: () => T, setter: (value: T) => void, subscribers: SvelteSet<(value: T) => void>) {
+function createSimpleStore<T>(
+	getter: () => T,
+	setter: (value: T) => void,
+	subscribers: SvelteSet<(value: T) => void>
+) {
 	const notify = () => {
 		const currentValue = getter();
 		for (const fn of subscribers) {
@@ -632,7 +631,9 @@ export const indexer = undefined;
 function createValidationStore() {
 	let errors = $state<ValidationErrors>({});
 	const isValid = $derived(() => Object.values(errors).every((error) => !error));
-	const subscribers = new SvelteSet<(value: { errors: ValidationErrors; isValid: boolean }) => void>();
+	const subscribers = new SvelteSet<
+		(value: { errors: ValidationErrors; isValid: boolean }) => void
+	>();
 
 	const notify = () => {
 		const current = { errors: { ...errors }, isValid: isValid() }; // Call the derived function
@@ -658,20 +659,12 @@ function createValidationStore() {
 		setError: (fieldName: string, errorMessage: string | null) => {
 			// Silent validation error setting
 			errors[fieldName] = errorMessage;
-			// 🔍 DEBUG: Log error setting
-			if (process.env.NODE_ENV !== 'production') {
-				console.log('[ValidationStore] setError:', fieldName, errorMessage, 'isValid:', isValid());
-			}
 			notify();
 		},
 		clearError: (fieldName: string) => {
 			// Silent validation error clearing
 			if (fieldName in errors) {
 				delete errors[fieldName];
-				// 🔍 DEBUG: Log error clearing
-				if (process.env.NODE_ENV !== 'production') {
-					console.log('[ValidationStore] clearError:', fieldName, 'isValid:', isValid());
-				}
 				notify();
 			}
 		},
@@ -703,15 +696,6 @@ function createValidationStore() {
 export const validationStore = createValidationStore();
 
 // --- Data Change Tracking Store ---
-/**
- * Tracks whether form data has been modified from its initial state.
- * Used by Fields.svelte to communicate with save buttons in HeaderEdit/RightSidebar.
- *
- * Flow:
- * 1. Fields.svelte detects changes and calls setHasChanges(true)
- * 2. Save buttons check hasChanges before deciding to reload
- * 3. After save/cancel, reset() is called to clear the flag
- */
 function createDataChangeStore() {
 	let hasChanges = $state<boolean>(false);
 	let initialDataSnapshot = $state<string>('');

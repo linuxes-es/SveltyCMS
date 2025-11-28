@@ -22,9 +22,9 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	// Stores
-	import { publicEnv } from '@stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	import { setupStore } from '@stores/setupStore.svelte';
-	import { systemLanguage } from '@stores/store.svelte';
+	import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 	// Componets
 	import SiteName from '@components/SiteName.svelte';
 	import ThemeToggle from '@components/ThemeToggle.svelte';

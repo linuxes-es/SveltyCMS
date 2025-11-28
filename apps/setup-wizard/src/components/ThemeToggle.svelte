@@ -8,7 +8,7 @@ It relies entirely on the centralized `themeStore` for its state and logic.
 - Optional tooltip for user guidance
 -->
 <script lang="ts">
-	import { themeStore, toggleDarkMode } from '@stores/themeStore.svelte';
+	import { themeStore, toggleDarkMode } from '@sveltycms/shared-utils/stores/themeStore';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
 	// Props

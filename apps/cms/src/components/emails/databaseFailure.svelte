@@ -6,7 +6,7 @@
 	 * Sent when database connection fails and automatic recovery attempts are exhausted
 	 */
 	import { dev } from '$app/environment';
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	import { Body, Button, Container, Head, Heading, Hr, Html, Img, Link, Preview, Section, Text, Row, Column } from 'better-svelte-email';
 
 	interface Props {

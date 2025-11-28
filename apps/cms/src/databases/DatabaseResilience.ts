@@ -480,7 +480,7 @@ export async function notifyAdminsOfDatabaseFailure(error: DatabaseError, metric
 		}
 
 		// Prepare email data
-		const { publicEnv } = await import(/* @vite-ignore */ '@src/stores/globalSettings.svelte');
+		const { publicEnv } = await import(/* @vite-ignore */ '@sveltycms/shared-utils/stores/globalSettings');
 		const systemState = getSystemState();
 
 		const emailData = {

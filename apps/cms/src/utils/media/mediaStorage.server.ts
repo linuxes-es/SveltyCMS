@@ -6,7 +6,7 @@
  * THIS FILE MUST NOT CONTAIN ANY DATABASE LOGIC.
  */
 
-import { publicEnv } from '@src/stores/globalSettings.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 import { error } from '@sveltejs/kit';
 import mime from 'mime-types';
 import Path from 'path';

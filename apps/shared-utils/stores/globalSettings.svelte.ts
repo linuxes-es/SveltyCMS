@@ -1,24 +1,16 @@
 /**
- * @file src/stores/globalSettings.svelte.ts
+ * @file apps/shared-utils/stores/globalSettings.svelte.ts
  * @description Global Settings Store for PUBLIC ONLY
  *
  * 🔒 SECURITY: This file only contains PUBLIC settings safe for client-side use.
  * Private settings (DB passwords, API keys, etc.) are NEVER exposed here.
- * They remain server-only in src/services/settingsService.ts
- *
- * ### Features
- * - Reactive PUBLIC settings using Svelte 5 $state/$derived runes
- * - Automatic UI updates when settings change
- * - Populated by root layout load function
- * - Type-safe access to public configuration
+ * They remain server-only.
  */
 
 import { browser } from '$app/environment';
-import { publicConfigSchema } from '@src/databases/schemas';
+import { publicConfigSchema } from '@sveltycms/shared-config/schemas';
 import { type InferOutput } from 'valibot';
-
-// Universal Logger (safe for client and server)
-import { logger } from '@utils/logger';
+import { logger } from '../logger.svelte'; // Assuming logger is in shared-utils
 
 type PublicEnv = InferOutput<typeof publicConfigSchema> & { PKG_VERSION?: string };
 
@@ -88,10 +80,13 @@ function startListening() {
  * Initializes or updates the client-side public environment store.
  * This should be called from a root layout's load function.
  * @param data The public settings loaded from the server.
+ * @param enableSync Whether to enable real-time sync via SSE (default: false)
  */
-export function initPublicEnv(data: PublicEnv): void {
+export function initPublicEnv(data: PublicEnv, enableSync = false): void {
 	Object.assign(state, data);
-	startListening();
+	if (enableSync) {
+		startListening();
+	}
 }
 
 /**

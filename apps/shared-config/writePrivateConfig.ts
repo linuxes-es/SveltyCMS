@@ -25,8 +25,9 @@ export async function writePrivateConfig(
 		error: (msg: string, err?: unknown) => console.error(msg, err)
 	};
 
-	// Config is in workspace root config/ directory
-	const privateConfigPath = path.resolve(process.cwd(), '../../config', 'private.ts');
+	// Config is in apps/shared-config/private.ts
+	// We assume process.cwd() is the workspace root when running setup scripts
+	const privateConfigPath = path.resolve(process.cwd(), 'apps/shared-config/private.ts');
 
 	// Generate random keys
 	const generateRandomKey = () => randomBytes(32).toString('base64');
@@ -40,7 +41,7 @@ export async function writePrivateConfig(
  * These values are required for the server to start and connect to the database.
  * This file was populated during the initial setup process.
  */
-import { createPrivateConfig } from '@sveltycms/shared-config/schemas';
+import { createPrivateConfig } from './schemas.js';
 
 export const privateEnv = createPrivateConfig({
 	// --- Core Database Connection ---

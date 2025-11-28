@@ -32,7 +32,7 @@ functionality for image editing and basic file information display.
 	import * as m from '@src/paraglide/messages';
 
 	// Stores
-	import { validationStore } from '@stores/store.svelte';
+	import { validationStore } from '@sveltycms/shared-utils/stores/store';
 	import { mode, collectionValue } from '@stores/collectionStore.svelte';
 
 	// Components

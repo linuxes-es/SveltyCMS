@@ -9,7 +9,7 @@
 	// Stores
 	import { page } from '$app/state';
 	import { collectionValue, setCollectionValue, setTargetWidget } from '@src/stores/collectionStore.svelte';
-	import { tabSet } from '@stores/store.svelte';
+	import { tabSet } from '@sveltycms/shared-utils/stores/store';
 	import { widgetFunctions } from '@stores/widgetStore.svelte';
 	import { get } from 'svelte/store';
 	// Components

@@ -24,17 +24,16 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import type { FieldType } from '.';
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 
 	// Stores
 	// Stores
-	import { validationStore } from '@stores/store.svelte';
-	import { contentLanguage } from '@stores/store.svelte';
+	import { validationStore } from '@sveltycms/shared-utils/stores/store';
+	import { contentLanguage } from '@sveltycms/shared-utils/stores/store';
 	import { collection } from '@src/stores/collectionStore.svelte';
 	import { activeInputStore } from '@src/stores/activeInputStore.svelte';
 
 	// Utils
-	import { getFieldName } from '@utils/utils';
 
 	// Valibot validation
 	import { string, email as emailValidator, pipe, parse, type ValiError, minLength, optional } from 'valibot';

@@ -25,7 +25,7 @@ Renders a checkbox with label, color, size, and helper text from field props
 -->
 <script lang="ts">
 	import { getFieldName } from '@src/utils/utils';
-	import { validationStore } from '@stores/store.svelte';
+	import { validationStore } from '@sveltycms/shared-utils/stores/store';
 	import type { FieldType } from './';
 
 	let {

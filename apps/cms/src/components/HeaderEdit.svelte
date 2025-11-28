@@ -50,7 +50,7 @@
 	import { collection, collectionValue, mode, setCollectionValue, setMode } from '@src/stores/collectionStore.svelte';
 	import { isDesktop, screenSize } from '@src/stores/screenSizeStore.svelte';
 	import { toggleUIElement, uiStateManager } from '@src/stores/UIStore.svelte';
-	import { contentLanguage, headerActionButton, shouldShowNextButton, tabSet, validationStore, dataChangeStore } from '@stores/store.svelte';
+	import { contentLanguage, headerActionButton, shouldShowNextButton, tabSet, validationStore, dataChangeStore } from '@sveltycms/shared-utils/stores/store';
 
 	const user = $derived(page.data.user as User);
 	const isAdmin = $derived(page.data.isAdmin || false);

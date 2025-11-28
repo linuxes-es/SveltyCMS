@@ -5,6 +5,16 @@
 	"private": true,
 	"exports": {
 		"./setupCheck": "./setupCheck.ts",
-		"./logger": "./logger.svelte.ts"
+		"./logger": "./logger.svelte.ts",
+		"./stores/globalSettings": "./stores/globalSettings.svelte.ts",
+		"./stores/store": "./stores/store.svelte.ts",
+		"./stores/themeStore": "./stores/themeStore.svelte.ts",
+		"./dateUtils": "./dateUtils.ts"
+	},
+	"dependencies": {
+		"@skeletonlabs/skeleton": "^2.11.0"
+	},
+	"peerDependencies": {
+		"svelte": "^5.0.0"
 	}
 }

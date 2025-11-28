@@ -24,7 +24,7 @@
  */
 
 import type { Handle } from '@sveltejs/kit';
-import { contentLanguage, systemLanguage } from '@stores/store.svelte';
+import { contentLanguage, systemLanguage } from '@sveltycms/shared-utils/stores/store';
 import type { Locale } from '@src/paraglide/runtime';
 import { locales } from '@src/paraglide/runtime';
 import { logger } from '@utils/logger.server';

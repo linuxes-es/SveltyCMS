@@ -24,7 +24,7 @@
  */
 
 import { browser, building } from '$app/environment';
-import { publicEnv } from '@src/stores/globalSettings.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 
 // Helper to safely access publicEnv properties with a default value
 const getEnv = <T>(key: keyof typeof publicEnv, defaultValue: T): T => {

@@ -30,7 +30,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 	// Logger
 	import { logger } from '@utils/logger';
 	// Utils & Media
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	import { MediaTypeEnum, type MediaBase, type MediaImage } from '@utils/media/mediaModels';
 	// Components
 	import Breadcrumb from '@components/Breadcrumb.svelte';

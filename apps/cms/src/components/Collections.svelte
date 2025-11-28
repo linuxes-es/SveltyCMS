@@ -57,7 +57,7 @@
 	// Stores
 	import { collection, contentStructure, mode, setMode } from '@stores/collectionStore.svelte';
 	import { uiStateManager } from '@stores/UIStore.svelte';
-	import { contentLanguage, shouldShowNextButton } from '@stores/store.svelte';
+	import { contentLanguage, shouldShowNextButton } from '@sveltycms/shared-utils/stores/store';
 	import { activeWidgets } from '@stores/widgetStore.svelte';
 
 	// Utils

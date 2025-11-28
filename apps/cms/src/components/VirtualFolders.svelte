@@ -31,7 +31,7 @@
 	import { logger } from '@utils/logger';
 	import { onMount } from 'svelte';
 	// Stores
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	import { toggleUIElement, uiStateManager } from '@stores/UIStore.svelte';
 	import { setMode } from '@stores/collectionStore.svelte';
 	import { screenSize } from '@stores/screenSizeStore.svelte';

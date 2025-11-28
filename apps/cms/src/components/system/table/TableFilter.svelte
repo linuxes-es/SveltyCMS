@@ -30,7 +30,7 @@ It includes search, filter toggles, column visibility, and density controls, opt
 	import { browser } from '$app/environment';
 
 	// Stores
-	import { setTranslationStatusOpen } from '@stores/store.svelte';
+	import { setTranslationStatusOpen } from '@sveltycms/shared-utils/stores/store';
 
 	// Logger
 	import { logger } from '@utils/logger';

@@ -1,16 +1,31 @@
 {
-    "name": "shared-theme",
-    "version": "0.0.1",
-    "private": true,
+    "name": "@sveltycms/shared-theme",
+    "version": "1.0.0",
     "type": "module",
-    "description": "Shared Tailwind v4 + Skeleton v4 theme for all SveltyCMS applications",
+    "private": true,
     "exports": {
         "./app.css": "./app.css",
-        "./sveltycms.css": "./sveltycms.css"
+        "./sveltycms.css": "./sveltycms.css",
+        "./theme": "./src/themes/SveltyCMS/SveltyCMSTheme.ts",
+        "./tailwind.config": "./tailwind.config.ts",
+        "./postcss.config": "./postcss.config.cjs"
     },
-    "dependencies": {
-        "tailwindcss": "^4.1.13",
-        "@skeletonlabs/skeleton": "^4.1.3",
-        "@skeletonlabs/skeleton-svelte": "^4.1.3"
+    "scripts": {
+        "check": "svelte-check --tsconfig ./tsconfig.json",
+        "lint": "prettier --check .",
+        "format": "prettier --write ."
+    },
+    "devDependencies": {
+        "@skeletonlabs/skeleton": "^2.11.0",
+        "@skeletonlabs/tw-plugin": "^0.4.1",
+        "autoprefixer": "^10.4.21",
+        "postcss": "^8.5.6",
+        "tailwindcss": "^3.4.18",
+        "typescript": "^5.9.3",
+        "vite": "^7.1.11",
+        "svelte-check": "^4.3.3",
+        "prettier": "^3.5.3",
+        "prettier-plugin-svelte": "^3.3.3",
+        "prettier-plugin-tailwindcss": "^0.6.11"
     }
 }

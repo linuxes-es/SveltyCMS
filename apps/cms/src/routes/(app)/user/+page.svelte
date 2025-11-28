@@ -25,8 +25,8 @@
 	import * as m from '@src/paraglide/messages';
 
 	// Stores
-	import '@stores/store.svelte';
-	import { avatarSrc } from '@stores/store.svelte';
+	import '@sveltycms/shared-utils/stores/store';
+	import { avatarSrc } from '@sveltycms/shared-utils/stores/store';
 	import { triggerActionStore } from '@utils/globalSearchIndex';
 	// Components
 	import PageTitle from '@components/PageTitle.svelte';

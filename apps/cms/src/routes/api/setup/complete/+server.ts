@@ -26,8 +26,8 @@ import type { RequestHandler } from './$types';
 
 // Collection utilities
 import type { Locale } from '@src/paraglide/runtime';
-import { publicEnv } from '@src/stores/globalSettings.svelte';
-import { systemLanguage } from '@stores/store.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
+import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 import { get } from 'svelte/store';
 
 interface AdminConfig {

@@ -16,7 +16,7 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
-	import { publicEnv } from '@stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 
 	interface Props {
 		char?: string | null;

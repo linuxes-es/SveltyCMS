@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Show OAuth when OAuth is enabled and an admin has sent an invitation
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	const { showOAuth = true } = $props<{
 		showOAuth?: boolean;
 	}>();

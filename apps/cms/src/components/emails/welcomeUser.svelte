@@ -6,11 +6,11 @@
 
 <script lang="ts">
 	import { dev } from '$app/environment';
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 
 	// ParaglideJS
 	import * as m from '@src/paraglide/messages';
-	import { systemLanguage } from '@stores/store.svelte';
+	import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 	// better-svelte-email components
 	import { Body, Button, Container, Head, Heading, Hr, Html, Img, Link, Preview, Section, Text } from 'better-svelte-email';
 

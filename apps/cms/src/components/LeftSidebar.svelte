@@ -32,7 +32,7 @@
 
 	// Stores
 	import { setMode } from '@stores/collectionStore.svelte';
-	import { avatarSrc, systemLanguage } from '@stores/store.svelte';
+	import { avatarSrc, systemLanguage } from '@sveltycms/shared-utils/stores/store';
 	import { toggleUIElement, uiStateManager, userPreferredState } from '@stores/UIStore.svelte';
 	import { globalLoadingStore, loadingOperations } from '@stores/loadingStore.svelte';
 

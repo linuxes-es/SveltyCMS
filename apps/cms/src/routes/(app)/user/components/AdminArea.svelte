@@ -16,7 +16,7 @@
 	import { untrack } from 'svelte';
 	import { logger } from '@utils/logger';
 	// Stores
-	import { avatarSrc } from '@stores/store.svelte';
+	import { avatarSrc } from '@sveltycms/shared-utils/stores/store';
 	import { globalLoadingStore, loadingOperations } from '@stores/loadingStore.svelte';
 
 	// Components

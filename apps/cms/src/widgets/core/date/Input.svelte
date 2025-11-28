@@ -23,7 +23,7 @@ User selects date → automatically converts to ISO 8601 UTC format
 
 <script lang="ts">
 	import { getFieldName } from '@src/utils/utils';
-	import { validationStore } from '@stores/store.svelte';
+	import { validationStore } from '@sveltycms/shared-utils/stores/store';
 	import type { FieldType } from './';
 
 	// Accept `error` as a prop from the parent (string or null/undefined)

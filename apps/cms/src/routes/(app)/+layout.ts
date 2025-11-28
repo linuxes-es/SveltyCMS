@@ -4,7 +4,7 @@
  * Hydrates the client-side reactive store with public settings from the server
  */
 
-import { initPublicEnv } from '@stores/globalSettings.svelte';
+import { initPublicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = ({ data }) => {

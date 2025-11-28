@@ -4,6 +4,8 @@
  * Uses Tailwind v3 + SveltyCMS Theme
  */
 
+@import '../../shared-theme/sveltycms.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

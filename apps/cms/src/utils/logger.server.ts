@@ -29,7 +29,7 @@
  */
 
 import { browser, building } from '$app/environment';
-import { publicEnv } from '@stores/globalSettings.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 
 // This module should never run in browser - fail fast if it does
 if (browser) {

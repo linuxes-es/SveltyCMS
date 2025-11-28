@@ -29,7 +29,7 @@ Interactive selector with "Select" button and clear functionality
 <script lang="ts">
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import type { FieldType } from './';
-	import { contentLanguage } from '@src/stores/store.svelte';
+	import { contentLanguage } from '@sveltycms/shared-utils/stores/store';
 
 	let { field, value, error }: { field: FieldType; value: string | string[] | null | undefined; error?: string | null } = $props();
 

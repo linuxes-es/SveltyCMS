@@ -42,9 +42,9 @@
 		minLength as valibotMinLength,
 		maxLength as valibotMaxLength
 	} from 'valibot';
-	import { validationStore } from '@stores/store.svelte';
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
-	import { contentLanguage } from '@src/stores/store.svelte';
+	import { validationStore } from '@sveltycms/shared-utils/stores/store';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
+	import { contentLanguage } from '@sveltycms/shared-utils/stores/store';
 
 	import { collection } from '@src/stores/collectionStore.svelte';
 	import { activeInputStore } from '@src/stores/activeInputStore.svelte';

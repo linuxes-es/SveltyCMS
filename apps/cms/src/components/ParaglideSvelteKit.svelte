@@ -21,7 +21,7 @@
 	import type { Snippet } from 'svelte';
 
 	// Stores
-	import { systemLanguage } from '@stores/store.svelte';
+	import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 
 	// Paraglide
 	import { getLocale, setLocale, locales as availableLocales } from '@src/paraglide/runtime';

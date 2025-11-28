@@ -22,9 +22,9 @@ import { saveAvatarImage } from '@utils/media/mediaStorage';
 
 // Stores
 import { getPrivateSettingSync } from '@src/services/settingsService';
-import { publicEnv } from '@src/stores/globalSettings.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 import type { Locale } from '@src/paraglide/runtime';
-import { systemLanguage } from '@stores/store.svelte';
+import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 import { get } from 'svelte/store';
 
 // System Logger

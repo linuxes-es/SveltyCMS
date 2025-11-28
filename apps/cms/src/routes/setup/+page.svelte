@@ -12,7 +12,7 @@ calls store methods and wires store state to child components.
 
 	// Stores
 	import { setupStore } from '@stores/setupStore.svelte';
-	import { systemLanguage } from '@stores/store.svelte';
+	import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 
 	// Child Layout Components
 	import SetupHeader from './SetupHeader.svelte';

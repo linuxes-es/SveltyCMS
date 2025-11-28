@@ -4,7 +4,7 @@
 -->
 
 <script lang="ts">
-	import { themeStore, updateTheme } from '@stores/themeStore.svelte';
+	import { themeStore, updateTheme } from '@sveltycms/shared-utils/stores/themeStore';
 	import type { DatabaseId } from '@src/content/types';
 	import type { Theme } from '@src/databases/dbInterface';
 	import { dateToISODateString } from '@utils/dateUtils';

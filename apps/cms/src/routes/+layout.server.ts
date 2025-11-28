@@ -5,7 +5,7 @@
 import { version } from '../../package.json';
 // Use server-side settings service with setup-safe fallbacks
 import { getPrivateSettingSync } from '@src/services/settingsService';
-import { publicEnv } from '@src/stores/globalSettings.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 import type { LayoutServerLoad } from './$types';
 import type { Locale } from '@src/paraglide/runtime';
 

@@ -132,6 +132,7 @@ const paths = {
 
 // --- Utilities ---
 const useColor = process.stdout.isTTY;
+let hasLoggedCollectionInit = false;
 
 // Standardized logger for build-time scripts, mimicking the main application logger's style.
 // Colored tag printed once so message-local color codes render correctly.
@@ -416,7 +417,7 @@ export default defineConfig((): UserConfig => {
 			}
 		},
 		optimizeDeps: {
-			exclude: [...builtinModules, ...builtinModules.map((m) => `node:${m}`), 'redis', '@src/databases/CacheService'],
+			exclude: [...builtinModules, ...builtinModules.map((m) => `node:${m}`), 'redis', '@src/databases/CacheService', '@sveltycms/shared-utils'],
 			include: ['@skeletonlabs/skeleton'],
 			entries: ['!tests/**/*', '!**/*.server.ts', '!**/*.server.js']
 		}

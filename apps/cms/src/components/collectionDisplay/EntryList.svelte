@@ -39,7 +39,7 @@ Features:
 	import { preloadEntry, reflectModeInURL } from '@utils/navigationUtils';
 	// Import centralized actions
 	// Config
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	// Types
 	import type { PaginationSettings, TableHeader } from '@components/system/table/TablePagination.svelte';
 	import type { StatusType } from '@src/content/types';
@@ -48,7 +48,7 @@ Features:
 	import { collection, collectionValue, mode, setCollectionValue, setMode, setModifyEntry, statusMap } from '@stores/collectionStore.svelte';
 	// DELETED: globalLoadingStore imports - not needed with SSR
 	import { isDesktop, screenSize } from '@stores/screenSizeStore.svelte';
-	import { contentLanguage, systemLanguage } from '@stores/store.svelte';
+	import { contentLanguage, systemLanguage } from '@sveltycms/shared-utils/stores/store';
 	import { handleUILayoutToggle, toggleUIElement, uiStateManager } from '@stores/UIStore.svelte';
 	// ParaglideJS
 	import * as m from '@src/paraglide/messages';

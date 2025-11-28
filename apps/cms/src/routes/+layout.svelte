@@ -19,10 +19,10 @@
 
 	// Paraglide locale bridge
 	import { locales as availableLocales, getLocale, setLocale } from '@src/paraglide/runtime';
-	import { systemLanguage } from '@stores/store.svelte';
+	import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 
 	// Centralized theme management
-	import { themeStore, initializeThemeStore, initializeDarkMode } from '@stores/themeStore.svelte';
+	import { themeStore, initializeThemeStore, initializeDarkMode } from '@sveltycms/shared-utils/stores/themeStore';
 
 	// Toast support
 	import { setGlobalToastStore } from '@utils/toast';

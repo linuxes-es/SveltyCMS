@@ -28,7 +28,7 @@ Interactive form with map, country selector, and address validation
 -->
 
 <script lang="ts">
-	import { systemLanguage } from '@src/stores/store.svelte';
+	import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 
 	import { onDestroy } from 'svelte';
 	import type { FieldType } from './';

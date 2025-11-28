@@ -14,7 +14,7 @@ Features:
 
 <script lang="ts">
 	import { logger } from '@utils/logger';
-	import { getPublicSetting, publicEnv } from '@src/stores/globalSettings.svelte';
+	import { getPublicSetting, publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	import type { PageData } from './$types';
 	// Components
 	import Seasons from '@components/system/icons/Seasons.svelte';
@@ -23,7 +23,7 @@ Features:
 	import SignUp from './components/SignUp.svelte';
 	import VersionCheck from '@components/VersionCheck.svelte';
 	// Stores
-	import { systemLanguage } from '@stores/store.svelte';
+	import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 	import { getLanguageName } from '@utils/languageUtils';
 	import { locales as availableLocales } from '@src/paraglide/runtime';
 	// ParaglideJS

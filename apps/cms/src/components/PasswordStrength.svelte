@@ -29,7 +29,7 @@
 -->
 
 <script lang="ts">
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	import { fade } from 'svelte/transition';
 
 	interface Props {

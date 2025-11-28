@@ -25,7 +25,7 @@ Renders: "1,234,567.89" (US) or "1.234.567,89" (German) based on system language
 -->
 
 <script lang="ts">
-	import { systemLanguage } from '@src/stores/store.svelte';
+	import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
 
 	const { value }: { value: number | null | undefined } = $props();
 

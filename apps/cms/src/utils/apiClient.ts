@@ -14,7 +14,7 @@
 
 import type { ISODateString } from '@src/content/types';
 import { logger } from '@utils/logger';
-import { publicEnv } from '@stores/globalSettings.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 
 // --- Type Definitions ---
 export interface ApiResponse<T = unknown> {

@@ -21,8 +21,8 @@
 
 	// Paraglide locale bridge
 	import { locales as availableLocales, getLocale, setLocale } from '../paraglide/runtime';
-	import { systemLanguage } from '@stores/store.svelte';
-	import { initializeDarkMode } from '@stores/themeStore.svelte';
+	import { systemLanguage } from '@sveltycms/shared-utils/stores/store';
+	import { initializeDarkMode } from '@sveltycms/shared-utils/stores/themeStore';
 
 	// Initialize Skeleton stores (must be at module level)
 	initializeStores();
@@ -38,7 +38,7 @@
 		const desired = systemLanguage.value;
 		if (desired && availableLocales.includes(desired as any) && currentLocale !== desired) {
 			setLocale(desired as any, { reload: false });
-			currentLocale = desired;
+			currentLocale = desired as any;
 		}
 	});
 

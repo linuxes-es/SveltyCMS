@@ -17,7 +17,7 @@
 	import { untrack } from 'svelte';
 	// Stores
 	import { page } from '$app/state';
-	import { tabSet } from '@stores/store.svelte';
+	import { tabSet } from '@sveltycms/shared-utils/stores/store';
 	import { collection, setCollection } from '@stores/collectionStore.svelte';
 
 	// Components

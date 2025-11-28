@@ -25,7 +25,7 @@
 	import { StatusTypes } from '@src/content/types';
 
 	// Stores
-	import { storeListboxValue } from '@stores/store.svelte';
+	import { storeListboxValue } from '@sveltycms/shared-utils/stores/store';
 
 	// Props
 	let {

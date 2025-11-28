@@ -34,8 +34,8 @@
 
 	// Stores
 	import { collection, collectionValue, setCollectionValue } from '@src/stores/collectionStore.svelte';
-	import { translationProgress, contentLanguage, dataChangeStore } from '@stores/store.svelte';
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { translationProgress, contentLanguage, dataChangeStore } from '@sveltycms/shared-utils/stores/store';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	import type { Locale } from '@src/paraglide/runtime';
 
 	// ParaglideJS

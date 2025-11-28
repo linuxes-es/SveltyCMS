@@ -6,7 +6,7 @@
 
 import { cacheService } from '@src/databases/CacheService';
 import { dbAdapter } from '@src/databases/db';
-import { publicEnv } from '@src/stores/globalSettings.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 import { error } from '@sveltejs/kit';
 import { sanitize } from '@utils/utils';
 import crypto from 'crypto';

@@ -25,8 +25,8 @@ Renders current language text with truncation for long content
 -->
 
 <script lang="ts">
-	import { contentLanguage } from '@src/stores/store.svelte';
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { contentLanguage } from '@sveltycms/shared-utils/stores/store';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 	import type { FieldType } from './';
 
 	const { field, value }: { field: FieldType; value: Record<string, string> | null | undefined } = $props();

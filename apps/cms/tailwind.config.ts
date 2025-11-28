@@ -18,7 +18,7 @@ import typography from '@tailwindcss/typography';
 // Import the Skeleton plugin
 import { skeleton } from '@skeletonlabs/tw-plugin';
 // Import Custom Theme
-import { SveltyCMSTheme } from './src/themes/SveltyCMS/SveltyCMSTheme';
+import { SveltyCMSTheme } from '../../apps/shared-theme/src/themes/SveltyCMS/SveltyCMSTheme';
 
 const config = {
 	// Opt for dark mode to be handled via the class method

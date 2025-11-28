@@ -9,7 +9,7 @@
 
 import { dev } from '$app/environment';
 import { getPrivateSettingSync } from '@src/services/settingsService';
-import { publicEnv } from '@src/stores/globalSettings.svelte';
+import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 
 import type { Credentials, OAuth2Client } from 'google-auth-library';
 

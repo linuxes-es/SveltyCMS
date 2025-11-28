@@ -42,11 +42,11 @@
 <script lang="ts">
 	import { logger } from '@utils/logger';
 	import { StatusTypes } from '@src/content/types';
-	import { publicEnv } from '@src/stores/globalSettings.svelte';
+	import { publicEnv } from '@sveltycms/shared-utils/stores/globalSettings';
 
 	// Stores
 	import { page } from '$app/state';
-	import { storeListboxValue } from '@stores/store.svelte';
+	import { storeListboxValue } from '@sveltycms/shared-utils/stores/store';
 
 	// Skeleton
 	import { getModalStore } from '@skeletonlabs/skeleton';
