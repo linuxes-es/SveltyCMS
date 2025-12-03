@@ -64,8 +64,6 @@
 	import RightSidebar from '@components/RightSidebar.svelte';
 	import SearchComponent from '@components/SearchComponent.svelte';
 	import FloatingNav from '@components/system/FloatingNav.svelte';
-	import ImageEditorHeader from './imageEditor/components/layout/ImageEditorHeader.svelte';
-	import ImageEditorFooter from './imageEditor/components/layout/ImageEditorFooter.svelte';
 
 	// Skeleton
 	import {
@@ -362,11 +360,7 @@
 					<!-- Page Header -->
 					{#if uiStateManager.uiState.value.pageheader !== 'hidden'}
 						<header class="sticky top-0 z-20 w-full">
-							{#if isImageEditorRoute}
-								<ImageEditorHeader />
-							{:else}
-								<HeaderEdit />
-							{/if}
+							<HeaderEdit />
 						</header>
 					{/if}
 
@@ -383,11 +377,7 @@
 					<!-- Page Footer / Mobile Nav -->
 					{#if uiStateManager.uiState.value.pagefooter !== 'hidden'}
 						<footer class="mt-auto w-full bg-surface-50 bg-gradient-to-b px-1 text-center dark:from-surface-700 dark:to-surface-900">
-							{#if isImageEditorRoute}
-								<ImageEditorFooter />
-							{:else}
-								<PageFooter />
-							{/if}
+							<PageFooter />
 						</footer>
 					{/if}
 				</main>

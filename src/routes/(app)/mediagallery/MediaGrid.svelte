@@ -27,6 +27,7 @@ Key features:
 
 	// Skeleton
 	import { popup } from '@skeletonlabs/skeleton';
+	import { showToast } from '@utils/toast';
 
 	// Svelte transitions
 	import { scale } from 'svelte/transition';
@@ -41,14 +42,57 @@ Key features:
 		gridSize?: 'tiny' | 'small' | 'medium' | 'large';
 		ondeleteImage?: (file: MediaBase | MediaImage) => void;
 		onBulkDelete?: (files: (MediaBase | MediaImage)[]) => void;
+		onEditImage?: (file: MediaImage) => void;
 	}
 
-	const { filteredFiles = [], gridSize = 'medium', ondeleteImage = () => {}, onBulkDelete = () => {} }: Props = $props();
+	const {
+		filteredFiles = $bindable([]),
+		gridSize = 'medium',
+		ondeleteImage = () => {},
+		onBulkDelete = () => {},
+		onEditImage = () => {}
+	}: Props = $props();
 
 	// Initialize the showInfo array with false values
 	let showInfo = $state<boolean[]>([]);
 	let selectedFiles = $state<Set<string>>(new Set());
 	let isSelectionMode = $state(false);
+	let isTagging = $state<Record<string, boolean>>({});
+
+	async function handleAITagging(file: MediaImage) {
+		const mediaId = file._id;
+		if (!mediaId) return;
+
+		isTagging[mediaId] = true;
+		showToast('Generating AI tags...', 'info', 2000);
+
+		try {
+			const response = await fetch('/api/media/ai-tag', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ mediaId })
+			});
+
+			const result = await response.json();
+
+			if (!response.ok || !result.success) {
+				throw new Error(result.error || 'Failed to get AI tags.');
+			}
+
+			// Update the file in the local state to be reactive
+			const index = filteredFiles.findIndex((f) => f._id === mediaId);
+			if (index !== -1) {
+				filteredFiles[index] = result.data;
+			}
+
+			showToast(result.message || 'AI tags generated!', 'success');
+		} catch (err) {
+			logger.error('Failed to generate AI tags', err);
+			showToast(err instanceof Error ? err.message : 'An error occurred.', 'error');
+		} finally {
+			isTagging[mediaId] = false;
+		}
+	}
 
 	function handleDelete(file: MediaBase | MediaImage) {
 		ondeleteImage(file);
@@ -266,10 +310,25 @@ Key features:
 						<div class="bg-surface-100-800-token arrow"></div>
 					</div>
 
-					<a href="/imageEditor?mediaId={file._id?.toString()}" aria-label="Edit" class="btn-icon" data-sveltekit-preload-data="hover">
-						<iconify-icon icon="mdi:pen" width="24" class="data:text-primary-500 text-tertiary-500"></iconify-icon>
-					</a>
-					<button onclick={() => handleDelete(file)} aria-label="Delete" class="btn-icon">
+					{#if file.type === 'image'}
+						<button
+							onclick={() => handleAITagging(file as MediaImage)}
+							aria-label="Generate AI Tags"
+							class="btn-icon"
+							disabled={file._id ? isTagging[file._id] : false}
+							title="Generate AI Tags"
+						>
+							{#if file._id && isTagging[file._id]}
+								<div class="h-4 w-4 animate-spin rounded-full border-2 border-primary-500 border-t-transparent"></div>
+							{:else}
+								<iconify-icon icon="mdi:robot-happy-outline" width="22" class="text-secondary-500"></iconify-icon>
+							{/if}
+						</button>
+						<button onclick={() => onEditImage(file as MediaImage)} aria-label="Edit" class="btn-icon" title="Edit Image">
+							<iconify-icon icon="mdi:pen" width="24" class="text-primary-500"></iconify-icon>
+						</button>
+					{/if}
+					<button onclick={() => handleDelete(file)} aria-label="Delete" class="btn-icon" title="Delete Image">
 						<iconify-icon icon="icomoon-free:bin" width="24" class="text-error-500"> </iconify-icon>
 					</button>
 				</header>

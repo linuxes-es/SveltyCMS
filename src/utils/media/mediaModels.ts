@@ -80,6 +80,16 @@ export interface ResizedImage {
 	mimeType: string;
 }
 
+export interface WatermarkOptions {
+	url: string;
+	position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'center';
+	opacity: number;
+	scale: number;
+	offsetX: number;
+	offsetY: number;
+	rotation: number;
+}
+
 // Base interface for all media types
 export interface MediaBase {
 	_id?: DatabaseId;

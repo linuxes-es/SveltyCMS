@@ -6,26 +6,12 @@
 This component allows users to upload and manage single media files (images).
 It integrates with a media library modal for selecting existing assets and provides
 functionality for image editing and basic file information display.
-
-### Props
-- `field`: FieldType & { path: string } - Configuration for the media upload field, including validation rules and storage path.
-- `value`: File | MediaImage - The currently selected file or media image object.
-
-### Features
-- **File Upload**: Allows direct file uploads via a file input.
-- **Media Library Integration**: Opens a modal to select existing media from the library.
-- **Image Preview**: Displays a preview of the selected image.
-- **Image Editing**: Provides an option to open a modal for image manipulation.
-- **File Information Display**: Shows details like file name, size, type, and timestamps.
-- **Validation**: Integrates with Valibot for client-side validation of file types.
-- **Reactivity**: Uses Svelte 5 runes (`$state`, `$props`, `$effect`) for efficient state management.
-- **Styling**: Adheres to the project's style guide using Tailwind CSS utility classes and semantic colors.
 -->
-
 <script lang="ts">
 	import type { ISODateString } from '@src/content/types';
 	import { convertTimestampToDateString, getFieldName } from '@utils/utils';
 	import { isoDateStringToDate } from '@utils/dateUtils';
+	import { logger } from '@utils/logger';
 
 	// ParaglideJS
 	import * as m from '@src/paraglide/messages';
@@ -37,34 +23,15 @@ functionality for image editing and basic file information display.
 	// Components
 	import type { MediaImage } from '@utils/media/mediaModels';
 	import FileInput from '@components/system/inputs/FileInput.svelte';
-	import { getModalStore, type ModalSettings, type ModalComponent } from '@skeletonlabs/skeleton';
-	import ModalImageEditor from './ModalImageEditor.svelte';
+	import ImageEditorModal from '@src/components/imageEditor/ImageEditorModal.svelte';
+	import { updateMediaMetadata } from '@utils/media/api';
 
 	// Define reactive state
 	let isFlipped = $state(false);
-	let _data: File | MediaImage | undefined = $state(undefined); // Initialize with `undefined`
+	let _data: File | MediaImage | undefined = $state(undefined);
 	let validationError: string | null = $state(null);
 	let debounceTimeout: number | undefined;
-	const modalStore = getModalStore();
-
-	function openImageEditor() {
-		const modalComponent: ModalComponent = {
-			ref: ModalImageEditor,
-			props: {
-				_data: _data,
-				onClose: modalStore.close,
-				mediaOnSelect: (file: File | MediaImage) => {
-					_data = file;
-					validateInput();
-				}
-			}
-		};
-		const modal: ModalSettings = {
-			type: 'component',
-			component: modalComponent
-		};
-		modalStore.trigger(modal);
-	}
+	let showEditor = $state(false);
 
 	// Define props
 	const { field, value = (collectionValue as any)[getFieldName(field)] } = $props();
@@ -123,12 +90,80 @@ functionality for image editing and basic file information display.
 		}, 300);
 	}
 
+	async function handleEditorSave({ detail }: CustomEvent<{ dataURL: string; file: File }>) {
+		const { file: editedFile } = detail;
+		// Create form data for the API request
+		const formData = new FormData();
+		formData.append('processType', 'save');
+		formData.append('files', editedFile);
+
+		// TODO: Pass watermark and other options from the field config
+		// const watermark = field.watermark;
+		// if(watermark) formData.append('watermarkOptions', JSON.stringify(watermark));
+
+		try {
+			// Send to media API
+			const saveResponse = await fetch('/api/media/process', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (!saveResponse.ok) {
+				const errorData = await saveResponse.json();
+				throw new Error(errorData.error || 'Failed to save edited image');
+			}
+
+			const result = await saveResponse.json();
+			if (!result.success || !result.data.data[0]?.success) {
+				throw new Error(result.data.data[0]?.error || 'Failed to process edited image');
+			}
+
+			// Update the widget data with the new persisted image data
+			_data = result.data.data[0].data;
+			showEditor = false;
+		} catch (error) {
+			logger.error('Error saving edited image:', error);
+		}
+	}
+
+	let focalPoint = $state({ x: 50, y: 50 });
+	let isDraggingFocalPoint = $state(false);
+
+	$effect(() => {
+		if (_data && !(_data instanceof File) && _data.metadata?.focalPoint) {
+			focalPoint = _data.metadata.focalPoint;
+		} else {
+			focalPoint = { x: 50, y: 50 };
+		}
+	});
+
+	function handleFocalPointDrag(event: MouseEvent, container: HTMLDivElement) {
+		if (!isDraggingFocalPoint) return;
+		const rect = container.getBoundingClientRect();
+		let x = ((event.clientX - rect.left) / rect.width) * 100;
+		let y = ((event.clientY - rect.top) / rect.height) * 100;
+
+		// Clamp values between 0 and 100
+		focalPoint.x = Math.max(0, Math.min(100, x));
+		focalPoint.y = Math.max(0, Math.min(100, y));
+	}
+
+	async function saveFocalPoint() {
+		isDraggingFocalPoint = false;
+		if (_data && !(_data instanceof File) && _data._id) {
+			try {
+				await updateMediaMetadata(_data._id, { focalPoint });
+				// Optionally show a success toast
+			} catch (e) {
+				logger.error('Failed to save focal point', e);
+				// Optionally show an error toast
+			}
+		}
+	}
+
 	import { getWidgetData } from './widgetData';
 
 	// The `WidgetData` function needs to be explicitly defined or called when needed.
-	// Since it was exported, it means it was part of the component's public API.
-	// In Svelte 5, component functions usually are regular functions and can be exported as part of the component's module.
-	// Let's create a wrapper function that calls `getWidgetData`.
 	export async function WidgetDataExport() {
 		return getWidgetData(_data, field, value);
 	}
@@ -166,14 +201,33 @@ functionality for image editing and basic file information display.
 						<span class="text-tertiary-500 dark:text-primary-500">{((_data.size ?? 0) / 1024).toFixed(2)} KB</span>
 					</p>
 				</div>
-				<!-- Image -->
+				<!-- Image and Actions Container -->
 				<div class="flex items-center justify-between">
 					{#if !isFlipped}
-						<img
-							src={_data instanceof File ? URL.createObjectURL(_data) : _data.thumbnails?.sm?.url || _data.url}
-							alt=""
-							class="col-span-11 m-auto max-h-[200px] max-w-[500px] rounded"
-						/>
+						<div
+							class="relative col-span-11 m-auto"
+							onmousemove={(e) => handleFocalPointDrag(e, e.currentTarget)}
+							onmouseup={saveFocalPoint}
+							onmouseleave={() => (isDraggingFocalPoint = false)}
+						>
+							<img
+								src={_data instanceof File ? URL.createObjectURL(_data) : _data.thumbnails?.sm?.url || _data.url}
+								alt="Preview"
+								class="max-h-[200px] max-w-[500px] rounded"
+							/>
+							{#if _data && !(_data instanceof File)}
+								<div
+									class="absolute cursor-move"
+									style={`left: ${focalPoint.x}%; top: ${focalPoint.y}%; transform: translate(-50%, -50%);`}
+									onmousedown={() => (isDraggingFocalPoint = true)}
+									role="button"
+									tabindex="0"
+									aria-label="Set focal point"
+								>
+									<iconify-icon icon="mdi:plus-circle-outline" width="24" class="text-primary-500 drop-shadow-lg" />
+								</div>
+							{/if}
+						</div>
 					{:else}
 						<div class="col-span-11 ml-2 grid grid-cols-2 gap-1 text-left">
 							<p class="">{m.widget_ImageUpload_Type()}</p>
@@ -194,7 +248,7 @@ functionality for image editing and basic file information display.
 					<!-- Buttons -->
 					<div class="col-span-1 flex flex-col items-end justify-between gap-2 p-2">
 						<!-- Edit -->
-						<button onclick={openImageEditor} aria-label="Edit image" class="variant-ghost btn-icon" title="Edit image">
+						<button onclick={() => (showEditor = true)} aria-label="Edit image" class="variant-ghost btn-icon" title="Edit image">
 							<iconify-icon icon="material-symbols:edit" width="24" class="text-primary-500"></iconify-icon>
 						</button>
 
@@ -223,4 +277,7 @@ functionality for image editing and basic file information display.
 			{validationError}
 		</p>
 	{/if}
+
+	<!-- Editor Modal -->
+	<ImageEditorModal bind:show={showEditor} image={_data instanceof File ? null : _data} on:save={handleEditorSave} />
 </div>

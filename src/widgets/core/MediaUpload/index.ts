@@ -14,9 +14,12 @@
 
 import * as m from '@src/paraglide/messages';
 import { createWidget } from '@src/widgets/widgetFactory';
+import Checkbox from '@src/widgets/core/Checkbox/index';
+import Input from '@src/widgets/core/Input/index';
 
 // Type for aggregation field parameter
 type AggregationField = { db_fieldName: string; [key: string]: unknown };
+
 
 import { array, minLength, optional, pipe, string, type BaseIssue, type BaseSchema, type InferInput as ValibotInput } from 'valibot';
 import type { MediaProps } from './types';
@@ -50,6 +53,20 @@ const MediaWidget = createWidget<MediaProps>({
 	defaults: {
 		multiupload: false,
 		allowedTypes: []
+	},
+
+	GuiSchema: {
+		multiupload: { widget: Checkbox, label: 'Allow Multiple Files' },
+		watermark: {
+			widget: 'group',
+			label: 'Watermark Options',
+			fields: {
+				text: { widget: Input, label: 'Watermark Text' },
+				position: { widget: Input, label: 'Position (e.g., center, top-right)' },
+				opacity: { widget: Input, label: 'Opacity (0-1)' },
+				scale: { widget: Input, label: 'Scale (e.g., 0.5 for 50%)' }
+			}
+		}
 	},
 
 	// Aggregation performs a lookup to search by the actual media file name.

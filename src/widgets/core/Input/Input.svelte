@@ -256,7 +256,7 @@
 			class:!border-primary-500={isValidating && !validationError}
 			class:!ring-primary-500={isValidating && !validationError}
 			aria-invalid={!!validationError}
-			aria-describedby={validationError ? `${fieldName}-error` : undefined}
+			aria-describedby={validationError ? `${fieldName}-error` : field.helper ? `${fieldName}-helper` : undefined}
 			aria-required={field?.required}
 			data-testid="text-input"
 		/>
@@ -296,6 +296,13 @@
 			</div>
 		{/if}
 	</div>
+
+	<!-- Helper Text -->
+	{#if field.helper}
+		<p id={`${fieldName}-helper`} class="absolute bottom-0 left-0 w-full text-center text-xs text-surface-500 dark:text-surface-400">
+			{field.helper}
+		</p>
+	{/if}
 
 	<!-- Error Message -->
 	{#if validationError}
