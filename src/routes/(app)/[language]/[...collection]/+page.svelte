@@ -33,7 +33,7 @@
 	import { getFieldName } from '@utils/utils';
 	import EntryList from '@src/components/collectionDisplay/EntryList.svelte';
 	import Fields from '@src/components/collectionDisplay/Fields.svelte';
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 	import type { Schema } from '@src/content/types';
 
 	interface PageData {
@@ -484,13 +484,13 @@
 				const saved = await autoSaveDraft();
 
 				if (saved) {
-					showToast('Changes auto-saved as draft', 'success');
+					toaster.success({ description: 'Changes auto-saved as draft' });
 					// Update initial value to prevent re-saving
 					initialCollectionValue = JSON.stringify(collectionValue.value);
 					// Allow navigation to continue
 					setMode('view');
 				} else {
-					showToast('Failed to auto-save. Please save manually.', 'error');
+					toaster.error({ description: 'Failed to auto-save. Please save manually.' });
 				}
 			}
 		}

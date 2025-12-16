@@ -366,7 +366,7 @@
 						<button
 							onclick={previousPage}
 							disabled={!canGoPrevious}
-							class="preset-filled-primary btn btn-sm transition-all duration-200 hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-0"
+							class="preset-filled-primary-500 btn btn-sm transition-all duration-200 hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-0"
 							aria-label="Previous page"
 						>
 							{m.button_previous()}
@@ -379,7 +379,7 @@
 						<button
 							onclick={nextPage}
 							disabled={!canGoNext}
-							class="preset-filled-primary btn btn-sm transition-all duration-200 hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-0"
+							class="preset-filled-primary-500 btn btn-sm transition-all duration-200 hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-0"
 							aria-label="Next page"
 						>
 							{m.button_next()}

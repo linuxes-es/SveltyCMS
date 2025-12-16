@@ -11,24 +11,24 @@
 -->
 
 <script lang="ts">
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 
 	async function restartServer() {
 		try {
 			const response = await fetch('/api/system/restart', { method: 'POST' });
 			if (response.ok) {
-				showToast('Server is restarting...', 'success');
+				toaster.success({ description: 'Server is restarting...' });
 			} else {
 				const data = await response.json();
-				showToast(data.error || 'Failed to restart server', 'error');
+				toaster.error({ description: data.error || 'Failed to restart server' });
 			}
 		} catch (error) {
-			showToast('Failed to restart server', 'error');
+			toaster.error({ description: 'Failed to restart server' });
 		}
 	}
 </script>
 
-<div class="preset-filled-warning p-4 text-center">
+<div class="preset-filled-warning-500 p-4 text-center">
 	<p class="font-bold">A server restart is required for some changes to take effect.</p>
-	<button class="preset-filled-error btn mt-2" on:click={restartServer}>Restart Now</button>
+	<button class="preset-filled-error-500 btn mt-2" on:click={restartServer}>Restart Now</button>
 </div>

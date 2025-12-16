@@ -19,7 +19,7 @@
 import { safeParse } from 'valibot';
 import { setupAdminSchema, dbConfigSchema, systemSettingsSchema } from '@utils/formSchemas';
 import { logger } from '@utils/logger';
-import { showToast } from '@utils/toast';
+import { toaster } from '@stores/store.svelte';
 import { goto } from '$app/navigation';
 
 // --- Types ---
@@ -418,7 +418,7 @@ function createSetupStore() {
 
 			if (data.success) {
 				logger.debug('✅ Database initialized successfully');
-				showToast('Database initialized successfully! ✨', 'success', 3000);
+				toaster.success({ description: 'Database initialized successfully! ✨' });
 
 				if (data.firstCollection) {
 					wizard.firstCollection = data.firstCollection;
@@ -426,7 +426,7 @@ function createSetupStore() {
 				return true;
 			} else {
 				logger.warn('⚠️  Database initialization had issues:', data.error);
-				showToast('Setup will continue, data will be created as needed.', 'info', 4000);
+				toaster.info({ description: 'Setup will continue, data will be created as needed.' });
 				return false;
 			}
 		} catch (error) {
@@ -454,7 +454,7 @@ function createSetupStore() {
 		const step2Valid = validateStep(2, true);
 
 		if (!step0Valid || !step1Valid || !step2Valid) {
-			showToast('Please fix validation errors before completing setup.', 'error');
+			toaster.error({ description: 'Please fix validation errors before completing setup.' });
 
 			// Navigate to first invalid step
 			if (!step0Valid) wizard.currentStep = 0;
@@ -486,13 +486,13 @@ function createSetupStore() {
 
 			if (!response.ok || !data.success) {
 				const errorMsg = data.error || 'Failed to finalize setup.';
-				showToast(errorMsg, 'error', 5000);
+				toaster.error({ description: errorMsg });
 				wizard.errorMessage = errorMsg;
 				throw new Error(errorMsg);
 			}
 
 			// Success!
-			showToast('Setup complete! Welcome to SveltyCMS! 🎉', 'success', 3000);
+			toaster.success({ description: 'Setup complete! Welcome to SveltyCMS! 🎉' });
 
 			// Clear store
 			clear();
@@ -513,7 +513,7 @@ function createSetupStore() {
 			wizard.errorMessage = errorMsg;
 
 			if (!wizard.errorMessage.includes('Failed to')) {
-				showToast(errorMsg, 'error', 5000);
+				toaster.error({ description: errorMsg });
 			}
 
 			return false;

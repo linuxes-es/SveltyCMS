@@ -40,27 +40,26 @@
 -->
 
 <script lang="ts">
-	import { logger } from '@utils/logger';
 	import { StatusTypes } from '@src/content/types';
 	import { publicEnv } from '@src/stores/globalSettings.svelte';
-
 	// Stores
 	import { page } from '$app/state';
 	import { storeListboxValue } from '@stores/store.svelte';
 
-	// Skeleton
-	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
-
 	// Components
 	import ScheduleModal from './ScheduleModal.svelte';
 
+	// Utils (Using your new v4 compatible manager)
+	import { modalState, showConfirm } from '@utils/modalState.svelte';
+
 	// ParaglideJS
 	import * as m from '@src/paraglide/messages';
+
+	// Transitions (Standard Svelte transitions still work great)
 	import { scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 
-	// Initialize modal store at component level
-	const modalStore = getModalStore();
+	import type { EntryListMultiButtonProps } from '@src/content/types';
 
 	// Types
 	type ActionType = 'create' | 'archive' | keyof typeof StatusTypes;
@@ -71,9 +70,6 @@
 		icon: string;
 		textColor: string;
 	}
-
-	import type { EntryListMultiButtonProps } from '@src/content/types';
-
 	// Props
 	let {
 		isCollectionEmpty = false,
@@ -89,41 +85,25 @@
 		test
 	}: EntryListMultiButtonProps = $props();
 
-	// State
+	// --- STATE MANAGEMENT (UPDATED FOR SVELTE 5) ---
 	let dropdownOpen = $state(false);
 	let dropdownRef = $state<HTMLElement | null>(null);
-	let manualActionSet = $state(false); // Track if user manually selected an action
+	let manualActionSet = $state(false);
 
-	// Derived values
 	const isAdmin = $derived(page.data?.isAdmin === true);
 	const currentAction = $derived(storeListboxValue.value as ActionType);
 
-	// Action configurations
+	// --- CONFIGURATION ---
 	const BASE_ACTIONS: Record<string, ActionConfig> = {
-		create: {
-			label: m.entrylist_multibutton_create(),
-			gradient: 'gradient-tertiary',
-			icon: 'ic:round-plus',
-			textColor: 'text-tertiary-500'
-		},
+		create: { label: m.entrylist_multibutton_create(), gradient: 'gradient-tertiary', icon: 'ic:round-plus', textColor: 'text-tertiary-500' },
 		publish: {
 			label: m.entrylist_multibutton_publish(),
 			gradient: 'gradient-primary',
 			icon: 'bi:hand-thumbs-up-fill',
 			textColor: 'text-primary-500'
 		},
-		unpublish: {
-			label: m.entrylist_multibutton_unpublish(),
-			gradient: 'gradient-yellow',
-			icon: 'bi:pause-circle',
-			textColor: 'text-yellow-500'
-		},
-		schedule: {
-			label: m.entrylist_multibutton_schedule(),
-			gradient: 'gradient-pink',
-			icon: 'bi:clock',
-			textColor: 'text-pink-500'
-		},
+		unpublish: { label: m.entrylist_multibutton_unpublish(), gradient: 'gradient-yellow', icon: 'bi:pause-circle', textColor: 'text-yellow-500' },
+		schedule: { label: m.entrylist_multibutton_schedule(), gradient: 'gradient-pink', icon: 'bi:clock', textColor: 'text-pink-500' },
 		clone: {
 			label: m.entrylist_multibutton_clone(),
 			gradient: 'gradient-secondary',
@@ -145,49 +125,23 @@
 		// Handle delete/archive based on configuration
 		if (publicEnv?.USE_ARCHIVE_ON_DELETE) {
 			if (isAdmin) {
-				// Admins see both archive and delete
-				actions.archive = {
-					label: 'Archive',
-					gradient: 'gradient-warning',
-					icon: 'bi:archive-fill',
-					textColor: 'text-warning-500'
-				};
-				actions.delete = {
-					label: m.button_delete(),
-					gradient: 'gradient-error',
-					icon: 'bi:trash3-fill',
-					textColor: 'text-error-500'
-				};
+				actions.archive = { label: 'Archive', gradient: 'gradient-warning', icon: 'bi:archive-fill', textColor: 'text-warning-500' };
+				actions.delete = { label: m.button_delete(), gradient: 'gradient-error', icon: 'bi:trash3-fill', textColor: 'text-error-500' };
 			} else {
-				// Non-admins only see archive (labeled as "Delete")
-				actions.delete = {
-					label: 'Archive',
-					gradient: 'gradient-warning',
-					icon: 'bi:archive-fill',
-					textColor: 'text-warning-500'
-				};
+				actions.delete = { label: 'Archive', gradient: 'gradient-warning', icon: 'bi:archive-fill', textColor: 'text-warning-500' };
 			}
 		} else {
-			// Everyone sees delete when archiving is disabled
-			actions.delete = {
-				label: m.button_delete(),
-				gradient: 'gradient-error',
-				icon: 'bi:trash3-fill',
-				textColor: 'text-error-500'
-			};
+			actions.delete = { label: m.button_delete(), gradient: 'gradient-error', icon: 'bi:trash3-fill', textColor: 'text-error-500' };
 		}
-
 		return actions;
 	});
 
 	// Current button state
 	const currentConfig = $derived(buttonMap[String(currentAction)] || buttonMap.create);
 	const isMainButtonDisabled = $derived(currentAction !== 'create' && !hasSelections);
-
-	// Get available actions for dropdown (exclude current action)
 	const availableActions = $derived(Object.entries(buttonMap).filter(([type]) => type !== currentAction));
 
-	// Helper functions
+	// --- ACTIONS ---
 	function isActionDisabled(actionType: ActionType): boolean {
 		return actionType !== 'create' && !hasSelections;
 	}
@@ -196,85 +150,47 @@
 		dropdownOpen = false;
 	}
 
-	function openScheduleModal(): void {
-		logger.debug('Opening schedule modal with count:', selectedCount);
-		logger.debug('Modal store:', modalStore);
+	function toggleDropdown(event: Event): void {
+		event.preventDefault();
+		event.stopPropagation();
+		dropdownOpen = !dropdownOpen;
+	}
 
-		// Use the component-level modalStore directly
-		modalStore.trigger({
-			type: 'component',
-			component: { ref: ScheduleModal },
-			title: 'Schedule Entry',
-			meta: {
-				initialAction: 'publish'
-			},
-			response: (result: { date: Date; action: string } | boolean) => {
-				if (result && typeof result === 'object' && 'date' in result) {
-					logger.debug('Schedule confirmed:', result.date, result.action);
-					schedule(result.date.toISOString(), result.action);
-				}
-			}
+	// --- MODAL TRIGGERS ---
+	function openScheduleModal(): void {
+		modalState.trigger(ScheduleModal, { initialAction: 'publish' }, (result: any) => {
+			if (result && result.date) schedule(result.date.toISOString(), result.action);
 		});
 	}
 
 	function openPublishModal(): void {
-		logger.debug('Opening publish modal with count:', selectedCount);
-
-		modalStore.trigger({
-			type: 'confirm',
-			title: `Please Confirm <span class="text-primary-500 font-bold">Publication</span>`,
-			body: `Are you sure you want to <span class="text-primary-500 font-semibold">change</span> ${selectedCount} ${selectedCount === 1 ? 'entry' : 'entries'} status to <span class="text-primary-500 font-semibold">publish</span>?`,
-			buttonTextConfirm: 'Publish',
-			response: (confirmed: boolean) => {
-				if (confirmed) {
-					logger.debug('Publish confirmed');
-					publish();
-				}
-			}
+		showConfirm({
+			title: 'Please Confirm Publication',
+			body: `Are you sure you want to change ${selectedCount} ${selectedCount === 1 ? 'entry' : 'entries'} status to publish?`,
+			onConfirm: () => publish()
 		});
 	}
 
 	function openUnpublishModal(): void {
-		logger.debug('Opening unpublish modal with count:', selectedCount);
-
-		modalStore.trigger({
-			type: 'confirm',
-			title: `Please Confirm <span class="text-yellow-500 font-bold">Unpublication</span>`,
-			body: `Are you sure you want to <span class="text-yellow-500 font-semibold">change</span> ${selectedCount} ${selectedCount === 1 ? 'entry' : 'entries'} status to <span class="text-yellow-500 font-semibold">unpublish</span>?`,
-			buttonTextConfirm: 'Unpublish',
-			response: (confirmed: boolean) => {
-				if (confirmed) {
-					logger.debug('Unpublish confirmed');
-					unpublish();
-				}
-			}
+		showConfirm({
+			title: 'Please Confirm Unpublication',
+			body: `Are you sure you want to change ${selectedCount} ${selectedCount === 1 ? 'entry' : 'entries'} status to unpublish?`,
+			onConfirm: () => unpublish()
 		});
 	}
 
 	function openCloneModal(): void {
-		logger.debug('Opening clone modal with count:', selectedCount);
-
-		modalStore.trigger({
-			type: 'confirm',
+		showConfirm({
 			title: m.entrylist_multibutton_clone(),
-			body: `Are you sure you want to clone ${selectedCount} ${selectedCount === 1 ? 'entry' : 'entries'}? This will create ${selectedCount === 1 ? 'a duplicate' : 'duplicates'} of the selected ${selectedCount === 1 ? 'entry' : 'entries'}.`,
-			buttonTextConfirm: m.entrylist_multibutton_clone(),
-			response: (confirmed: boolean) => {
-				if (confirmed) {
-					logger.debug('Clone confirmed');
-					clone();
-				}
-			}
+			body: `Are you sure you want to clone ${selectedCount} ${selectedCount === 1 ? 'entry' : 'entries'}?`,
+			confirmText: 'Clone',
+			onConfirm: () => clone()
 		});
 	}
 
-	// Main button click handler
 	function handleMainButtonClick(event: Event): void {
 		event.preventDefault();
 		event.stopPropagation();
-
-		logger.debug('Main button clicked, action:', currentAction, 'hasSelections:', hasSelections, 'selectedCount:', selectedCount);
-
 		switch (currentAction) {
 			case 'create':
 				create();
@@ -294,7 +210,7 @@
 				openCloneModal();
 				break;
 			case 'archive':
-				deleteAction(false); // Archive mode
+				deleteAction(false);
 				break;
 			case 'delete':
 			case StatusTypes.delete:
@@ -304,90 +220,64 @@
 			case StatusTypes.test:
 				test();
 				break;
-			default:
-				logger.warn('Unknown action:', currentAction);
 		}
-
 		closeDropdown();
 	}
 
-	// Dropdown option click handler
 	function handleOptionClick(event: Event, actionType: ActionType): void {
 		event.preventDefault();
-
-		// Prevent selecting actions that require selections
-		if (isActionDisabled(actionType)) {
-			return;
-		}
-
+		if (isActionDisabled(actionType)) return;
 		storeListboxValue.set(actionType);
-		manualActionSet = true; // Mark as manually set
+		manualActionSet = true;
 		closeDropdown();
 	}
 
-	// Toggle dropdown
-	function toggleDropdown(event: Event): void {
-		event.preventDefault();
-		event.stopPropagation();
-		dropdownOpen = !dropdownOpen;
-	}
+	// --- EFFECTS ---
 
-	// Click outside handler
-	function handleClickOutside(event: MouseEvent): void {
-		const target = event.target as HTMLElement;
-		if (dropdownRef && !dropdownRef.contains(target)) {
-			closeDropdown();
-		}
-	}
-
-	// Smart state management based on collection state
+	// 1. Click Outside Handler
 	$effect(() => {
-		// If collection is empty, always show Create
+		if (!dropdownOpen) return;
+
+		const handleClickOutside = (event: MouseEvent) => {
+			const target = event.target as HTMLElement;
+			if (dropdownRef && !dropdownRef.contains(target)) {
+				closeDropdown();
+			}
+		};
+
+		// Small delay to prevent immediate closing if the click that opened it bubbles up
+		setTimeout(() => {
+			document.addEventListener('click', handleClickOutside);
+		}, 0);
+
+		return () => document.removeEventListener('click', handleClickOutside);
+	});
+
+	// 2. Smart Selection Logic
+	$effect(() => {
 		if (isCollectionEmpty) {
 			storeListboxValue.set('create');
 			manualActionSet = false;
 			return;
 		}
+		if (manualActionSet) return;
 
-		// Don't auto-switch if user manually selected an action
-		if (manualActionSet) {
-			return;
-		}
-
-		// If no selections, default to Create
 		if (!hasSelections) {
-			if (currentAction !== 'create') {
-				storeListboxValue.set('create');
-			}
+			if (currentAction !== 'create') storeListboxValue.set('create');
 			return;
 		}
-
-		// If has selections but current action is 'create', switch to 'publish'
 		if (hasSelections && currentAction === 'create') {
 			storeListboxValue.set('publish');
 		}
 	});
 
-	// Reset manual flag when selections are cleared
 	$effect(() => {
-		if (!hasSelections) {
-			manualActionSet = false;
-		}
-	});
-
-	// Click outside listener
-	$effect(() => {
-		if (dropdownOpen) {
-			document.addEventListener('click', handleClickOutside);
-			return () => document.removeEventListener('click', handleClickOutside);
-		}
+		if (!hasSelections) manualActionSet = false;
 	});
 </script>
 
-<!-- Multi-button group -->
 <div class="relative z-20 mt-1 flex items-center font-medium text-white" bind:this={dropdownRef}>
-	<div class="preset-filled-token btn-group flex overflow-hidden rounded-l-full rounded-r-md rtl:rounded rtl:rounded-r-full">
-		<!-- Main action button -->
+	<div class="preset-filled-token flex overflow-hidden rounded-l-full rounded-r-md rtl:rounded rtl:rounded-r-full shadow-sm">
 		<button
 			type="button"
 			class="btn w-[60px] rounded-l-full md:w-auto rtl:rotate-180 {currentConfig.gradient}"
@@ -400,7 +290,7 @@
 				<div class="hidden h-6 text-left md:flex md:flex-col md:justify-center">
 					<div class="leading-tight">{currentConfig.label}</div>
 					{#if hasSelections && selectedCount > 0 && currentAction !== 'create'}
-						<div class="text-center text-xs leading-tight">
+						<div class="text-center text-xs leading-tight opacity-90">
 							({selectedCount}
 							{selectedCount === 1 ? 'item' : 'items'})
 						</div>
@@ -409,16 +299,13 @@
 			</span>
 		</button>
 
-		<!-- Divider -->
-		<div class="border-l-[3px] border-black dark:border-white"></div>
+		<div class="border-l-[3px] border-black/20 dark:border-white/20"></div>
 
-		<!-- Dropdown toggle button -->
 		<button
 			type="button"
-			class="flex w-[42px] items-center justify-center rounded-r-md bg-surface-400 transition-colors hover:bg-surface-500 dark:bg-surface-600 dark:hover:bg-surface-500"
+			class="flex w-[42px] items-center justify-center bg-surface-400 transition-colors hover:bg-surface-500 dark:bg-surface-600 dark:hover:bg-surface-500"
 			aria-label="Toggle actions menu"
 			aria-expanded={dropdownOpen}
-			aria-controls="actions-dropdown"
 			onclick={toggleDropdown}
 		>
 			<iconify-icon
@@ -430,34 +317,31 @@
 		</button>
 	</div>
 
-	<!-- Dropdown menu -->
 	{#if dropdownOpen}
 		<ul
-			id="actions-dropdown"
-			class="absolute right-2 top-full z-50 mt-1 max-h-[300px] divide-y divide-white overflow-y-auto rounded bg-surface-400 shadow-lg dark:bg-surface-700 rtl:left-2 rtl:right-auto"
+			class="absolute right-0 top-full z-50 mt-1 min-w-[200px] overflow-hidden rounded bg-surface-400 shadow-xl dark:bg-surface-700 rtl:left-0 rtl:right-auto"
 			role="menu"
 			transition:scale={{ duration: 200, easing: quintOut, start: 0.95, opacity: 0 }}
 		>
 			{#each availableActions as [actionType, config] (actionType)}
 				{@const disabled = isActionDisabled(actionType as ActionType)}
 
-				<li class={disabled ? 'opacity-50' : ''}>
+				<li class="border-b border-white/10 last:border-0 {disabled ? 'opacity-50' : ''}">
 					<button
 						type="button"
 						onclick={(e) => handleOptionClick(e, actionType as ActionType)}
 						{disabled}
 						role="menuitem"
-						aria-label={config.label}
-						class="group btn relative flex w-full justify-between gap-2 overflow-hidden bg-surface-400 text-white dark:bg-surface-700 {disabled
+						class="group relative flex w-full items-center gap-3 px-4 py-3 text-left text-white transition-colors hover:bg-surface-500 {disabled
 							? 'cursor-not-allowed'
-							: ''}"
+							: 'cursor-pointer'}"
 					>
-						<!-- Gradient overlay that appears on hover -->
 						{#if !disabled}
 							<div class="absolute inset-0 {config.gradient} opacity-0 transition-opacity duration-200 group-hover:opacity-100"></div>
 						{/if}
-						<iconify-icon icon={config.icon} width="24" aria-hidden="true" class="pointer-events-none relative z-10"></iconify-icon>
-						<span class="pointer-events-none relative z-10 w-full text-left">{config.label}</span>
+
+						<iconify-icon icon={config.icon} width="20" class="relative z-10"></iconify-icon>
+						<span class="relative z-10">{config.label}</span>
 					</button>
 				</li>
 			{/each}

@@ -20,7 +20,7 @@ Features:
 	import { PermissionAction } from '@src/databases/auth/types';
 	// SECURITY: Never import privateEnv in .svelte files - it exposes secrets to client!
 	// Use page.data from +page.server.ts instead
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 
 	interface Props {
 		permissions?: Record<string, Record<string, boolean>>;
@@ -77,7 +77,7 @@ Features:
 		// Don't allow modifying admin permissions
 		const role = roles.find((r: Role) => r._id === roleId);
 		if (role?.isAdmin) {
-			showToast('Cannot modify permissions for admin role', 'warning');
+			toaster.warning({ description: 'Cannot modify permissions for admin role' });
 			return;
 		}
 
@@ -122,7 +122,7 @@ Features:
 {#if error}
 	<div class="p-4 text-center text-error-500" role="alert">
 		<p>Error: {error}</p>
-		<button onclick={() => (error = null)} class="preset-filled-primary btn mt-2">Dismiss</button>
+		<button onclick={() => (error = null)} class="preset-filled-primary-500 btn mt-2">Dismiss</button>
 	</div>
 {:else}
 	<div class="flex flex-col gap-4">
@@ -152,7 +152,7 @@ Features:
 								<div class="flex items-center gap-2">
 									<span class="font-semibold">{role.name}</span>
 									{#if role.isAdmin}
-										<span class="preset-filled-primary badge">Admin</span>
+										<span class="preset-filled-primary-500 badge">Admin</span>
 									{/if}
 								</div>
 								{#if role.description}
@@ -165,7 +165,7 @@ Features:
 										onclick={() => togglePermission(role._id, action)}
 										disabled={role.isAdmin}
 										aria-label={`${permissionsState[role._id]?.[action] ? 'Disable' : 'Enable'} ${action} for ${role.name}`}
-										class={`btn ${permissionsState[role._id]?.[action] ? 'preset-filled-success' : 'preset-filled-error'}`}
+										class={`btn ${permissionsState[role._id]?.[action] ? 'preset-filled-success-500' : 'preset-filled-error-500'}`}
 									>
 										<iconify-icon icon={actionIcons[action]} width="18"></iconify-icon>
 									</button>

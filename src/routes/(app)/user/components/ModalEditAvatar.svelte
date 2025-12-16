@@ -23,8 +23,8 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 
 	// Skeleton
 	import { Avatar, FileUpload } from '@skeletonlabs/skeleton-svelte';
-	import { showToast } from '@utils/toast';
-	import { dialogState } from '@utils/dialogState.svelte';
+	import { toaster } from '@stores/store.svelte';
+	import { modalState, showConfirm } from '@utils/modalState.svelte';
 
 	let files = $state<File[]>([]);
 	let isUploading = $state(false);
@@ -55,7 +55,7 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 		parent?: any; // Loose type for now
 	}
 
-	const { title, body, parent }: Props = $props();
+	const { title, body }: Props = $props();
 
 	const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/svg+xml', 'image/gif'];
 	const MAX_FILE_SIZE = 5242880; // 5MB
@@ -151,13 +151,11 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 
 			// Show confirmation if replacing existing avatar
 			if (avatarSrc.value && avatarSrc.value !== '/Default_User.svg') {
-				dialogState.showConfirm({
+				showConfirm({
 					title: 'Replace Avatar',
 					body: 'Are you sure you want to replace your current avatar?',
-					onConfirm: async (confirmed: boolean) => {
-						if (confirmed) {
-							await uploadAvatar(file);
-						}
+					onConfirm: async () => {
+						await uploadAvatar(file);
 					}
 				});
 			} else {
@@ -168,11 +166,11 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 			if ((error as ValiError<typeof avatarSchema>).issues) {
 				const valiError = error as ValiError<typeof avatarSchema>;
 				logger.error(valiError.issues[0]?.message);
-				showToast(valiError.issues[0]?.message || 'Invalid file', 'error');
+				toaster.error({ description: valiError.issues[0]?.message || 'Invalid file' });
 				return;
 			}
 			logger.error((error as Error).message);
-			showToast((error as Error).message || 'Upload failed', 'error');
+			toaster.error({ description: (error as Error).message || 'Upload failed' });
 			return;
 		}
 	}
@@ -255,12 +253,12 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 			await invalidateAll();
 
 			// Show success toast
-			showToast('Avatar updated successfully!', 'success');
-			dialogState.close();
+			toaster.success({ description: 'Avatar updated successfully!' });
+			modalState.close();
 		} catch (error) {
 			console.error('Avatar upload failed:', error);
 			imageLoadError = true;
-			showToast('Failed to update avatar', 'error');
+			toaster.error({ description: 'Failed to update avatar' });
 			// Revert preview on error
 			previewUrl = null;
 		} finally {
@@ -276,15 +274,10 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 	async function deleteAvatar(): Promise<void> {
 		logger.info('deleteAvatar function called');
 
-		dialogState.showConfirm({
+		showConfirm({
 			title: 'Delete Avatar',
 			body: 'Are you sure you want to delete your avatar? This action cannot be undone.',
-			onConfirm: async (confirmed: boolean) => {
-				if (!confirmed) {
-					logger.info('Delete cancelled by user');
-					return;
-				}
-
+			onConfirm: async () => {
 				// User confirmed - proceed with deletion
 				try {
 					const currentAvatar = avatarSrc.value;
@@ -306,10 +299,12 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 						previewUrl = null;
 
 						// Show success message
-						showToast('<iconify-icon icon="radix-icons:avatar" color="white" width="24" class="mr-1"></iconify-icon> Avatar Deleted', 'success');
+						toaster.success({
+							description: '<iconify-icon icon="radix-icons:avatar" color="white" width="24" class="mr-1"></iconify-icon> Avatar Deleted'
+						});
 
 						// Close dialog
-						dialogState.close();
+						modalState.close();
 
 						// Reload page data
 						await invalidateAll();
@@ -321,20 +316,19 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 
 					const msg = error instanceof Error ? error.message : 'Failed to delete avatar';
 
-					showToast(`<iconify-icon icon="radix-icons:cross-2" color="white" width="24" class="mr-1"></iconify-icon> ${msg}`, 'error');
+					toaster.error({ description: `<iconify-icon icon="radix-icons:cross-2" color="white" width="24" class="mr-1"></iconify-icon> ${msg}` });
 				}
 			}
 		});
 	}
 
 	// Base Classes
-	const cBase = 'card p-4 w-modal shadow-xl space-y-4 bg-white dark:bg-surface-800';
 	const cHeader = 'text-2xl font-bold';
-	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token';
+	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-xl';
 </script>
 
-<div class="modal-avatar {cBase}">
-	<header class={`text-center text-primary-500 ${cHeader}`}>
+<div class="modal-avatar space-y-4">
+	<header class={`text-center text-primary-500 ${cHeader} shrink-0`}>
 		{title ?? '(title missing)'}
 	</header>
 	<article class="text-center text-sm">
@@ -343,7 +337,7 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 
 	<form class="modal-form {cForm}">
 		<div class="grid grid-cols-1 grid-rows-{avatarSrc.value ? '1' : '2'} items-center justify-center">
-			<FileUpload.Root bind:acceptedFiles={files} accept={acceptMime} maxFiles={1} {onFileChange} class="w-full flex flex-col items-center gap-4">
+			<FileUpload acceptedFiles={files} accept={acceptMime} maxFiles={1} {onFileChange} class="w-full flex flex-col items-center gap-4">
 				<!-- Hidden Input -->
 				<FileUpload.HiddenInput />
 
@@ -376,14 +370,14 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 						<p class="text-sm">{m.modaledit_avatarfilesallowed()}</p>
 					</div>
 				</FileUpload.Dropzone>
-			</FileUpload.Root>
+			</FileUpload>
 		</div>
 		{#if !files.length && !isUploading}
 			<small class="block text-center text-tertiary-500 opacity-75 dark:text-primary-500">{m.modaledit_avatarfilesize()}</small>
 		{/if}
 		<!-- Progress Bar -->
 		{#if isUploading}
-			<div class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-container-token">
+			<div class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl">
 				<div class="flex flex-col items-center gap-2">
 					<div class="h-16 w-16 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
 					{#if uploadProgress > 0}
@@ -394,10 +388,10 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 		{/if}
 	</form>
 
-	<footer class="modal-footer justify-between">
+	<footer class="modal-footer justify-between pt-4 border-t border-surface-500/20">
 		<!-- Delete Avatar -->
 		{#if avatarSrc.value && avatarSrc.value !== '/Default_User.svg'}
-			<button type="button" onclick={deleteAvatar} class="preset-filled-error btn">
+			<button type="button" onclick={deleteAvatar} class="preset-filled-error-500 btn">
 				<iconify-icon icon="icomoon-free:bin" width="24"></iconify-icon>
 				<span class="hidden sm:block">{m.button_delete()}</span>
 			</button>
@@ -407,11 +401,11 @@ Efficiently handles avatar uploads with validation, deletion, and real-time prev
 		{/if}
 		<div class="flex justify-between gap-2">
 			<!-- Cancel -->
-			<button class="preset-outline-secondary btn" onclick={() => dialogState.close()} disabled={isUploading}>
+			<button class="preset-outlined-secondary-500 btn" onclick={() => modalState.close()} disabled={isUploading}>
 				{m.button_cancel()}
 			</button>
 			<!-- Save -->
-			<button class="preset-filled-tertiary btn dark:preset-filled-primary" onclick={onFormSubmit} disabled={!files.length || isUploading}>
+			<button class="preset-filled-tertiary-500 btn dark:preset-filled-primary-500" onclick={onFormSubmit} disabled={!files.length || isUploading}>
 				{#if isUploading}
 					<div class="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
 					Uploading...

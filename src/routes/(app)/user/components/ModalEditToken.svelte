@@ -21,10 +21,10 @@ It handles token creation, updates, and deletion with proper validation and erro
 	import { page } from '$app/state';
 
 	// Skeleton & Stores
-	// // getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
+	// // getModalStore deprecated - use modalState from @utils/modalState.svelte;
 	// const modalStore = getModalStore();
-	import { dialogState } from '@utils/dialogState.svelte';
-	import { showToast } from '@utils/toast';
+
+	import { toaster } from '@stores/store.svelte';
 
 	// Component
 	import FloatingInput from '@components/system/inputs/floatingInput.svelte';
@@ -39,26 +39,15 @@ It handles token creation, updates, and deletion with proper validation and erro
 
 	// Props
 	interface Props {
-		parent?: ModalComponent['props'];
 		token: string;
 		user_id: string;
 		email: string;
 		role: string;
 		expires: string;
-		title?: string;
-		body?: string;
+		close?: () => void;
 	}
 
-	const {
-		parent = { regionFooter: 'modal-footer p-4' },
-		token = '',
-		user_id = '',
-		email = '',
-		role = 'user',
-		expires = '',
-		title,
-		body
-	}: Props = $props();
+	const { token = '', user_id = '', email = '', role = 'user', expires = '', close }: Props = $props();
 
 	// Form Data with format conversion
 	function convertLegacyFormat(expires: string): string {
@@ -145,37 +134,28 @@ It handles token creation, updates, and deletion with proper validation and erro
 
 			// Check if SMTP is not configured
 			if (responseData.smtp_not_configured) {
-				showToast(
-					`<iconify-icon icon="mdi:email-alert" color="white" width="24" class="mr-1"></iconify-icon> ${isEditMode ? 'Token updated' : 'Token created'} - Email not sent: SMTP not configured`,
-					'warning'
-				);
+				toaster.warning({
+					description: `<iconify-icon icon="mdi:email-alert" color="white" width="24" class="mr-1"></iconify-icon> ${isEditMode ? 'Token updated' : 'Token created'} - Email not sent: SMTP not configured`
+				});
 			} else if (responseData.dev_mode && !responseData.email_sent) {
 				// Email was skipped due to dev mode or dummy config
-				showToast(
-					`<iconify-icon icon="mdi:dev-to" color="white" width="24" class="mr-1"></iconify-icon> ${isEditMode ? 'Token updated' : 'Token created'} - Email sending skipped (dev mode)`,
-					'info'
-				);
+				toaster.info({
+					description: `<iconify-icon icon="mdi:dev-to" color="white" width="24" class="mr-1"></iconify-icon> ${isEditMode ? 'Token updated' : 'Token created'} - Email sending skipped (dev mode)`
+				});
 			} else {
 				// Success - email sent
-				showToast(
-					`<iconify-icon icon="mdi:check" color="white" width="24" class="mr-1"></iconify-icon> ${isEditMode ? 'Token updated' : 'Token created'} successfully`,
-					'success'
-				);
+				// TODO: Add 'user_token_created' to messages or find correct key
+				toaster.success({ description: 'User token created' });
 			}
 
 			// Invalidate data first, then close modal
 			await invalidateAll();
 
 			// Close modal and trigger response handler
-			if (parent?.onClose) {
-				(parent.onClose as any)({ success: true, action: isEditMode ? 'edit' : 'create' });
-			}
-			// Close modal with response data
-			// Removed modalStore usage
-			dialogState.close();
+			if (close) close();
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'An unknown error occurred';
-			showToast(`<iconify-icon icon="mdi:alert-circle" color="white" width="24" class="mr-1"></iconify-icon> ${message}`, 'error');
+			toaster.error({ description: message });
 		} finally {
 			tokenForm.submitting = false;
 		}
@@ -195,21 +175,18 @@ It handles token creation, updates, and deletion with proper validation and erro
 				throw new Error(data.message || 'Failed to delete token');
 			}
 
-			showToast(`<iconify-icon icon="mdi:check" width="24" class="mr-1"></iconify-icon> ${m.modal_token_deleted_successfully()}`, 'success');
+			toaster.success({
+				description: `<iconify-icon icon="mdi:check" width="24" class="mr-1"></iconify-icon> ${m.modal_token_deleted_successfully()}`
+			});
 			// Invalidate data first, then close modal
 			await invalidateAll();
 
 			// Close modal and trigger response handler
-			if (parent?.onClose) {
-				(parent.onClose as any)({ success: true, action: 'delete' });
-			}
-			// Close modal with response data
-			// Removed modalStore usage
-			dialogState.close();
+			if (close) close();
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Failed to delete token';
 			// This catch block will now receive a proper error message if the API fails.
-			showToast(`<iconify-icon icon="mdi:alert-circle" width="24" class="mr-1"></iconify-icon> ${message}`, 'error');
+			toaster.error({ description: `<iconify-icon icon="mdi:alert-circle" width="24" class="mr-1"></iconify-icon> ${message}` });
 		}
 	}
 
@@ -232,21 +209,12 @@ It handles token creation, updates, and deletion with proper validation and erro
 				return 48; // Default 2 days
 		}
 	}
-
-	// Base Classes
-	const cBase = 'card p-4 w-modal shadow-xl space-y-4 bg-white dark:bg-surface-800';
-	const cHeader = 'text-2xl font-bold';
-	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token';
 </script>
 
-<div class="modal-example-form {cBase}">
-	<header class={`text-center dark:text-primary-500 ${cHeader}`}>
-		{title ?? '(title missing)'}
-	</header>
-	<article class="text-center text-sm text-black dark:text-white">
-		{body ?? '(body missing)'}
-	</article>
-	<form class="modal-form {cForm}" onsubmit={onFormSubmit} id="token-form">
+<div class="modal-example-form space-y-4 text-black dark:text-white">
+	<!-- Header title handled by DialogManager if passed as prop, but keeping internal header if needed for specific layout -->
+
+	<form class="modal-form space-y-4" onsubmit={onFormSubmit} id="token-form">
 		<!-- Email field -->
 		<div class="group relative z-0 mb-6 w-full">
 			<FloatingInput
@@ -281,7 +249,7 @@ It handles token creation, updates, and deletion with proper validation and erro
 							{#each roles as r}
 								<button
 									type="button"
-									class="chip {tokenForm.data.role === r._id ? 'preset-filled-tertiary' : 'preset-ghost-secondary'}"
+									class="chip {tokenForm.data.role === r._id ? 'preset-filled-tertiary-500' : 'preset-ghost-secondary-500'}"
 									onclick={() => (tokenForm.data.role = r._id)}
 								>
 									{#if tokenForm.data.role === r._id}
@@ -315,26 +283,22 @@ It handles token creation, updates, and deletion with proper validation and erro
 				<option value="1 month">1 Month</option>
 			</select>
 		</div>
+
+		<footer class="modal-footer flex items-center {tokenForm.data.token ? 'justify-between' : 'justify-end'} pt-4 border-t border-surface-500/20">
+			<!-- Delete - Only show for existing tokens -->
+			{#if tokenForm.data.token}
+				<button type="button" onclick={deleteToken} class="preset-filled-error-500 btn">
+					<iconify-icon icon="icomoon-free:bin" width="24"></iconify-icon><span class="hidden sm:block">{m.button_delete()}</span>
+				</button>
+			{/if}
+			<div class="flex gap-2">
+				<!-- Cancel -->
+				<button type="button" class="preset-outlined-secondary-500 btn" onclick={() => close?.()}>{m.button_cancel()}</button>
+				<!-- Save -->
+				<button type="submit" form="token-form" class="preset-filled-tertiary-500 btn dark:preset-filled-primary-500">
+					{m.button_save()}
+				</button>
+			</div>
+		</footer>
 	</form>
-
-	<footer class="modal-footer flex items-center {tokenForm.data.token ? 'justify-between' : 'justify-end'} p-4 {parent?.regionFooter ?? ''}">
-		<!-- Delete - Only show for existing tokens -->
-		{#if tokenForm.data.token}
-			<button type="button" onclick={deleteToken} class="preset-filled-error btn">
-				<iconify-icon icon="icomoon-free:bin" width="24"></iconify-icon><span class="hidden sm:block">{m.button_delete()}</span>
-			</button>
-		{/if}
-		<div class="flex gap-2">
-			<!-- Cancel -->
-			<button type="button" class="preset-outline-secondary btn" onclick={() => dialogState.close()}>{m.button_cancel()}</button>
-			<!-- Save -->
-			<button type="submit" form="token-form" class="preset-filled-tertiary btn dark:preset-filled-primary {parent?.buttonPositive ?? ''}">
-				{m.button_save()}
-			</button>
-		</div>
-	</footer>
 </div>
-
-<style>
-	/* Removed: dark-mode-input styles - now handled via textColor prop */
-</style>

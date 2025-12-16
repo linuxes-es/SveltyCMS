@@ -56,6 +56,7 @@ and configurable quality settings for weaker devices.
 	}>();
 
 	// Performance-based configuration
+	// svelte-ignore state_referenced_locally
 	let actualQuality = $state(quality);
 	$effect(() => {
 		actualQuality = quality;

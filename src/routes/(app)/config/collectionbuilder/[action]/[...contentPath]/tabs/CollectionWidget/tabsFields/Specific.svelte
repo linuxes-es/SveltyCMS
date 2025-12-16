@@ -16,16 +16,14 @@ Features:
 	import InputSwitch from '@components/system/builder/InputSwitch.svelte';
 
 	// Skeleton Stores
-	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
+	// Skeleton Stores
 	import { targetWidget } from '@src/stores/collectionStore.svelte';
-
-	const modalStore = getModalStore();
 
 	// Define widget keys and excluded fields for specificity
 	const defaultFields = ['label', 'display', 'db_fieldName', 'required', 'translated', 'icon', 'helper', 'width', 'permissions'];
 
 	// Reactive statements to derive widget-related data
-	const currentWidgetName = $derived($modalStore[0]?.value?.widget?.Name);
+	const currentWidgetName = $derived((targetWidget.value?.widget as any)?.Name);
 	const currentGuiSchema = $derived(currentWidgetName ? $widgetFunctions[currentWidgetName]?.GuiSchema || null : null);
 	const specificFields = $derived(currentGuiSchema ? Object.keys(currentGuiSchema).filter((key) => !defaultFields.includes(key)) : []);
 
@@ -37,7 +35,7 @@ Features:
 	}
 </script>
 
-{#if $modalStore[0] && currentGuiSchema && specificFields.length > 0}
+{#if targetWidget.value && currentGuiSchema && specificFields.length > 0}
 	{#each specificFields as property}
 		<InputSwitch
 			value={targetWidget.value[property]}
@@ -46,6 +44,6 @@ Features:
 			key={property}
 		/>
 	{/each}
-{:else if $modalStore[0] && currentWidgetName}
+{:else if targetWidget.value && currentWidgetName}
 	<div class="text-center text-sm text-gray-500">No specific options for this widget type</div>
 {/if}

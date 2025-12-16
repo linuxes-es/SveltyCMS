@@ -26,7 +26,7 @@ Simple file-manager-like component for organizing media folders.
 	import { toggleUIElement, uiStateManager } from '@stores/UIStore.svelte';
 
 	// Utils
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 
 	// Components
 	import TreeView from '@components/system/TreeView.svelte';
@@ -100,7 +100,7 @@ Simple file-manager-like component for organizing media folders.
 		} catch (err) {
 			error = 'Failed to load folders';
 			logger.error('Error fetching folders:', err);
-			showToast('Failed to load folders', 'error');
+			toaster.error({ description: 'Failed to load folders' });
 		} finally {
 			isLoading = false;
 		}
@@ -213,13 +213,13 @@ Simple file-manager-like component for organizing media folders.
 			});
 
 			if (response.ok) {
-				showToast('Folder moved successfully', 'success');
+				toaster.success({ description: 'Folder moved successfully' });
 				await fetchFolders();
 			} else {
 				throw new Error('Failed to move folder');
 			}
 		} catch (error) {
-			showToast('Failed to move folder', 'error');
+			toaster.error({ description: 'Failed to move folder' });
 			logger.error('Error moving folder:', error);
 		}
 	}
@@ -260,7 +260,7 @@ Simple file-manager-like component for organizing media folders.
 			<button
 				type="button"
 				onclick={toggleEditMode}
-				class="btn btn-sm transition-colors {isEditMode ? 'preset-filled-warning' : 'preset-ghost-surface'}"
+				class="btn btn-sm transition-colors {isEditMode ? 'preset-filled-warning-500' : 'preset-ghost-surface-500'}"
 				title={isEditMode ? 'Exit Edit Mode' : 'Enter Edit Mode'}
 				aria-pressed={isEditMode}
 			>
@@ -299,7 +299,7 @@ Simple file-manager-like component for organizing media folders.
 			<div class="flex flex-col items-center justify-center space-y-3 p-6 text-center" role="alert" aria-live="assertive">
 				<iconify-icon icon="ic:outline-error" width="32" class="text-error-500" aria-hidden="true"></iconify-icon>
 				<p class="text-sm text-error-500">{error}</p>
-				<button type="button" class="preset-filled-error btn btn-sm" onclick={fetchFolders}>
+				<button type="button" class="preset-filled-error-500 btn btn-sm" onclick={fetchFolders}>
 					<iconify-icon icon="ic:outline-refresh" width="16" class="mr-1" aria-hidden="true"></iconify-icon>
 					Retry
 				</button>

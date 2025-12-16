@@ -45,7 +45,7 @@ and proper active state indication.
 	<div class="sidebar-tools flex flex-1 flex-col gap-1 p-1.5 lg:p-2 max-lg:gap-0.5 max-lg:p-1">
 		{#each tools as tool}
 			<button
-				class="btn preset-filled-primary flex flex-col items-center justify-center gap-1 py-2"
+				class="btn preset-filled-primary-500 flex flex-col items-center justify-center gap-1 py-2"
 				class:active={isToolActive(tool)}
 				class:disabled={!hasImage}
 				class:bg-primary-500={isToolActive(tool)}

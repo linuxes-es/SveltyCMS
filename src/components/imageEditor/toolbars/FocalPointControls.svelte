@@ -20,8 +20,8 @@ Toolbar controls for the FocalPoint widget
 	<div class="flex items-center gap-2">
 		<span class="text-sm font-medium">Focal Point:</span>
 		<div class="flex items-center gap-1">
-			<span class="badge preset-soft-primary text-xs">X: {focalX}%</span>
-			<span class="badge preset-soft-primary text-xs">Y: {focalY}%</span>
+			<span class="badge preset-soft-primary-500 text-xs">X: {focalX}%</span>
+			<span class="badge preset-soft-primary-500 text-xs">Y: {focalY}%</span>
 		</div>
 	</div>
 
@@ -33,12 +33,12 @@ Toolbar controls for the FocalPoint widget
 
 	<!-- Actions -->
 	<div class="flex items-center gap-2">
-		<button onclick={onReset} class="btn preset-ghost-surface btn-sm" title="Reset to center">
+		<button onclick={onReset} class="btn preset-ghost-surface-500 btn-sm" title="Reset to center">
 			<iconify-icon icon="mdi:restore" width="18"></iconify-icon>
 			<span>Reset</span>
 		</button>
 
-		<button onclick={onApply} class="btn preset-filled-primary btn-sm" title="Apply focal point">
+		<button onclick={onApply} class="btn preset-filled-primary-500 btn-sm" title="Apply focal point">
 			<iconify-icon icon="mdi:check" width="18"></iconify-icon>
 			<span>Apply</span>
 		</button>

@@ -402,7 +402,7 @@
 		<div class="flex items-center gap-2">
 			<!-- Reset All Button - Small and subtle -->
 			{#if currentPreferences.length > 0}
-				<button class="preset-outline-surface btn-icon" onclick={resetAllWidgets} aria-label="Reset all widgets" title="Reset all widgets">
+				<button class="preset-outlined-surface-500 btn-icon" onclick={resetAllWidgets} aria-label="Reset all widgets" title="Reset all widgets">
 					<iconify-icon icon="mdi:refresh"></iconify-icon>
 				</button>
 			{/if}
@@ -410,7 +410,7 @@
 			<div class="relative">
 				{#if availableWidgets.length > 0}
 					<button
-						class="preset-filled-tertiary btn dark:preset-filled-primary"
+						class="preset-filled-tertiary-500 btn dark:preset-filled-primary-500"
 						onclick={() => (dropdownOpen = !dropdownOpen)}
 						aria-haspopup="true"
 						aria-expanded={dropdownOpen}
@@ -494,11 +494,11 @@
 								</div>
 							{:else if WidgetComponent === null}
 								<!-- Error state -->
-								<div class="card preset-ghost-error flex h-full flex-col items-center justify-center p-4">
+								<div class="card preset-ghost-error-500 flex h-full flex-col items-center justify-center p-4">
 									<iconify-icon icon="mdi:alert-circle-outline" width="48" class="mb-2 text-error-500"></iconify-icon>
 									<h3 class="h4 mb-2">Widget Load Error</h3>
 									<p class="text-sm">Failed to load: {item.component}</p>
-									<button class="preset-filled-error btn btn-sm mt-4" onclick={() => removeWidget(item.id)}> Remove Widget </button>
+									<button class="preset-filled-error-500 btn btn-sm mt-4" onclick={() => removeWidget(item.id)}> Remove Widget </button>
 								</div>
 							{:else}
 								<!-- Render the actual widget - Svelte 5 dynamic components -->
@@ -563,7 +563,7 @@
 					Your data is securely managed and never leaves your server
 				</div>
 				<div class="flex space-x-2">
-					<button onclick={() => (showImportExport = false)} class="preset-filled-primary btn"> Done </button>
+					<button onclick={() => (showImportExport = false)} class="preset-filled-primary-500 btn"> Done </button>
 				</div>
 			</div>
 		</div>

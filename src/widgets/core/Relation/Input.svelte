@@ -27,7 +27,7 @@ Interactive selector with "Select" button and clear functionality
 -->
 
 <script lang="ts">
-	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
+	import { modalState } from '@utils/modalState.svelte';
 	import type { FieldType } from './';
 	import { contentLanguage } from '@src/stores/store.svelte';
 
@@ -58,19 +58,13 @@ Interactive selector with "Select" button and clear functionality
 	// The text to display in the selector button.
 	const displayText = $derived(selectedEntry?.[field.displayField as string]?.[lang] || 'Select an Entry');
 
+	import RelationModal from './RelationModal.svelte';
+
 	// Function to open the selection/creation modal.
 	function openRelationModal() {
-		getModalStore().trigger({
-			type: 'component',
-			component: 'relationModal', // This would be your entry selection modal
-			meta: {
-				collectionId: field.collection,
-				// Callback to update the value when an entry is selected in the modal
-				callback: (selectedId: string | undefined) => {
-					if (selectedId) {
-						value = selectedId;
-					}
-				}
+		modalState.trigger(RelationModal as any, { collectionId: field.collection }, (selectedId: string | undefined) => {
+			if (selectedId) {
+				value = selectedId;
 			}
 		});
 	}
@@ -82,7 +76,7 @@ Interactive selector with "Select" button and clear functionality
 		<div class="actions">
 			<button onclick={openRelationModal} aria-label="Select Entry">Select</button>
 			{#if value}
-				<button onclick={() => (value = null)} aria-label="Clear Selection">&times;</button>
+				<button onclick={() => (value = null)} aria-label="Clear Selection">×</button>
 			{/if}
 		</div>
 	</div>

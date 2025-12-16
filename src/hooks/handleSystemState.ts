@@ -31,10 +31,15 @@ export const handleSystemState: Handle = async ({ event, resolve }) => {
 
 	// Skip trace logging for static assets and health checks to reduce log noise
 	const isHealthCheck = pathname.startsWith('/api/system/health') || pathname.startsWith('/api/dashboard/health');
-	const isStaticAsset = pathname.startsWith('/static') || pathname.startsWith('/assets') || pathname.startsWith('/_');
+	const isStaticAsset =
+		pathname.startsWith('/static') ||
+		pathname.startsWith('/assets') ||
+		pathname.startsWith('/_') ||
+		pathname.startsWith('/favicon.ico') ||
+		pathname.startsWith('/.well-known');
 
 	if (!isHealthCheck && !isStaticAsset) {
-		logger.debug(`[handleSystemState] Request to ${pathname}, system state: ${systemState.overallState}`);
+		logger.trace(`[handleSystemState] Request to ${pathname}, system state: ${systemState.overallState}`);
 	}
 
 	//  Setup Mode Detection - Prevents retry loops and eliminates 15+ second delay
@@ -66,7 +71,8 @@ export const handleSystemState: Handle = async ({ event, resolve }) => {
 			'/assets',
 			'/favicon.ico',
 			'/.well-known',
-			'/_'
+			'/_',
+			'/api/system/version'
 		];
 		const isAllowedRoute = allowedPaths.some((prefix) => pathname.startsWith(prefix)) || pathname === '/';
 		if (isAllowedRoute) {
@@ -75,7 +81,7 @@ export const handleSystemState: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	const isReady = isSystemReady(); // This should be true for 'READY' or 'DEGRADED' states
+	// const isReady = isSystemReady(); // Removed unused declaration
 
 	// --- State: FAILED ---
 	// If a critical service has failed, block all requests except health checks
@@ -110,10 +116,12 @@ export const handleSystemState: Handle = async ({ event, resolve }) => {
 	// --- State: INITIALIZING or IDLE ---
 	// If the system is initializing, wait for it to complete (unless it's an allowed route)
 	if (systemState.overallState === 'INITIALIZING') {
-		const allowedPaths = ['/api/system/health', '/api/dashboard/health', '/setup', '/api/setup', '/login', '/.well-known', '/_'];
-		const isAllowedRoute = allowedPaths.some((prefix) => pathname.startsWith(prefix)) || pathname === '/';
+		// Only allow health checks and explicit setup routes.
+		// /login and / must wait for the DB to be ready to avoid false positives in setupCheck.
+		const allowedPaths = ['/api/system/health', '/api/dashboard/health', '/setup', '/api/setup'];
+		const isAllowedRoute = allowedPaths.some((prefix) => pathname.startsWith(prefix));
 
-		if (isAllowedRoute) {
+		if (isAllowedRoute || isStaticAsset) {
 			logger.trace(`Allowing request to ${pathname} during INITIALIZING state.`);
 			return resolve(event);
 		}
@@ -131,15 +139,20 @@ export const handleSystemState: Handle = async ({ event, resolve }) => {
 		}
 
 		// System is now ready, continue processing
+		// Update isReady status since state has changed
+		systemState = getSystemState();
 	}
+
+	// Re-check readiness as it might have changed during the wait above
+	const currentSystemReady = isSystemReady();
 
 	// --- State: IDLE (Setup Mode) ---
 	// If the system is not yet ready and not initializing, only allow essential requests to pass.
-	if (!isReady) {
-		const allowedPaths = ['/api/system/health', '/api/dashboard/health', '/setup', '/api/setup'];
+	if (!currentSystemReady) {
+		const allowedPaths = ['/api/system/health', '/api/dashboard/health', '/setup', '/api/setup', '/api/system/version'];
 		const isAllowedRoute = allowedPaths.some((prefix) => pathname.startsWith(prefix));
 
-		if (isAllowedRoute) {
+		if (isAllowedRoute || isStaticAsset) {
 			logger.trace(`Allowing request to ${pathname} during ${systemState.overallState} state.`);
 			return resolve(event);
 		}

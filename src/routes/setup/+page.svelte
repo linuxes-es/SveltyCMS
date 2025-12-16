@@ -1,10 +1,24 @@
 <!--
 @file src/routes/setup/+page.svelte
-@description Professional multi-step setup wizard for SveltyCMS.
-@refactor This component is now a "coordinator" that uses the "Service Store" pattern.
-All API logic and state (isLoading, errorMessage, etc.)
-are now handled by `setupStore.svelte.ts`. This component just
-calls store methods and wires store state to child components.
+@component
+**Professional multi-step setup wizard for SveltyCMS**
+
+### Props
+- `wizard`
+- `loadStore`
+- `clearStore`
+- `setupPersistenceFn`
+- `validateStep`
+- `seedDatabase`
+- `completeSetup`
+
+### Features
+- Multi-step setup wizard
+- Database configuration
+- Admin user configuration
+- System configuration
+- Email configuration
+- Review configuration
 -->
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
@@ -28,17 +42,12 @@ calls store methods and wires store state to child components.
 	import EmailConfig from './EmailConfig.svelte';
 	import ReviewConfig from './ReviewConfig.svelte';
 
-	// Skeleton
-	// Toast and getToastStore deprecated - use custom toaster
-// import { Toast, getToastStore } from '@skeletonlabs/skeleton-svelte';
-
 	// ParaglideJS
 	import * as m from '@src/paraglide/messages';
 	import { getLocale } from '@src/paraglide/runtime';
 
 	// Utils
 	import { getLanguageName } from '@utils/languageUtils';
-	import { setGlobalToastStore } from '@utils/toast';
 	import { locales as availableLocales } from '@src/paraglide/runtime';
 
 	// --- 1. STATE MANAGEMENT (Wired to Store) ---
@@ -54,26 +63,24 @@ calls store methods and wires store state to child components.
 	let langSearch = $state('');
 	let currentLanguageTag = $state(getLocale());
 
-	// --- 4. LIFECYCLE HOOKS ---
-	const modalComponentRegistry: Record<string, any> = { welcomeModal: { ref: WelcomeModal } };
-	const modalStore = getModalStore();
+	// --- 4. LIFECYCLE HOOKS	// Modal
+	import { modalState } from '@utils/modalState.svelte';
 
 	onMount(() => {
-		setGlobalToastStore(getToastStore());
+		console.log('Setup Page Mounted');
 		loadStore();
 		initialDataSnapshot = JSON.stringify(wizard);
 		document.addEventListener('click', outsideLang);
 		setupPersistenceFn();
 
-		const welcomeShown = sessionStorage.getItem('sveltycms_welcome_modal_shown');
-		if (!welcomeShown) {
-			requestAnimationFrame(() => {
-				setTimeout(() => {
+		requestAnimationFrame(() => {
+			setTimeout(() => {
+				if (!sessionStorage.getItem('sveltycms_welcome_modal_shown')) {
 					showWelcomeModal();
 					sessionStorage.setItem('sveltycms_welcome_modal_shown', 'true');
-				}, 100);
-			});
-		}
+				}
+			}, 100);
+		});
 
 		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
 			if (hasUnsavedChanges() && !wizard.isSubmitting) {
@@ -94,9 +101,13 @@ calls store methods and wires store state to child components.
 		document.removeEventListener('click', outsideLang);
 	});
 
+	// Modal
 	function showWelcomeModal() {
-		const modal: ModalSettings = { type: 'component', component: 'welcomeModal' };
-		modalStore.trigger(modal);
+		modalState.trigger(WelcomeModal, {}, (result) => {
+			if (result) {
+				console.log('Welcome modal confirmed');
+			}
+		});
 	}
 
 	// --- 5. DERIVED STATE (Page-Specific) ---
@@ -211,9 +222,7 @@ calls store methods and wires store state to child components.
 	</style>
 </svelte:head>
 
-<div class="bg-surface-50-900 min-h-screen w-full transition-colors">
-	<Modal components={modalComponentRegistry} />
-	<Toast />
+<div class="bg-surface-50 dark:bg-surface-900 min-h-screen w-full transition-colors">
 	<div class="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
 		<!-- ✅ NEW: Component for Header -->
 		<SetupHeader
@@ -239,7 +248,9 @@ calls store methods and wires store state to child components.
 			/>
 
 			<!-- Main Card (Right Side) -->
-			<div class="flex flex-1 flex-col rounded-xl border border-surface-200 bg-white shadow-xl dark:border-white dark:bg-surface-800">
+			<div
+				class="flex flex-1 flex-col rounded-xl border border-surface-200 bg-white shadow-xl dark:border-surface-700 dark:bg-surface-800 dark:shadow-[0_0_50px_-12px_rgba(0,0,0,0.8)]"
+			>
 				<!-- ✅ NEW: Component for Card Header -->
 				<SetupCardHeader
 					currentStep={wizard.currentStep}
@@ -247,6 +258,8 @@ calls store methods and wires store state to child components.
 					onreset={() => {
 						if (typeof window !== 'undefined' && !confirm('Clear all setup data?')) return;
 						clearStore();
+						sessionStorage.removeItem('sveltycms_welcome_modal_shown');
+						window.location.reload();
 					}}
 				/>
 
@@ -325,36 +338,36 @@ calls store methods and wires store state to child components.
 									<div class="grid grid-cols-2 gap-x-4 gap-y-2 p-3 sm:grid-cols-6">
 										<div class="sm:col-span-1">
 											<span class="font-semibold">{m.setup_db_test_latency()}:</span>
-											<span class="text-terrary-500 dark:text-primary-500">{wizard.lastDbTestResult.latencyMs ?? '—'} ms</span>
+											<span class="text-tertiary-500 dark:text-primary-500">{wizard.lastDbTestResult.latencyMs ?? '—'} ms</span>
 										</div>
 										<div class="sm:col-span-1">
 											<span class="font-semibold">{m.setup_db_test_engine()}:</span>
-											<span class="text-terrary-500 dark:text-primary-500">{wizard.dbConfig.type}</span>
+											<span class="text-tertiary-500 dark:text-primary-500">{wizard.dbConfig.type}</span>
 										</div>
 										<div class="sm:col-span-1">
 											<span class="font-semibold">{m.label_host()}:</span>
-											<span class="text-terrary-500 dark:text-primary-500">{wizard.dbConfig.host}</span>
+											<span class="text-tertiary-500 dark:text-primary-500">{wizard.dbConfig.host}</span>
 										</div>
 										{#if !isFullUri}
 											<div class="sm:col-span-1">
 												<span class="font-semibold">{m.label_port()}:</span>
-												<span class="text-terrary-500 dark:text-primary-500">{wizard.dbConfig.port}</span>
+												<span class="text-tertiary-500 dark:text-primary-500">{wizard.dbConfig.port}</span>
 											</div>
 										{/if}
 										<div class="sm:col-span-1">
 											<span class="font-semibold">{m.label_database()}:</span>
-											<span class="text-terrary-500 dark:text-primary-500">{wizard.dbConfig.name}</span>
+											<span class="text-tertiary-500 dark:text-primary-500">{wizard.dbConfig.name}</span>
 										</div>
 										{#if wizard.dbConfig.user}
 											<div class="sm:col-span-1">
 												<span class="font-semibold">{m.label_user?.() || m.setup_db_test_user()}:</span>
-												<span class="text-terrary-500 dark:text-primary-500">{wizard.dbConfig.user}</span>
+												<span class="text-tertiary-500 dark:text-primary-500">{wizard.dbConfig.user}</span>
 											</div>
 										{/if}
 										{#if wizard.lastDbTestResult.classification}
 											<div class="sm:col-span-2">
 												<span class="font-semibold">Code:</span>
-												<span class="text-terrary-500 dark:text-primary-500">{wizard.lastDbTestResult.classification}</span>
+												<span class="text-tertiary-500 dark:text-primary-500">{wizard.lastDbTestResult.classification}</span>
 											</div>
 										{/if}
 									</div>

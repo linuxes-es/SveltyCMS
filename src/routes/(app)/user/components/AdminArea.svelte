@@ -40,8 +40,8 @@
 	import * as m from '@src/paraglide/messages';
 	// Skeleton
 	import { Avatar } from '@skeletonlabs/skeleton-svelte';
-	import { dialogState } from '@utils/dialogState.svelte';
-	import { showToast } from '@utils/toast';
+	import { modalState, showConfirm } from '@utils/modalState.svelte';
+	import { toaster } from '@stores/store.svelte';
 	// Svelte-dnd-action
 	import { PermissionAction, PermissionType } from '@src/databases/auth/types';
 	import { dndzone } from 'svelte-dnd-action';
@@ -100,7 +100,7 @@
 				} catch (err) {
 					const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 					logger.error('AdminArea fetch error:', errorMessage);
-					showToast(`Error fetching data: ${errorMessage}`, 'error');
+					toaster.error({ description: `Error fetching data: ${errorMessage}` });
 					tableData = [];
 					totalItems = 0;
 				}
@@ -230,60 +230,23 @@
 		});
 	});
 
-	// Modal for token editing
-	function modalTokenUser() {
-		dialogState.showComponent({
-			title: m.adminarea_title(),
-			body: m.adminarea_body(),
-			component: ModalEditToken,
-			props: {
-				token: '',
-				email: '',
-				role: 'user',
-				expires: '',
-				slot: `
-					<div class="mb-4">
-						<h3 class="text-lg font-bold">Existing Tokens</h3>
-						<p class="text-gray-500">Token list will refresh after creation</p>
-					</div>
-				`
-			},
-			response: (result) => {
-				// On success, refresh data without changing view state
-				if (result && result.success) {
-					// Don't change the view state, just refresh the data
-					fetchData(); // Refetch data
-					return;
-				}
-				if (result?.success === false) {
-					showToast(result.error || 'Failed to send email', 'error');
-				}
-			}
-		});
-	}
+	// Function to edit a specific token
+	function editToken(tokenId: Token) {
+		const tokenData = tokenId;
+		if (!tokenData) return;
 
-	// Function to edit a specific token
-	// Function to edit a specific token
-	function editToken(tokenData: Token) {
-		dialogState.showComponent({
+		modalState.trigger(ModalEditToken as any, {
+			token: tokenData.token,
+			email: tokenData.email,
+			role: tokenData.role,
+			expires: convertDateToExpiresFormat(tokenData.expires),
 			title: m.multibuttontoken_modaltitle(),
 			body: m.multibuttontoken_modalbody(),
-			component: ModalEditToken,
-			props: {
-				token: tokenData.token,
-				email: tokenData.email,
-				role: tokenData.role,
-				expires: convertDateToExpiresFormat(tokenData.expires)
-			},
-			response: (result) => {
-				// On success, refresh the data without changing view state
+			response: (result: any) => {
 				if (result && result.success) {
-					// Don't change the view state, just refresh the data
-					fetchData(); // Refetch data
-					return;
-				}
-				if (result?.success === false) {
-					showToast(result.error || 'Failed to update token', 'error');
+					fetchData();
+				} else if (result?.success === false) {
+					toaster.error({ description: result.error || 'Failed to update token' });
 				}
 			}
 		});
@@ -371,7 +334,7 @@
 
 		// Prevent admins from blocking themselves
 		if (currentUser && user._id === currentUser._id) {
-			showToast('You cannot block your own account', 'warning');
+			toaster.warning({ description: 'You cannot block your own account' });
 			return;
 		}
 
@@ -387,24 +350,11 @@
 			? `Are you sure you want to <span class="text-success-500 font-semibold">unblock</span> user <span class="text-tertiary-500 font-medium">${user.email}</span>? This will allow them to access the system again.`
 			: `Are you sure you want to <span class="text-error-500 font-semibold">block</span> user <span class="text-tertiary-500 font-medium">${user.email}</span>? This will prevent them from accessing the system.`;
 
-		dialogState.showConfirm({
+		showConfirm({
 			title: modalTitle,
 			body: modalBody,
-			// confirmText: actionWord, // v4 doesn't support confirmText in showConfirm easily, usually it's "Confirm" or we need custom dialog.
-			// Wait, showConfirm only takes title, body, onConfirm in my updated API.
-			// I should stick to standard confirm or update dialogState to support labels if needed.
-			// For now, I'll assume standard confirm button.
-			// Actually, my updated dialogState (Step 1464) only has title, body, onConfirm. It doesn't support custom button text/classes yet.
-			// I might need to update dialogState to support `confirmText`, `cancelText`, `confirmClasses` if I want to maintain this fidelity.
-			// Or I can just pass them as props if I update `DialogManager`.
-			// Let's assume for now I accept standard "Confirm" / "Cancel".
-			// But the user had custom classes (red for block) which is important.
-			// I should update dialogState to accept `meta` or `classes`?
-			// Let's keep it simple for now and update dialogState later if needed, or update `DialogManager` to read it.
-			onConfirm: async (r: boolean) => {
-				if (r) {
-					await performBlockAction(user, action, actionPastTense);
-				}
+			onConfirm: async () => {
+				await performBlockAction(user, action, actionPastTense);
 			}
 		});
 	}
@@ -430,13 +380,13 @@
 					'_id' in item && (item as User)._id === user._id ? { ...item, blocked: !item.blocked } : item
 				);
 				tableData = updatedData;
-				showToast(`User ${actionPastTense} successfully`, 'success');
+				toaster.success({ description: `User ${actionPastTense} successfully` });
 			} else {
 				throw new Error(result.message || `Failed to ${action} user`);
 			}
 		} catch (err) {
 			const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-			showToast(`Failed to ${action} user: ${errorMessage}`, 'error');
+			toaster.error({ description: `Failed to ${action} user: ${errorMessage}` });
 		}
 	}
 
@@ -456,13 +406,11 @@
 			? `Are you sure you want to <span class="text-success-500 font-semibold">unblock</span> token for <span class="text-tertiary-500 font-medium">${token.email}</span>? This will allow the token to be used again.`
 			: `Are you sure you want to <span class="text-error-500 font-semibold">block</span> token for <span class="text-tertiary-500 font-medium">${token.email}</span>? This will prevent the token from being used.`;
 
-		dialogState.showConfirm({
+		showConfirm({
 			title: modalTitle,
 			body: modalBody,
-			onConfirm: async (r: boolean) => {
-				if (r) {
-					await performTokenBlockAction(token, action, actionPastTense);
-				}
+			onConfirm: async () => {
+				await performTokenBlockAction(token, action, actionPastTense);
 			}
 		});
 	}
@@ -488,13 +436,13 @@
 					'token' in item && (item as Token).token === token.token ? { ...item, blocked: !item.blocked } : item
 				);
 				tableData = updatedData;
-				showToast(`Token ${actionPastTense} successfully`, 'success');
+				toaster.success({ description: `Token ${actionPastTense} successfully` });
 			} else {
 				throw new Error(result.message || `Failed to ${action} token`);
 			}
 		} catch (err) {
 			const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-			showToast(`Failed to ${action} token: ${errorMessage}`, 'error');
+			toaster.error({ description: `Failed to ${action} token: ${errorMessage}` });
 		}
 	}
 
@@ -505,6 +453,11 @@
 	function handleDndFinalize(event: CustomEvent) {
 		displayTableHeaders = event.detail.items;
 		localStorage.setItem('userPaginationSettings', JSON.stringify({ density, displayTableHeaders }));
+	}
+
+	function modalTokenUser() {
+		// TODO: Implement modalTokenUser logic or locate missing import
+		toaster.warning({ description: 'Feature not implemented yet' });
 	}
 
 	// Toggle views
@@ -578,7 +531,7 @@
 	<div class="flex flex-col flex-wrap items-center justify-evenly gap-2 sm:flex-row xl:justify-between">
 		<button onclick={modalTokenUser} aria-label={m.adminarea_emailtoken()} class="gradient-primary btn w-full text-white sm:max-w-xs">
 			<iconify-icon icon="material-symbols:mail" color="white" width="18" class="mr-1"></iconify-icon>
-			<span class="whitespace-normal break-words">{m.adminarea_emailtoken()}</span>
+			<span class="whitespace-normal wrap-break-word">{m.adminarea_emailtoken()}</span>
 		</button>
 
 		<PermissionGuard
@@ -660,7 +613,9 @@
 						>
 							{#each displayTableHeaders as header: TableHeader (header.id)}
 								<button
-									class="chip {header.visible ? 'preset-filled-secondary' : 'preset-ghost-secondary'} w-100 mr-2 flex items-center justify-center"
+									class="chip {header.visible
+										? 'preset-filled-secondary-500'
+										: 'preset-ghost-secondary-500'} w-100 mr-2 flex items-center justify-center"
 									animate:flip={{ duration: flipDurationMs }}
 									onclick={() => {
 										displayTableHeaders = displayTableHeaders.map((h) => (h.id === header.id ? { ...h, visible: !h.visible } : h));
@@ -679,9 +634,7 @@
 			{/if}
 
 			<div class="table-container max-h-[calc(100vh-120px)] overflow-auto">
-				<table
-					class="table table-interactive table-hover {density === 'compact' ? 'table-compact' : density === 'normal' ? '' : 'table-comfortable'}"
-				>
+				<table class="table table-interactive {density === 'compact' ? 'table-compact' : density === 'normal' ? '' : 'table-comfortable'}">
 					<thead class="text-tertiary-500 dark:text-primary-500">
 						{#if filterShow}
 							<tr class="divide-x divide-preset-400">
@@ -813,7 +766,7 @@
 											<div class="flex items-center justify-center gap-2">
 												<span class="font-mono text-sm">{isUser(row) ? row._id : isToken(row) ? row._id : '-'}</span>
 												<button
-													class="preset-ghost btn-icon btn-icon-sm hover:preset-filled-tertiary"
+													class="preset-ghost btn-icon btn-icon-sm hover:preset-filled-tertiary-500"
 													aria-label="Copy User ID"
 													title="Copy User ID to clipboard"
 													onclick={(event) => {
@@ -822,10 +775,10 @@
 														navigator.clipboard
 															.writeText(val)
 															.then(() => {
-																showToast('User ID copied to clipboard', 'success');
+																toaster.success({ description: 'User ID copied to clipboard' });
 															})
 															.catch(() => {
-																showToast('Failed to copy', 'error');
+																toaster.error({ description: 'Failed to copy' });
 															});
 													}}
 												>
@@ -837,7 +790,7 @@
 											<div class="flex items-center justify-center gap-2">
 												<span class="max-w-[200px] truncate font-mono text-sm">{isToken(row) && header.key === 'token' ? row.token : '-'}</span>
 												<button
-													class="preset-ghost btn-icon btn-icon-sm hover:preset-filled-tertiary"
+													class="preset-ghost btn-icon btn-icon-sm hover:preset-filled-tertiary-500"
 													aria-label="Copy Token"
 													title="Copy Token to clipboard"
 													onclick={(event) => {
@@ -846,10 +799,10 @@
 														navigator.clipboard
 															.writeText(val)
 															.then(() => {
-																showToast('Token copied to clipboard', 'success');
+																toaster.success({ description: 'Token copied to clipboard' });
 															})
 															.catch(() => {
-																showToast('Failed to copy', 'error');
+																toaster.error({ description: 'Failed to copy' });
 															});
 													}}
 												>
@@ -912,7 +865,7 @@
 				/>
 			</div>
 		{:else}
-			<div class="preset-ghost-error btn text-center font-bold">
+			<div class="preset-ghost-error-500 btn text-center font-bold">
 				{#if showUserList}{m.adminarea_nouser()}{:else if showUsertoken}{m.adminarea_notoken()}{/if}
 			</div>
 		{/if}

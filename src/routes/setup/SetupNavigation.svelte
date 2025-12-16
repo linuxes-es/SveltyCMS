@@ -9,11 +9,11 @@ Handles Previous, Next, and Complete buttons and their states.
 	const { currentStep, totalSteps, canProceed, isLoading, onprev = () => {}, onnext = () => {}, oncomplete = () => {} } = $props();
 </script>
 
-<div class="flex shrink-0 items-center justify-between border-t border-slate-200 px-4 pb-4 pt-4 sm:px-8 sm:pb-6 sm:pt-6">
+<div class="grid grid-cols-[1fr_auto_1fr] items-center gap-4 border-t border-slate-200 px-4 py-3 sm:px-6">
 	<!-- Previous Button -->
-	<div class="flex-1">
+	<div class="justify-self-start">
 		{#if currentStep > 0}
-			<button onclick={() => onprev()} class="preset-filled-tertiary btn dark:preset-filled-primary">
+			<button onclick={() => onprev()} class="preset-filled-tertiary-500 btn dark:preset-filled-primary-500">
 				<iconify-icon icon="mdi:arrow-left-bold" class="mr-1 h-4 w-4" aria-hidden="true"></iconify-icon>
 				{m.button_previous()}
 			</button>
@@ -21,18 +21,18 @@ Handles Previous, Next, and Complete buttons and their states.
 	</div>
 
 	<!-- Step Indicator -->
-	<div class="shrink-0 text-center text-sm font-medium">
+	<div class="text-center text-sm font-medium whitespace-nowrap">
 		{m.setup_progress_step_of({ current: String(currentStep + 1), total: String(totalSteps) })}
 	</div>
 
 	<!-- Next/Complete Button -->
-	<div class="flex flex-1 justify-end">
+	<div class="flex justify-end justify-self-end">
 		{#if currentStep < totalSteps - 1}
 			<button
 				onclick={() => onnext()}
 				disabled={!canProceed || isLoading}
 				aria-disabled={!canProceed || isLoading}
-				class="preset-filled-tertiary btn transition-all dark:preset-filled-primary {canProceed ? '' : 'cursor-not-allowed opacity-60'}"
+				class="preset-filled-tertiary-500 btn transition-all dark:preset-filled-primary-500 {canProceed ? '' : 'cursor-not-allowed opacity-60'}"
 			>
 				{#if isLoading && currentStep === 0}
 					<div class="h-4 w-4 animate-spin rounded-full border-2 border-t-2 border-transparent border-t-white" role="status"></div>
@@ -47,7 +47,7 @@ Handles Previous, Next, and Complete buttons and their states.
 				onclick={() => oncomplete()}
 				disabled={isLoading}
 				aria-disabled={isLoading}
-				class="preset-filled-tertiary btn transition-all dark:preset-filled-primary {isLoading ? 'cursor-not-allowed opacity-60' : ''}"
+				class="preset-filled-tertiary-500 btn transition-all dark:preset-filled-primary-500 {isLoading ? 'cursor-not-allowed opacity-60' : ''}"
 			>
 				{#if isLoading}
 					<div class="h-4 w-4 animate-spin rounded-full border-2 border-t-2 border-transparent border-t-white" role="status"></div>

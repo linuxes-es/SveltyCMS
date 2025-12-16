@@ -17,6 +17,7 @@
 
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { page } from '$app/state';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -40,7 +41,7 @@
 			</div>
 		{:then module}
 			<!-- Resolved State -->
-			<svelte:component this={module.EmailPreview} {emailList} />
+			<svelte:component this={module.EmailPreview} {...emailList} {page} />
 		{:catch error}
 			<!-- Error State -->
 			<div class="rounded border border-red-200 bg-red-50 p-4 text-red-500">

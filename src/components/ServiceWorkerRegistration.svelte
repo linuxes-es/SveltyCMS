@@ -88,7 +88,7 @@ Registers and manages the service worker for offline support and caching.
 
 {#if updateAvailable}
 	<!-- Update notification -->
-	<div class="card preset-filled-primary fixed bottom-4 right-4 z-50 max-w-sm p-4 shadow-xl">
+	<div class="card preset-filled-primary-500 fixed bottom-4 right-4 z-50 max-w-sm p-4 shadow-xl">
 		<div class="flex items-center gap-3">
 			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path
@@ -104,7 +104,7 @@ Registers and manages the service worker for offline support and caching.
 			</div>
 		</div>
 		<div class="mt-3 flex gap-2">
-			<button class="preset-ghost-surface btn btn-sm" onclick={updateServiceWorker}> Update Now </button>
+			<button class="preset-ghost-surface-500 btn btn-sm" onclick={updateServiceWorker}> Update Now </button>
 			<button class="preset-ghost btn btn-sm" onclick={() => (updateAvailable = false)}> Later </button>
 		</div>
 	</div>
@@ -112,7 +112,7 @@ Registers and manages the service worker for offline support and caching.
 
 <!-- Debug tools (only in dev mode) -->
 {#if import.meta.env.DEV && browser}
-	<div class="card preset-soft-surface fixed bottom-4 left-4 z-50 p-2 text-xs">
+	<div class="card preset-soft-surface-500 fixed bottom-4 left-4 z-50 p-2 text-xs">
 		<button class="preset-ghost btn btn-sm" onclick={clearCache}> Clear Cache </button>
 	</div>
 {/if}

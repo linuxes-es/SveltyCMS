@@ -21,7 +21,22 @@ import type { Locale } from '@src/paraglide/runtime';
 
 export const load: LayoutServerLoad = async ({ cookies, locals }) => {
 	// Load settings from database cache (ensures cache is populated)
-	const { public: publicSettings } = await loadSettingsCache();
+	let publicSettings;
+	try {
+		const cache = await loadSettingsCache();
+		publicSettings = cache.public;
+	} catch (e) {
+		// Log error only if setup is complete (otherwise it's expected)
+		// We'll use fallback defaults so the layout doesn't crash
+		// Log as debug/info because this is expected behavior during first-time setup
+		console.debug('Layout: Settings cache not available, using defaults (Setup Mode enabled).');
+		publicSettings = {
+			BASE_LOCALE: 'en',
+			DEFAULT_CONTENT_LANGUAGE: 'en',
+			SITE_NAME: 'SveltyCMS Setup',
+			SITE_TITLE: 'SveltyCMS Setup'
+		};
+	}
 
 	// Extract values for server-side logic
 	const baseLocale = publicSettings.BASE_LOCALE;
@@ -34,12 +49,24 @@ export const load: LayoutServerLoad = async ({ cookies, locals }) => {
 	const contentLanguage = (cookies.get('contentLanguage') as Locale) ?? defaultContentLanguage;
 
 	// --- Content System Hydration ---
-	const { contentManager } = await import('@src/content/ContentManager');
-	const navigationStructure = await contentManager.getNavigationStructureProgressive({
-		maxDepth: 1,
-		tenantId: locals.tenantId
-	});
-	const contentVersion = contentManager.getContentVersion();
+	// --- Content System Hydration ---
+	// Only load content if not in setup mode (settings loaded successfully)
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let navigationStructure: any[] = [];
+	let contentVersion = 0;
+
+	if (!publicSettings['SITE_NAME'] || publicSettings['SITE_NAME'] !== 'SveltyCMS Setup') {
+		try {
+			const { contentManager } = await import('@src/content/ContentManager');
+			navigationStructure = await contentManager.getNavigationStructureProgressive({
+				maxDepth: 1,
+				tenantId: locals.tenantId
+			});
+			contentVersion = contentManager.getContentVersion();
+		} catch (err) {
+			console.warn('Layout: Failed to initialize ContentManager (non-fatal):', err);
+		}
+	}
 
 	return {
 		systemLanguage,

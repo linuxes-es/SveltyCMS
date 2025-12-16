@@ -125,8 +125,9 @@ Shows horizontal stepper on mobile, vertical stepper on desktop with legend.
 				</div>
 			{/each}
 			<!-- Setup Steps Legend -->
-			<div class="mt-6 flex items-end gap-6 border-t pt-6">
-				<div class="flex-1">
+			<!-- Setup Steps Legend -->
+			<div class="mt-6 border-t pt-6">
+				<div class="mb-4">
 					<h4 class="mb-4 text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-200">Legend</h4>
 					<ul class="space-y-2 text-xs">
 						{#each legendItems as item (item.key)}
@@ -146,7 +147,7 @@ Shows horizontal stepper on mobile, vertical stepper on desktop with legend.
 				</div>
 
 				<!-- Version Check  -->
-				<div class="flex shrink-0 items-center">
+				<div class="flex items-center text-left">
 					<VersionCheck />
 				</div>
 			</div>

@@ -44,8 +44,8 @@
 	// Skeleton
 	import { Tabs } from '@skeletonlabs/skeleton-svelte';
 	// import { CodeBlock, Tab, TabGroup, clipboard } from '@skeletonlabs/skeleton-svelte';
-	import { showConfirm } from '@utils/modalUtils';
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
+	import { showConfirm } from '@utils/modalState.svelte';
 
 	import { widgetFunctions as widgetFunctionsStore } from '@stores/widgetStore.svelte';
 
@@ -287,7 +287,7 @@
 				const revertData = { ...selectedRevision.data, _id: (collectionValue as any).value?._id };
 				setCollectionValue(revertData);
 				currentCollectionValue = revertData; // also update local state
-				showToast('Content reverted. Please save your changes.', 'info');
+				toaster.info({ description: 'Content reverted. Please save your changes.' });
 				localTabSet = '0';
 			}
 		});
@@ -330,42 +330,42 @@
 	});
 </script>
 
-<Tabs bind:value={localTabSet} class="flex flex-1 flex-col items-center">
+<Tabs value={localTabSet} onValueChange={(e) => (localTabSet = e.value)} class="flex flex-1 flex-col items-center">
 	<Tabs.List
-		class="flex justify-between md:justify-around rounded-tl-container-token rounded-tr-container-token border-b border-tertiary-500 dark:border-primary-500 w-full"
+		class="flex justify-between md:justify-around rounded-tl-container rounded-tr-container border-b border-tertiary-500 dark:border-primary-500 w-full"
 	>
-		<Tabs.Control value="0" class="flex-1">
+		<Tabs.Trigger value="0" class="flex-1">
 			<div class="flex items-center justify-center gap-2 py-2">
 				<iconify-icon icon="mdi:pen" width="20" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
 				{m.button_edit()}
 			</div>
-		</Tabs.Control>
+		</Tabs.Trigger>
 
 		{#if collection.value?.revision}
-			<Tabs.Control value="1" class="flex-1">
+			<Tabs.Trigger value="1" class="flex-1">
 				<div class="flex items-center justify-center gap-2 py-2">
 					<iconify-icon icon="mdi:history" width="20" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
-					{m.applayout_version()} <span class="preset-filled-secondary badge">{revisions.length}</span>
+					{m.applayout_version()} <span class="preset-filled-secondary-500 badge">{revisions.length}</span>
 				</div>
-			</Tabs.Control>
+			</Tabs.Trigger>
 		{/if}
 
 		{#if collection.value?.livePreview}
-			<Tabs.Control value="2" class="flex-1">
+			<Tabs.Trigger value="2" class="flex-1">
 				<div class="flex items-center justify-center gap-2 py-2">
 					<iconify-icon icon="mdi:eye-outline" width="20" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
 					{m.Fields_preview()}
 				</div>
-			</Tabs.Control>
+			</Tabs.Trigger>
 		{/if}
 
 		{#if user?.isAdmin}
-			<Tabs.Control value="3" class="flex-1">
+			<Tabs.Trigger value="3" class="flex-1">
 				<div class="flex items-center justify-center gap-2 py-2">
 					<iconify-icon icon="mdi:api" width="20" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
 					API
 				</div>
-			</Tabs.Control>
+			</Tabs.Trigger>
 		{/if}
 	</Tabs.List>
 
@@ -377,7 +377,7 @@
 					{#if rawField.widget}
 						{@const field = ensureFieldProperties(rawField)}
 						<div
-							class="mx-auto text-center {!field?.width ? 'w-full ' : 'max-md:!w-full'}"
+							class="mx-auto text-center {!field?.width ? 'w-full ' : 'max-md:w-full!'}"
 							style={'min-width:min(300px,100%);' + (field.width ? `width:calc(${Math.floor(100 / field?.width)}% - 0.5rem)` : '')}
 						>
 							<div class="flex items-center justify-between gap-2 px-[5px] text-start field-label">
@@ -484,7 +484,7 @@
 							</option>
 						{/each}
 					</select>
-					<button class="preset-filled-primary btn" onclick={handleRevert} disabled={!selectedRevision?.data}>
+					<button class="preset-filled-primary-500 btn" onclick={handleRevert} disabled={!selectedRevision?.data}>
 						<iconify-icon icon="mdi:restore" class="mr-1"></iconify-icon> Revert
 					</button>
 				</div>
@@ -540,17 +540,17 @@
 					<iconify-icon icon="mdi:open-in-new" width="20" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
 					<input type="text" class="input grow text-sm" readonly value={previewUrl} />
 					<button
-						class="preset-ghost-surface btn btn-sm"
+						class="preset-ghost-surface-500 btn btn-sm"
 						onclick={() => {
 							navigator.clipboard.writeText(previewUrl);
-							showToast('Preview URL Copied', 'success');
+							toaster.success({ description: 'Preview URL Copied' });
 						}}
 						aria-label="Copy preview URL"
 					>
 						<iconify-icon icon="mdi:content-copy" width="16"></iconify-icon>
 					</button>
 				</div>
-				<a href={previewUrl} target="_blank" rel="noopener noreferrer" class="preset-filled-primary btn btn-sm">
+				<a href={previewUrl} target="_blank" rel="noopener noreferrer" class="preset-filled-primary-500 btn btn-sm">
 					<iconify-icon icon="mdi:open-in-new" width="16" class="mr-1"></iconify-icon>
 					Open
 				</a>
@@ -571,10 +571,10 @@
 			<div class="flex items-center gap-2">
 				<input type="text" class="input grow" readonly value={apiUrl} />
 				<button
-					class="preset-ghost-surface btn"
+					class="preset-ghost-surface-500 btn"
 					onclick={() => {
 						navigator.clipboard.writeText(apiUrl);
-						showToast('API URL Copied', 'success');
+						toaster.success({ description: 'API URL Copied' });
 					}}>Copy</button
 				>
 			</div>

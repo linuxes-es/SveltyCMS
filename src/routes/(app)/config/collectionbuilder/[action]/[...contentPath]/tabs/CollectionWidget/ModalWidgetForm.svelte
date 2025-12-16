@@ -20,8 +20,7 @@ It handles widget configuration, permissions, and specific options.
 	import { collectionValue, setCollectionValue, targetWidget } from '@src/stores/collectionStore.svelte';
 
 	import { Tabs } from '@skeletonlabs/skeleton-svelte';
-	import { dialogState } from '@utils/dialogState.svelte';
-	// const modalStore = getModalStore();
+	import { modalState } from '@utils/modalState.svelte';
 
 	let localTabSet = $state('0');
 
@@ -36,7 +35,7 @@ It handles widget configuration, permissions, and specific options.
 		body?: string;
 	}
 
-	const { parent, value, response, title, body }: Props = $props();
+	const { parent = {}, value, response, title, body }: Props = $props();
 
 	// Local variables
 	// const modalData = $derived($modalStore[0]);
@@ -59,7 +58,7 @@ It handles widget configuration, permissions, and specific options.
 		if (response) {
 			response(targetWidget);
 		}
-		dialogState.close();
+		modalState.close();
 	}
 
 	// Function to delete the widget
@@ -74,82 +73,78 @@ It handles widget configuration, permissions, and specific options.
 					fields: newFields
 				});
 			}
-			dialogState.close();
+			modalState.close();
 		}
 	}
 
 	// Base Classes
-	const cBase = 'card p-4 w-screen h-screen shadow-xl space-y-4 bg-white';
-	const cHeader = 'text-2xl font-bold';
-	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token';
+	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-xl';
 </script>
 
-{#if true}
-	<div class={cBase}>
-		<header class={cHeader}>
-			{title ?? '(title missing)'}
-		</header>
-		<article class="text-center">
-			{body ?? '(body missing)'}
-		</article>
+<div class="space-y-4">
+	<header class="text-2xl font-bold text-center">
+		{title ?? '(title missing)'}
+	</header>
+	<article class="text-center">
+		{body ?? '(body missing)'}
+	</article>
 
-		<!-- Tabs Headers -->
-		<form class={cForm}>
-			<Tabs value={localTabSet} onValueChange={(e) => (localTabSet = e.value)}>
-				<Tabs.List class="flex justify-between lg:justify-start border-b border-surface-200-800">
-					<Tabs.Trigger value="0">
-						<div class="flex items-center gap-1 py-2 px-4">
-							<iconify-icon icon="mdi:required" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
-							<span>Default</span>
-						</div>
-					</Tabs.Trigger>
-					<Tabs.Trigger value="1">
-						<div class="flex items-center gap-1 py-2 px-4">
-							<iconify-icon icon="mdi:security-lock" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
-							<span>{m.system_permission()}</span>
-						</div>
-					</Tabs.Trigger>
+	<!-- Tabs Headers -->
+	<form class={cForm}>
+		<Tabs value={localTabSet} onValueChange={(e) => (localTabSet = e.value)}>
+			<Tabs.List class="flex justify-between lg:justify-start border-b border-surface-200-800">
+				<Tabs.Trigger value="0">
+					<div class="flex items-center gap-1 py-2 px-4">
+						<iconify-icon icon="mdi:required" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
+						<span>Default</span>
+					</div>
+				</Tabs.Trigger>
+				<Tabs.Trigger value="1">
+					<div class="flex items-center gap-1 py-2 px-4">
+						<iconify-icon icon="mdi:security-lock" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
+						<span>{m.system_permission()}</span>
+					</div>
+				</Tabs.Trigger>
 
-					{#if specificOptions.length > 0}
-						<Tabs.Trigger value="2">
-							<div class="flex items-center gap-1 py-2 px-4">
-								<iconify-icon icon="ph:star-fill" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
-								<span>Specific</span>
-							</div>
-						</Tabs.Trigger>
-					{/if}
-				</Tabs.List>
-
-				<Tabs.Content value="0">
-					<Default {guiSchema} />
-				</Tabs.Content>
-				<Tabs.Content value="1">
-					<Permission />
-				</Tabs.Content>
 				{#if specificOptions.length > 0}
-					<Tabs.Content value="2">
-						<Specific />
-					</Tabs.Content>
+					<Tabs.Trigger value="2">
+						<div class="flex items-center gap-1 py-2 px-4">
+							<iconify-icon icon="ph:star-fill" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
+							<span>Specific</span>
+						</div>
+					</Tabs.Trigger>
 				{/if}
-			</Tabs>
-		</form>
+			</Tabs.List>
 
-		<div class="hidden"></div>
+			<Tabs.Content value="0">
+				<Default {guiSchema} />
+			</Tabs.Content>
+			<Tabs.Content value="1">
+				<Permission />
+			</Tabs.Content>
+			{#if specificOptions.length > 0}
+				<Tabs.Content value="2">
+					<Specific />
+				</Tabs.Content>
+			{/if}
+		</Tabs>
+	</form>
 
-		<footer class="{parent.regionFooter} justify-between">
-			<!-- Delete Button -->
-			<button type="button" onclick={deleteWidget} aria-label="Delete" class="preset-filled-error btn">
-				<iconify-icon icon="icomoon-free:bin" width="24"></iconify-icon>
-				<span class="hidden sm:block">{m.button_delete()}</span>
-			</button>
+	<div class="hidden"></div>
 
-			<!-- Cancel & Save Buttons -->
-			<div class="flex justify-between gap-4">
-				<button type="button" aria-label={m.button_cancel()} class="btn {parent?.buttonNeutral}" onclick={() => dialogState.close()}
-					>{m.button_cancel()}</button
-				>
-				<button type="button" aria-label={m.button_save()} class="btn {parent?.buttonPositive}" onclick={onFormSubmit}>{m.button_save()}</button>
-			</div>
-		</footer>
-	</div>
-{/if}
+	<footer class="flex justify-between pt-4 border-t border-surface-500/20">
+		<!-- Delete Button -->
+		<button type="button" onclick={deleteWidget} aria-label="Delete" class="preset-filled-error-500 btn">
+			<iconify-icon icon="icomoon-free:bin" width="24"></iconify-icon>
+			<span class="hidden sm:block">{m.button_delete()}</span>
+		</button>
+
+		<!-- Cancel & Save Buttons -->
+		<div class="flex justify-between gap-4">
+			<button type="button" aria-label={m.button_cancel()} class="btn preset-outlined-secondary-500" onclick={() => modalState.close()}
+				>{m.button_cancel()}</button
+			>
+			<button type="button" aria-label={m.button_save()} class="btn preset-filled-primary-500" onclick={onFormSubmit}>{m.button_save()}</button>
+		</div>
+	</footer>
+</div>

@@ -5,7 +5,7 @@
 -->
 <script lang="ts">
 	import { fade, slide } from 'svelte/transition';
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 	import PageTitle from '@components/PageTitle.svelte';
 	import { onMount } from 'svelte';
 
@@ -40,7 +40,7 @@
 			console.debug('[Config Sync] Received status:', status);
 		} catch (err) {
 			const errorMsg = err instanceof Error ? err.message : String(err);
-			showToast(`Failed to fetch status: ${errorMsg}`, 'error');
+			toaster.error({ description: `Failed to fetch status: ${errorMsg}` });
 			status = null;
 		} finally {
 			isLoading = false;
@@ -56,7 +56,7 @@
 
 	async function performImport() {
 		if (!status || status.unmetRequirements.length > 0) {
-			showToast('Sync blocked due to unmet requirements.', 'warning');
+			toaster.warning({ description: 'Sync blocked due to unmet requirements.' });
 			return;
 		}
 
@@ -67,9 +67,9 @@
 			if (fileToImport) {
 				const fileContent = await fileToImport.text();
 				payload.payload = JSON.parse(fileContent);
-				showToast(`Importing from file: ${fileToImport.name}`, 'info');
+				toaster.info({ description: `Importing from file: ${fileToImport.name}` });
 			} else {
-				showToast('No file selected, performing standard filesystem sync.', 'info');
+				toaster.info({ description: 'No file selected, performing standard filesystem sync.' });
 			}
 
 			const res = await fetch('/api/config_sync', {
@@ -81,11 +81,11 @@
 			const result = await res.json();
 			if (!res.ok) throw new Error(result.message || `HTTP ${res.status}`);
 
-			showToast(result.message || 'Sync successful!', 'success');
+			toaster.success({ description: result.message || 'Sync successful!' });
 			await loadStatus(); // Refresh status after sync/import
 		} catch (err) {
 			const errorMsg = err instanceof Error ? err.message : String(err);
-			showToast(`Sync failed: ${errorMsg}`, 'error');
+			toaster.error({ description: `Sync failed: ${errorMsg}` });
 		} finally {
 			isProcessing = false;
 			fileToImport = null;
@@ -94,7 +94,7 @@
 
 	function exportToJSON() {
 		if (!status || !status.changes) {
-			showToast('No changes to export.', 'warning');
+			toaster.warning({ description: 'No changes to export.' });
 			return;
 		}
 		const jsonString = JSON.stringify(status.changes, null, 2);
@@ -107,11 +107,11 @@
 		a.click();
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
-		showToast('Configuration changes exported to JSON.', 'success');
+		toaster.success({ description: 'Configuration changes exported to JSON.' });
 	}
 
 	function exportToCSV() {
-		showToast('CSV export is not yet implemented.', 'info');
+		toaster.info({ description: 'CSV export is not yet implemented.' });
 	}
 
 	// Sync all detected changes (filesystem -> DB)
@@ -129,7 +129,7 @@
 
 <div class="wrapper">
 	<!-- Header Description -->
-	<div class="preset-soft-surface mb-4 p-4">
+	<div class="preset-soft-surface-500 mb-4 p-4">
 		<p class="text-surface-600 dark:text-surface-300">
 			This tool manages the synchronization between configuration defined in the filesystem (the "source of truth") and the configuration active in
 			the database. Use it to deploy structural changes between different environments (e.g., from development to live).
@@ -161,7 +161,7 @@
 	<section transition:fade|local>
 		{#if activeTab === 'sync'}
 			{#if status?.unmetRequirements && status.unmetRequirements.length > 0}
-				<div class="alert preset-filled-error my-4 p-4" transition:slide>
+				<div class="alert preset-filled-error-500 my-4 p-4" transition:slide>
 					<h4 class="font-bold">Sync Blocked: Unmet Requirements</h4>
 					<p class="text-sm">The following requirements must be met before you can import configuration:</p>
 					<ul class="mt-2 list-disc pl-5 text-sm">
@@ -174,7 +174,7 @@
 
 			<div class="my-4">
 				<button
-					class="preset-filled-tertiary btn w-full dark:preset-filled-primary sm:w-auto"
+					class="preset-filled-tertiary-500 btn w-full dark:preset-filled-primary-500 sm:w-auto"
 					disabled={isProcessing || !status || status.status === 'in_sync' || status.unmetRequirements.length > 0}
 					onclick={syncAllChanges}
 				>
@@ -189,7 +189,7 @@
 					Checking synchronization status...
 					<button
 						onclick={loadStatus}
-						class="preset-filled-tertiary btn mt-6 flex items-center gap-2 dark:preset-filled-primary"
+						class="preset-filled-tertiary-500 btn mt-6 flex items-center gap-2 dark:preset-filled-primary-500"
 						disabled={isLoading}
 					>
 						<iconify-icon icon="mdi:refresh" class={isLoading ? 'animate-spin' : ''}></iconify-icon>
@@ -227,9 +227,9 @@
 											<td>{item.name}</td>
 											<td><span class="preset-soft badge capitalize">{item.type}</span></td>
 											<td>
-												{#if changeType === 'new'}<span class="preset-filled-success badge">New</span>{/if}
-												{#if changeType === 'updated'}<span class="preset-filled-warning badge">Updated</span>{/if}
-												{#if changeType === 'deleted'}<span class="preset-filled-error badge">Deleted</span>{/if}
+												{#if changeType === 'new'}<span class="preset-filled-success-500 badge">New</span>{/if}
+												{#if changeType === 'updated'}<span class="preset-filled-warning-500 badge">Updated</span>{/if}
+												{#if changeType === 'deleted'}<span class="preset-filled-error-500 badge">Deleted</span>{/if}
 											</td>
 										</tr>
 									{/each}
@@ -249,7 +249,11 @@
 				<p class="mb-4 text-sm text-surface-500">Upload a JSON or CSV file containing configuration changes to apply them to the database.</p>
 				<div class="flex flex-col gap-4">
 					<input type="file" class="input" accept=".json,.csv" onchange={handleFileSelect} />
-					<button class="preset-filled-tertiary btn dark:preset-filled-primary" disabled={!fileToImport || isProcessing} onclick={performImport}>
+					<button
+						class="preset-filled-tertiary-500 btn dark:preset-filled-primary-500"
+						disabled={!fileToImport || isProcessing}
+						onclick={performImport}
+					>
 						<iconify-icon icon="mdi:upload" class={isProcessing ? 'animate-spin' : ''}></iconify-icon>
 						{isProcessing ? 'Importing...' : 'Import from File'}
 					</button>
@@ -264,10 +268,10 @@
 				</h3>
 				<p class="mb-4 text-sm text-surface-500">Save the detected configuration changes to a file.</p>
 				<div class="flex gap-4">
-					<button class="preset-filled-tertiary btn dark:preset-filled-primary" disabled={isProcessing} onclick={exportToJSON}>
+					<button class="preset-filled-tertiary-500 btn dark:preset-filled-primary-500" disabled={isProcessing} onclick={exportToJSON}>
 						<iconify-icon icon="mdi:code-json"></iconify-icon> Export as JSON
 					</button>
-					<button class="preset-filled-secondary btn" disabled={isProcessing} onclick={exportToCSV}>
+					<button class="preset-filled-secondary-500 btn" disabled={isProcessing} onclick={exportToCSV}>
 						<iconify-icon icon="mdi:file-csv-outline"></iconify-icon> Export as CSV
 					</button>
 				</div>

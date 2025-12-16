@@ -129,8 +129,8 @@ Key features:
 		</div>
 
 		<div class="table-container max-h-[calc(100vh-120px)] overflow-auto">
-			<table class="table table-interactive table-hover">
-				<thead class="bg-surface-100-800-token sticky top-0 text-tertiary-500 dark:text-primary-500">
+			<table class="table table-interactive ">
+				<thead class="bg-surface-100 dark:bg-surface-800 sticky top-0 text-tertiary-500 dark:text-primary-500">
 					<tr class="divide-x divide-preset-400 border-b border-black dark:border-white">
 						<th class="w-10">Select</th>
 						<th>Thumbnail</th>
@@ -195,11 +195,11 @@ Key features:
 							<td>
 								<a
 									href="/imageEditor?mediaId={file._id?.toString()}"
-									class="preset-ghost-primary btn btn-sm"
+									class="preset-ghost-primary-500 btn btn-sm"
 									aria-label="Edit"
 									data-sveltekit-preload-data="hover">Edit</a
 								>
-								<button onclick={() => handleDelete(file)} class="preset-filled-error btn btn-sm" aria-label="Delete"> Delete </button>
+								<button onclick={() => handleDelete(file)} class="preset-filled-error-500 btn btn-sm" aria-label="Delete"> Delete </button>
 							</td>
 						</tr>
 					{/each}
@@ -208,7 +208,7 @@ Key features:
 
 			<!-- Pagination -->
 			<div
-				class=" bg-surface-100-800-token sticky bottom-0 left-0 right-0 mt-2 flex flex-col items-center justify-center px-2 py-2 md:flex-row md:justify-between md:p-4"
+				class=" bg-surface-100 dark:bg-surface-800 sticky bottom-0 left-0 right-0 mt-2 flex flex-col items-center justify-center px-2 py-2 md:flex-row md:justify-between md:p-4"
 			>
 				<TablePagination
 					bind:currentPage

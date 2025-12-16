@@ -20,7 +20,7 @@
 	import * as m from '@src/paraglide/messages';
 
 	// Skeleton
-	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
+	import { modalState } from '@utils/modalState.svelte';
 
 	interface Props {
 		'on:save'?: () => void;
@@ -42,8 +42,6 @@
 	}
 
 	const { 'on:save': onSave = () => {} }: Props = $props() as Props;
-
-	const modalStore = getModalStore();
 
 	// Extract the collection name from the URL
 	const contentTypes = page.params.contentTypes;
@@ -94,14 +92,14 @@
 			selectedWidget.permissions = {};
 		}
 		setTargetWidget(selectedWidget);
-		const c: ModalComponent = { ref: ModalWidgetForm };
-		const modal: ModalSettings = {
-			type: 'component',
-			component: c,
-			title: 'Define your Widget',
-			body: 'Setup your widget and then press Save.',
-			value: selectedWidget,
-			response: (r: Field | null) => {
+		modalState.trigger(
+			ModalWidgetForm as any,
+			{
+				title: 'Define your Widget',
+				body: 'Setup your widget and then press Save.',
+				value: selectedWidget
+			},
+			(r: Field | null) => {
 				if (!r) return;
 				// Find the index of the existing widget based on its ID
 				const existingIndex = fields.findIndex((widget) => widget.id === r.id);
@@ -124,28 +122,26 @@
 					});
 				}
 			}
-		};
-		modalStore.trigger(modal);
+		);
 	}
 
 	// Modal 1 to choose a widget
 	function modalSelectWidget(selected?: Field): void {
-		const c: ModalComponent = { ref: ModalSelectWidget };
-		const modal: ModalSettings = {
-			type: 'component',
-			component: c,
-			title: 'Select a Widget',
-			body: 'Select your widget and then press submit.',
-			value: selected,
-			response: (r: { selectedWidget: string } | null) => {
+		modalState.trigger(
+			ModalSelectWidget as any,
+			{
+				title: 'Select a Widget',
+				body: 'Select your widget and then press submit.',
+				value: selected
+			},
+			(r: { selectedWidget: string } | null) => {
 				if (!r) return;
 				const { selectedWidget } = r;
 				const widget = { widget: { key: selectedWidget, Name: selectedWidget }, permissions: {} };
 				setTargetWidget(widget as any);
 				modalWidgetForm(widget as Field);
 			}
-		};
-		modalStore.trigger(modal);
+		);
 	}
 
 	// Function to save data by sending a POST request
@@ -176,7 +172,7 @@
 </script>
 
 <div class="flex flex-col">
-	<div class="preset-outline-tertiary rounded-t-md p-2 text-center dark:preset-outline-primary">
+	<div class="preset-outlined-tertiary-500 rounded-t-md p-2 text-center dark:preset-outlined-primary-500">
 		<p>
 			{m.collection_widgetfield_addrequired()}
 			<span class="text-tertiary-500 dark:text-primary-500">{contentTypes}</span> Collection inputs.
@@ -187,9 +183,9 @@
 		<VerticalList items={fields} {headers} {flipDurationMs} {handleDndConsider} {handleDndFinalize}>
 			{#each fields as field (field.id)}
 				<div
-					class="border-blue preset-outline-surface my-2 grid w-full grid-cols-6 items-center rounded-md border p-1 text-left hover:preset-filled-surface dark:text-white"
+					class="border-blue preset-outlined-surface-500 my-2 grid w-full grid-cols-6 items-center rounded-md border p-1 text-left hover:preset-filled-surface-500 dark:text-white"
 				>
-					<div class="preset-ghost-tertiary badge h-10 w-10 rounded-full dark:preset-ghost-primary">
+					<div class="preset-ghost-tertiary-500 badge h-10 w-10 rounded-full dark:preset-ghost-primary-500">
 						{field.id}
 					</div>
 
@@ -198,7 +194,7 @@
 					<div class=" ">{field?.db_fieldName ? field.db_fieldName : '-'}</div>
 					<div class=" ">{field.widget?.key}</div>
 
-					<button type="button" onclick={() => modalWidgetForm(field)} aria-label={m.button_edit()} class="preset-ghost-primary btn-icon ml-auto">
+					<button type="button" onclick={() => modalWidgetForm(field)} aria-label={m.button_edit()} class="preset-ghost-primary-500 btn-icon ml-auto">
 						<iconify-icon icon="ic:baseline-edit" width="24" class="dark:text-white"></iconify-icon>
 					</button>
 				</div>
@@ -207,14 +203,14 @@
 	</div>
 	<div>
 		<div class="mt-2 flex items-center justify-center gap-3">
-			<button onclick={() => modalSelectWidget()} class="preset-filled-tertiary btn">{m.collection_widgetfield_addFields()} </button>
+			<button onclick={() => modalSelectWidget()} class="preset-filled-tertiary-500 btn">{m.collection_widgetfield_addFields()} </button>
 		</div>
 		<div class=" flex items-center justify-between">
-			<button type="button" onclick={() => tabSet.set(1)} class="preset-filled-secondary btn mt-2 justify-end">{m.button_previous()}</button>
+			<button type="button" onclick={() => tabSet.set(1)} class="preset-filled-secondary-500 btn mt-2 justify-end">{m.button_previous()}</button>
 			<button
 				type="button"
 				onclick={handleCollectionSave}
-				class="preset-filled-tertiary btn mt-2 justify-end dark:preset-filled-primary dark:text-black">{m.button_save()}</button
+				class="preset-filled-tertiary-500 btn mt-2 justify-end dark:preset-filled-primary-500 dark:text-black">{m.button_save()}</button
 			>
 		</div>
 	</div>

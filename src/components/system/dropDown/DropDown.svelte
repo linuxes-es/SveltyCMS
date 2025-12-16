@@ -31,6 +31,7 @@
 
 	// State for dropdown expansion and selected item
 	let expanded = $state(false);
+	// svelte-ignore state_referenced_locally
 	let currentSelected = $state(selected);
 
 	// Effect to update currentSelected when the selected prop changes or to set initial default
@@ -69,7 +70,7 @@
 	<!-- Dropdown button -->
 	<button
 		onclick={toggleExpanded}
-		class="preset-filled-tertiary btn dark:preset-ghost-primary"
+		class="preset-filled-tertiary-500 btn dark:preset-ghost-primary-500"
 		aria-label="Toggle Dropdown"
 		class:selected={expanded}
 	>
@@ -87,7 +88,7 @@
 		{#each filteredItems as item}
 			<button
 				onclick={() => selectItem(item)}
-				class="preset-filled-warning btn relative hover:preset-filled-secondary dark:preset-outline-warning"
+				class="preset-filled-warning-500 btn relative hover:preset-filled-secondary-500 dark:preset-outlined-warning-500"
 				aria-label={modifier(item)}
 			>
 				<span class="text-surface-700 dark:text-white">{modifier(item)}</span>

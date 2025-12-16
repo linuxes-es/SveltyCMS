@@ -15,7 +15,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 	import TablePagination from '@components/system/table/TablePagination.svelte';
 	import TableFilter from '@components/system/table/TableFilter.svelte';
 	// import { clipboard } from '@skeletonlabs/skeleton-svelte';
@@ -103,10 +103,10 @@
 				const result = await response.json();
 				usersRef.value = result.data; // Update the referenced value
 			} else {
-				showToast('Failed to fetch users', 'error');
+				toaster.error({ description: 'Failed to fetch users' });
 			}
 		} catch (error) {
-			showToast('An error occurred while fetching users', 'error');
+			toaster.error({ description: 'An error occurred while fetching users' });
 		}
 		// Assign back to the $state variable after async operation
 		users = usersRef.value;
@@ -150,10 +150,10 @@
 						tokensRef.value = result.data; // Assign to the ref's value
 						totalItemsRef.value = result.pagination.totalItems; // Assign to the ref's value
 					} else {
-						showToast('Failed to fetch tokens', 'error');
+						toaster.error({ description: 'Failed to fetch tokens' });
 					}
 				} catch (error) {
-					showToast('An error occurred while fetching tokens', 'error');
+					toaster.error({ description: 'An error occurred while fetching tokens' });
 				}
 			},
 			'Fetching website tokens'
@@ -165,7 +165,7 @@
 	async function generateToken() {
 		const currentNewTokenName = newTokenName; // Capture current state
 		if (!currentNewTokenName) {
-			showToast('Please enter a name for the token.', 'error');
+			toaster.error({ description: 'Please enter a name for the token.' });
 			return;
 		}
 
@@ -178,41 +178,39 @@
 
 			if (response.ok) {
 				await fetchTokens(); // Refetch to get the new token and update pagination
-				showToast(`Token generated for ${currentNewTokenName}`, 'success');
+				toaster.success({ description: `Token generated for ${currentNewTokenName}` });
 				newTokenName = ''; // Clear input
 			} else {
 				if (response.status === 409) {
-					showToast('A token with this name already exists', 'error');
+					toaster.error({ description: 'A token with this name already exists' });
 				} else {
-					showToast('Failed to generate token', 'error');
+					toaster.error({ description: 'Failed to generate token' });
 				}
 			}
 		} catch (error) {
-			showToast('An error occurred while generating the token', 'error');
+			toaster.error({ description: 'An error occurred while generating the token' });
 		}
 	}
-	import { dialogState } from '@utils/dialogState.svelte';
+	import { showConfirm } from '@utils/modalState.svelte';
 
 	async function deleteToken(id: string, name: string) {
-		dialogState.showConfirm({
+		showConfirm({
 			title: 'Delete Token',
 			body: `Are you sure you want to delete the token "${name}"? This action cannot be undone.`,
-			onConfirm: async (confirmed: boolean) => {
-				if (confirmed) {
-					try {
-						const response = await fetch(`/api/website-tokens/${id}`, {
-							method: 'DELETE'
-						});
+			onConfirm: async () => {
+				try {
+					const response = await fetch(`/api/website-tokens/${id}`, {
+						method: 'DELETE'
+					});
 
-						if (response.ok) {
-							await fetchTokens(); // Refetch to update the list
-							showToast('Token deleted.', 'success');
-						} else {
-							showToast('Failed to delete token', 'error');
-						}
-					} catch (error) {
-						showToast('An error occurred while deleting the token', 'error');
+					if (response.ok) {
+						await fetchTokens(); // Refetch to update the list
+						toaster.success({ description: 'Token deleted.' });
+					} else {
+						toaster.error({ description: 'Failed to delete token' });
 					}
+				} catch (error) {
+					toaster.error({ description: 'An error occurred while deleting the token' });
 				}
 			}
 		});
@@ -238,7 +236,7 @@
 			<h4 class="h4 mb-2 font-bold text-tertiary-500 dark:text-primary-500">Generate New Website Token</h4>
 			<div class="flex gap-2">
 				<input type="text" class="input" placeholder="Token Name" bind:value={newTokenName} />
-				<button class="preset-filled-primary btn" onclick={generateToken}>Generate</button>
+				<button class="preset-filled-primary-500 btn" onclick={generateToken}>Generate</button>
 			</div>
 		</div>
 	</div>
@@ -269,7 +267,9 @@
 						>
 							{#each displayTableHeaders as header: TableHeader (header.id)}
 								<button
-									class="chip {header.visible ? 'preset-filled-secondary' : 'preset-ghost-secondary'} w-100 mr-2 flex items-center justify-center"
+									class="chip {header.visible
+										? 'preset-filled-secondary-500'
+										: 'preset-ghost-secondary-500'} w-100 mr-2 flex items-center justify-center"
 									animate:flip={{ duration: 300 }}
 									onclick={() => {
 										displayTableHeaders = displayTableHeaders.map((h: TableHeader) => (h.id === header.id ? { ...h, visible: !h.visible } : h));
@@ -287,7 +287,7 @@
 				</div>
 			{/if}
 			<div class="table-container">
-				<table class="table table-hover">
+				<table class="table">
 					<thead>
 						{#if filterShow}
 							<tr class="divide-x divide-preset-400">
@@ -341,9 +341,9 @@
 												<button
 													onclick={async () => {
 														await navigator.clipboard.writeText(token.token);
-														showToast('Token copied to clipboard', 'success');
+														toaster.success({ description: 'Token copied to clipboard' });
 													}}
-													class="preset-ghost-surface btn-icon btn-icon-sm"
+													class="preset-ghost-surface-500 btn-icon btn-icon-sm"
 													aria-label="Copy token to clipboard"
 												>
 													<iconify-icon icon="mdi:clipboard-outline" width="16"></iconify-icon>
@@ -359,7 +359,7 @@
 									</td>
 								{/each}
 								<td>
-									<button class="preset-filled-error btn btn-sm" onclick={() => deleteToken(token._id, token.name)}>Delete</button>
+									<button class="preset-filled-error-500 btn btn-sm" onclick={() => deleteToken(token._id, token.name)}>Delete</button>
 								</td>
 							</tr>
 						{/each}

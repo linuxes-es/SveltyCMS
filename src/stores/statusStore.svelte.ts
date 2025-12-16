@@ -6,7 +6,7 @@
 
 import { collection, collectionValue, setCollectionValue } from '@src/stores/collectionStore.svelte';
 import { updateEntryStatus } from '@src/utils/apiClient';
-import { showToast } from '@utils/toast';
+import { toaster } from '@stores/store.svelte';
 import type { StatusType } from '@src/content/types';
 import { StatusTypes } from '@src/content/types';
 import { logger } from '@utils/logger';
@@ -121,10 +121,10 @@ export const statusStore = {
 						_scheduled: undefined
 					});
 
-					showToast(newValue ? 'Entry published successfully' : 'Entry unpublished successfully', 'success');
+					toaster.success({ description: newValue ? 'Entry published successfully' : 'Entry unpublished successfully' });
 					return true;
 				} else {
-					showToast(result.error || `Failed to ${newStatus} entry`, 'error');
+					toaster.error({ description: result.error || `Failed to ${newStatus} entry` });
 					return false;
 				}
 			}
@@ -140,7 +140,7 @@ export const statusStore = {
 			}
 		} catch (e) {
 			const error = e as Error;
-			showToast(`Error updating status: ${error.message}`, 'error');
+			toaster.error({ description: `Error updating status: ${error.message}` });
 			logger.error(`[StatusStore] Error in ${componentName}:`, error);
 			return false;
 		} finally {

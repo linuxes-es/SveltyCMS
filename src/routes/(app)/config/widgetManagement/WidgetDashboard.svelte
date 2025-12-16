@@ -14,8 +14,6 @@ Features:
 	import { onMount } from 'svelte';
 	import { logger } from '@utils/logger';
 	import WidgetCard from './WidgetCard.svelte';
-	// import { popup, type PopupSettings } from '@skeletonlabs/skeleton-svelte';
-	import { popup, type PopupSettings } from '@utils/popup';
 	import { widgetStoreActions } from '@stores/widgetStore.svelte';
 
 	// Props
@@ -64,28 +62,6 @@ Features:
 		withInput: widgets.filter((w) => w.pillar?.input?.exists).length,
 		withDisplay: widgets.filter((w) => w.pillar?.display?.exists).length
 	});
-
-	// Tooltip settings for metric cards
-	const totalTooltip: PopupSettings = {
-		event: 'hover',
-		target: 'totalTooltip',
-		placement: 'top'
-	};
-	const activeTooltip: PopupSettings = {
-		event: 'hover',
-		target: 'activeTooltip',
-		placement: 'top'
-	};
-	const coreTooltip: PopupSettings = {
-		event: 'hover',
-		target: 'coreTooltip',
-		placement: 'top'
-	};
-	const customTooltip: PopupSettings = {
-		event: 'hover',
-		target: 'customTooltip',
-		placement: 'top'
-	};
 
 	// Filtered widgets
 	const filteredWidgets = $derived(
@@ -315,8 +291,8 @@ Features:
 				<div class="relative rounded-lg bg-blue-50 p-4 shadow-sm transition-all hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30">
 					<button
 						class="btn-icon btn-icon-sm absolute right-2 top-2 text-blue-600 dark:text-blue-400"
-						use:popup={totalTooltip}
 						aria-label="Information about total widgets"
+						title="All registered widgets in the system (core + custom)"
 					>
 						<iconify-icon icon="mdi:information-outline" class="text-lg"></iconify-icon>
 					</button>
@@ -333,8 +309,8 @@ Features:
 				<div class="relative rounded-lg bg-green-50 p-4 shadow-sm transition-all hover:bg-green-100 dark:bg-green-900/20 dark:hover:bg-green-900/30">
 					<button
 						class="btn-icon btn-icon-sm absolute right-2 top-2 text-primary-500"
-						use:popup={activeTooltip}
 						aria-label="Information about active widgets"
+						title="Widgets currently enabled and available for use in collections"
 					>
 						<iconify-icon icon="mdi:information-outline" class="text-lg"></iconify-icon>
 					</button>
@@ -351,8 +327,8 @@ Features:
 				<div class="relative rounded-lg bg-blue-50 p-4 shadow-sm transition-all hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30">
 					<button
 						class="btn-icon btn-icon-sm absolute right-2 top-2 text-blue-600 dark:text-blue-400"
-						use:popup={coreTooltip}
 						aria-label="Information about core widgets"
+						title="Essential system widgets that are always active and cannot be disabled"
 					>
 						<iconify-icon icon="mdi:information-outline" class="text-lg"></iconify-icon>
 					</button>
@@ -371,8 +347,8 @@ Features:
 				>
 					<button
 						class="btn-icon btn-icon-sm absolute right-2 top-2 text-yellow-600 dark:text-yellow-400"
-						use:popup={customTooltip}
 						aria-label="Information about custom widgets"
+						title="Optional widgets that can be toggled on/off as needed"
 					>
 						<iconify-icon icon="mdi:information-outline" class="text-lg"></iconify-icon>
 					</button>
@@ -387,7 +363,7 @@ Features:
 			</div>
 
 			<!-- Filters and Search -->
-			<div class="card preset-filled-surface mt-6 space-y-4 p-4">
+			<div class="card preset-filled-surface-500 mt-6 space-y-4 p-4">
 				<!-- Search and Sync Button Row -->
 				<div class="flex flex-col gap-3 sm:flex-row sm:items-center">
 					<!-- Search -->
@@ -412,7 +388,7 @@ Features:
 					{#each [{ value: 'all' as const, label: 'All', count: stats.total, icon: 'mdi:widgets' }, { value: 'active' as const, label: 'Active', count: stats.active, icon: 'mdi:check-circle' }, { value: 'inactive' as const, label: 'Inactive', count: stats.inactive, icon: 'mdi:pause-circle' }, { value: 'core' as const, label: 'Core', count: stats.core, icon: 'mdi:puzzle' }, { value: 'custom' as const, label: 'Custom', count: stats.custom, icon: 'mdi:puzzle-plus' }] as filter}
 						<button
 							onclick={() => (activeFilter = filter.value)}
-							class="btn {activeFilter === filter.value ? 'preset-filled-tertiary text-white' : 'preset-ghost-secondary '}"
+							class="btn {activeFilter === filter.value ? 'preset-filled-tertiary-500 text-white' : 'preset-ghost-secondary-500 '}"
 							aria-label="{filter.label} widgets ({filter.count})"
 						>
 							<iconify-icon icon={filter.icon} class="text-lg"></iconify-icon>

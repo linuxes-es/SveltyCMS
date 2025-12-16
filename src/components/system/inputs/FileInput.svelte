@@ -118,7 +118,7 @@
 					<button
 						onclick={openFileInput}
 						aria-label={m.widget_ImageUpload_BrowseNew()}
-						class="preset-filled-tertiary btn mt-3 dark:preset-filled-primary"
+						class="preset-filled-tertiary-500 btn mt-3 dark:preset-filled-primary-500"
 					>
 						{m.widget_ImageUpload_BrowseNew()}
 					</button>
@@ -126,7 +126,7 @@
 					<button
 						onclick={() => toggleMedia(true)}
 						aria-label={m.widget_ImageUpload_SelectMedia()}
-						class="preset-filled-tertiary btn mt-3 dark:preset-filled-primary"
+						class="preset-filled-tertiary-500 btn mt-3 dark:preset-filled-primary-500"
 					>
 						{m.widget_ImageUpload_SelectMedia()}
 					</button>
@@ -141,13 +141,13 @@
 	<!-- Show existing Media Images -->
 	{#if showMedia}
 		<div
-			class="bg-surface-100-800-token fixed left-[50%] top-[50%] z-[999999999] flex h-[90%] w-[95%] translate-x-[-50%] translate-y-[-50%] flex-col rounded border-[1px] border-surface-400 p-2"
+			class="bg-surface-100 dark:bg-surface-800 fixed left-[50%] top-[50%] z-[999999999] flex h-[90%] w-[95%] translate-x-[-50%] translate-y-[-50%] flex-col rounded border-[1px] border-surface-400 p-2"
 		>
-			<div class="bg-surface-100-800-token flex items-center justify-between border-b p-2">
+			<div class="bg-surface-100 dark:bg-surface-800 flex items-center justify-between border-b p-2">
 				<p class="ml-auto font-bold text-black dark:text-primary-500">
 					{m.widget_ImageUpload_SelectImage()}
 				</p>
-				<button onclick={() => toggleMedia(false)} aria-label="Close" class="preset-ghost-secondary btn-icon ml-auto">
+				<button onclick={() => toggleMedia(false)} aria-label="Close" class="preset-ghost-secondary-500 btn-icon ml-auto">
 					<iconify-icon icon="material-symbols:close" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
 				</button>
 			</div>

@@ -1,8 +1,14 @@
 <!--
 @file src/routes/setup/ConnectionStatus.svelte
-@description Real-time connection status indicator with detailed feedback
+@component
+**Real-time connection status indicator with detailed feedback**
 
-Features:
+### Props:
+- `state`
+- `result`
+- `onRetry`
+
+### Features:
 - Real-time connection status updates
 - Success and error details with troubleshooting tips
 - Animated testing indicator
@@ -247,7 +253,7 @@ Features:
 			<!-- Retry Button -->
 			{#if onRetry}
 				<div class="mt-3 flex justify-end">
-					<button onclick={onRetry} class="preset-ghost-surface btn btn-sm flex items-center gap-2">
+					<button onclick={onRetry} class="preset-ghost-surface-500 btn btn-sm flex items-center gap-2">
 						<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
 								stroke-linecap="round"

@@ -41,8 +41,8 @@
 	import * as m from '@src/paraglide/messages';
 
 	// Skeleton
-	import { showToast } from '@utils/toast';
-	import { showModal } from '@utils/modalUtils';
+	import { toaster } from '@stores/store.svelte';
+	import { modalState } from '@utils/modalState.svelte';
 	import type { ContentNode, DatabaseId } from '@root/src/databases/dbInterface';
 	import type { ISODateString } from '@root/src/content/types';
 
@@ -90,19 +90,14 @@
 	 * @param existingCategory Optional Partial<DndItem> if editing an existing category.
 	 */
 	function modalAddCategory(existingCategory?: Partial<ContentNode>): void {
-		const modalComponent: ModalComponent = {
-			ref: ModalCategory,
-			props: {
-				existingCategory: existingCategory as ContentNode | undefined
-			}
-		};
-
-		const modalSettings: ModalSettings = {
-			type: 'component',
-			title: existingCategory ? 'Edit Category' : 'Add New Category',
-			body: existingCategory ? 'Modify Category Details' : 'Enter Unique Name and an Icon for your new category column',
-			component: modalComponent,
-			response: async (response: CategoryModalResponse | boolean) => {
+		modalState.trigger(
+			ModalCategory as any,
+			{
+				existingCategory: existingCategory as ContentNode | undefined,
+				title: existingCategory ? 'Edit Category' : 'Add New Category',
+				body: existingCategory ? 'Modify Category Details' : 'Enter Unique Name and an Icon for your new category column'
+			},
+			async (response: CategoryModalResponse | boolean) => {
 				if (!response || typeof response === 'boolean') return;
 
 				try {
@@ -113,12 +108,10 @@
 					}
 				} catch (error) {
 					logger.error('Error handling category modal response:', error);
-					showToast('Error updating categories', 'error');
+					toaster.error({ description: 'Error updating categories' });
 				}
 			}
-		};
-
-		showModal(modalSettings);
+		);
 	}
 
 	/**
@@ -202,7 +195,7 @@
 	async function handleSave() {
 		const items = Object.values(nodesToSave);
 		if (items.length === 0) {
-			showToast('No changes to save.', 'info');
+			toaster.info({ description: 'No changes to save.' });
 			return;
 		}
 
@@ -222,7 +215,7 @@
 			const result: ApiResponse = await response.json();
 
 			if (response.ok && result.success) {
-				showToast('Categories and Collections updated successfully', 'success');
+				toaster.success({ description: 'Categories and Collections updated successfully' });
 				// Clear pending saves after successful API call
 				nodesToSave = {};
 				// Re-sync `currentConfig` with the *actual* structure returned by the server
@@ -239,7 +232,7 @@
 			}
 		} catch (error) {
 			logger.error('Error saving categories:', error);
-			showToast(error instanceof Error ? error.message : 'Failed to save categories', 'error');
+			toaster.error({ description: error instanceof Error ? error.message : 'Failed to save categories' });
 			apiError = error instanceof Error ? error.message : 'Unknown error occurred';
 		} finally {
 			isLoading = false;
@@ -273,7 +266,7 @@
 		onclick={() => modalAddCategory()}
 		type="button"
 		aria-label="Add New Category"
-		class="preset-filled-tertiary btn flex items-center gap-1 md:preset-filled-tertiary md:btn"
+		class="preset-filled-tertiary-500 btn flex items-center gap-1 md:preset-filled-tertiary-500 md:btn"
 		disabled={isLoading}
 	>
 		<iconify-icon icon="bi:collection" width="18" class="text-white"></iconify-icon>
@@ -285,7 +278,7 @@
 		onclick={handleAddCollectionClick}
 		type="button"
 		aria-label="Add New Collection"
-		class="preset-filled-surface btn flex items-center justify-between gap-1 rounded font-bold"
+		class="preset-filled-surface-500 btn flex items-center justify-between gap-1 rounded font-bold"
 		disabled={isLoading}
 	>
 		<iconify-icon icon="material-symbols:category" width="18"></iconify-icon>
@@ -293,7 +286,13 @@
 	</button>
 
 	<!-- Save Button -->
-	<button type="button" onclick={handleSave} aria-label="Save" class="preset-filled-primary btn flex items-center gap-1 md:btn" disabled={isLoading}>
+	<button
+		type="button"
+		onclick={handleSave}
+		aria-label="Save"
+		class="preset-filled-primary-500 btn flex items-center gap-1 md:btn"
+		disabled={isLoading}
+	>
 		{#if isLoading}
 			<iconify-icon icon="eos-icons:loading" width="24" class="animate-spin text-white"></iconify-icon>
 		{:else}

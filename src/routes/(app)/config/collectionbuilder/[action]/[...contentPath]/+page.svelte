@@ -35,14 +35,15 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 	import * as m from '@src/paraglide/messages';
 
 	// Components
-	import CollectionWidget from './tabs/CollectionWidget.svelte';
 	import CollectionForm from './tabs/CollectionForm.svelte';
+	import CollectionWidget from './tabs/CollectionWidget.svelte';
 	import PageTitle from '@components/PageTitle.svelte';
 
 	// Skeleton
 	import { Tabs } from '@skeletonlabs/skeleton-svelte';
 	// import { Tab, TabGroup } from '@skeletonlabs/skeleton-svelte';
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
+	import { showConfirm } from '@utils/modalState.svelte';
 
 	import { widgetStoreActions } from '@stores/widgetStore.svelte';
 
@@ -61,8 +62,6 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 
 	import type { User } from '@src/databases/auth/types';
 	import type { FieldInstance, Schema } from '@src/content/types';
-
-	const modalStore = getModalStore();
 
 	// Extract the collection name from the URL
 	let collectionPath = $state(page.params.contentPath);
@@ -146,7 +145,7 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 
 		// Check validation errors before submission
 		if (validationStore.errors && Object.keys(validationStore.errors).length > 0) {
-			showToast('Please fix validation errors before saving', 'error');
+			toaster.error({ description: 'Please fix validation errors before saving' });
 			return;
 		}
 
@@ -181,7 +180,7 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 		});
 
 		if (resp.data.status === 200) {
-			showToast("Collection Saved. You're all set to build your content.", 'success');
+			toaster.success({ description: "Collection Saved. You're all set to build your content." });
 			if (originalName && originalName !== currentName && currentName) {
 				const newPath = page.url.pathname.replace(originalName, currentName);
 				goto(newPath);
@@ -191,32 +190,27 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 
 	function handleCollectionDelete() {
 		const currentCollection = collection.value;
-		// Define the confirmation modal
-		const confirmModal: ModalSettings = {
-			type: 'confirm',
+
+		showConfirm({
 			title: 'Please Confirm',
 			body: 'Are you sure you wish to delete this collection?',
-			response: (r: boolean) => {
-				if (r) {
-					// Send the form data to the server
-					axios.post(`?/deleteCollections`, obj2formData({ contentTypes: String(currentCollection?.name || '') }), {
-						headers: {
-							'Content-Type': 'multipart/form-data'
-						}
-					});
+			onConfirm: async () => {
+				// Send the form data to the server
+				await axios.post(`?/deleteCollections`, obj2formData({ contentTypes: String(currentCollection?.name || '') }), {
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					}
+				});
 
-					// Notify via global toast helper
-					showToast('Collection Deleted.', 'error');
-					goto(`/collection`);
-				} else {
-					// User cancelled, do not delete
-					logger.debug('User cancelled deletion.');
-				}
+				// Notify via global toast helper
+				toaster.error({ description: 'Collection Deleted.' });
+				goto(`/collection`);
+			},
+			onCancel: () => {
+				// User cancelled, do not delete
+				logger.debug('User cancelled deletion.');
 			}
-		};
-		// Trigger the confirmation modal
-		modalStore.trigger(confirmModal);
-		// Close the modal
+		});
 	}
 
 	onMount(() => {
@@ -236,7 +230,7 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 	<PageTitle name={pageTitle} highlight={highlightedPart} icon="ic:baseline-build" />
 
 	<!-- Back -->
-	<button onclick={() => history.back()} type="button" aria-label="Back" class="preset-outline-primary btn-icon">
+	<button onclick={() => history.back()} type="button" aria-label="Back" class="preset-outlined-primary-500 btn-icon">
 		<iconify-icon icon="ri:arrow-left-line" width="20"></iconify-icon>
 	</button>
 </div>
@@ -247,13 +241,13 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 			<button
 				type="button"
 				onclick={handleCollectionDelete}
-				class=" preset-filled-error btn mb-3 mr-1 mt-1 justify-end dark:preset-filled-error dark:text-black"
+				class=" preset-filled-error-500 btn mb-3 mr-1 mt-1 justify-end dark:preset-filled-error-500 dark:text-black"
 				>{m.button_delete()}
 			</button>
 			<button
 				type="button"
 				onclick={handleCollectionSave}
-				class="preset-filled-tertiary btn mb-3 mr-1 mt-1 justify-end dark:preset-filled-tertiary dark:text-black">{m.button_save()}</button
+				class="preset-filled-tertiary-500 btn mb-3 mr-1 mt-1 justify-end dark:preset-filled-tertiary-500 dark:text-black">{m.button_save()}</button
 			>
 		</div>
 	{/if}

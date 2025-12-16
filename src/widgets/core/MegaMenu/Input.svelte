@@ -35,7 +35,7 @@ Interactive menu builder with add/edit/reorder capabilities
 -->
 
 <script lang="ts">
-	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
+	import { modalState } from '@utils/modalState.svelte';
 	import type { FieldType } from './';
 	import type { MenuItem, MenuEditContext } from './types';
 	import { contentLanguage } from '@src/stores/store.svelte';
@@ -110,6 +110,8 @@ Interactive menu builder with add/edit/reorder capabilities
 		dragOverIndex = null;
 	}
 
+	import MenuItemEditorModal from './MenuItemEditorModal.svelte';
+
 	// Function to open edit modal
 	function editItem(item: MenuItem, level: number) {
 		const modalContext: MenuEditContext = {
@@ -127,11 +129,7 @@ Interactive menu builder with add/edit/reorder capabilities
 			}
 		};
 
-		getModalStore().trigger({
-			type: 'component',
-			component: 'menuItemEditorModal',
-			meta: modalContext
-		});
+		modalState.trigger(MenuItemEditorModal as any, modalContext);
 	}
 
 	// Function to delete an item
@@ -168,7 +166,7 @@ Interactive menu builder with add/edit/reorder capabilities
 <div class="space-y-4">
 	<div class="flex items-center justify-between border-b border-surface-200 pb-3 dark:border-surface-700">
 		<h3 class=" text-lg font-semibold text-surface-900 dark:text-surface-100">Menu Structure</h3>
-		<button type="button" class="preset-filled-tertiary btn dark:preset-filled-primary" onclick={addItem}>
+		<button type="button" class="preset-filled-tertiary-500 btn dark:preset-filled-primary-500" onclick={addItem}>
 			<iconify-icon icon="mdi:plus" width="16"></iconify-icon>
 			Add Menu Item
 		</button>
@@ -211,7 +209,7 @@ Interactive menu builder with add/edit/reorder capabilities
 							{#if item.children.length > 0 && (field as any).defaults?.enableExpandCollapse !== false}
 								<button
 									type="button"
-									class="preset-filled-surface btn"
+									class="preset-filled-surface-500 btn"
 									onclick={() => toggleExpanded(item)}
 									aria-expanded={item._expanded !== false}
 									aria-label={item._expanded !== false ? 'Collapse children' : 'Expand children'}
@@ -241,7 +239,7 @@ Interactive menu builder with add/edit/reorder capabilities
 							{#if (field as any).fields && (field as any).fields.length > 1}
 								<button
 									type="button"
-									class="preset-filled-tertiary btn dark:preset-filled-primary"
+									class="preset-filled-tertiary-500 btn dark:preset-filled-primary-500"
 									onclick={() => addChildItem(item)}
 									aria-label="Add child item"
 									title="Add child item"
@@ -250,11 +248,11 @@ Interactive menu builder with add/edit/reorder capabilities
 								</button>
 							{/if}
 
-							<button type="button" class="abtn preset-filled-surface" onclick={() => editItem(item, 0)} aria-label="Edit item" title="Edit item">
+							<button type="button" class="abtn preset-filled-surface-500" onclick={() => editItem(item, 0)} aria-label="Edit item" title="Edit item">
 								<iconify-icon icon="mdi:pencil" width="14"></iconify-icon>
 							</button>
 
-							<button type="button" class="preset-filled-error btn" onclick={() => deleteItem(item)} aria-label="Delete item" title="Delete item">
+							<button type="button" class="preset-filled-error-500 btn" onclick={() => deleteItem(item)} aria-label="Delete item" title="Delete item">
 								<iconify-icon icon="mdi:delete" width="14"></iconify-icon>
 							</button>
 						</div>

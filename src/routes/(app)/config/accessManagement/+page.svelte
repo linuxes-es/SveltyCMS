@@ -17,7 +17,7 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 	import { logger } from '@utils/logger';
 	import { Tabs } from '@skeletonlabs/skeleton-svelte';
 	import { globalLoadingStore, loadingOperations } from '@stores/loadingStore.svelte';
@@ -71,18 +71,18 @@
 					});
 
 					if (response.status === 200) {
-						showToast('Configuration updated successfully!', 'success');
+						toaster.success({ description: 'Configuration updated successfully!' });
 						hasModifiedChanges = false;
 						modifiedCount = 0;
 					} else if (response.status === 304) {
-						showToast('No changes detected, configuration not updated.', 'info');
+						toaster.info({ description: 'No changes detected, configuration not updated.' });
 					} else {
 						const responseText = await response.text();
-						showToast(`Error updating configuration: ${responseText}`, 'error');
+						toaster.error({ description: `Error updating configuration: ${responseText}` });
 					}
 				} catch (error) {
 					logger.error('Network error during save:', error);
-					showToast('Network error occurred while updating configuration.', 'error');
+					toaster.error({ description: 'Network error occurred while updating configuration.' });
 				}
 			},
 			'Saving access control configuration'
@@ -96,7 +96,7 @@
 		rolesData = page.data.roles; // Reset to initial loaded state
 		hasModifiedChanges = false;
 		modifiedCount = 0;
-		showToast('Changes have been reset.', 'info');
+		toaster.info({ description: 'Changes have been reset.' });
 	};
 </script>
 
@@ -107,7 +107,7 @@
 		<button
 			onclick={saveAllChanges}
 			aria-label="Save all changes"
-			class="preset-filled-tertiary btn"
+			class="preset-filled-tertiary-500 btn"
 			disabled={!hasModifiedChanges || globalLoadingStore.isLoading}
 		>
 			{#if globalLoadingStore.isLoadingReason(loadingOperations.configSave)}
@@ -120,7 +120,7 @@
 		<button
 			onclick={resetChanges}
 			aria-label="Reset changes"
-			class="preset-filled-secondary btn"
+			class="preset-filled-secondary-500 btn"
 			disabled={!hasModifiedChanges || globalLoadingStore.isLoading}
 		>
 			Reset
@@ -136,32 +136,32 @@
 </div>
 
 <div class="flex flex-col">
-	<Tabs bind:value={currentTab} class="grow">
+	<Tabs value={currentTab} onValueChange={(e) => (currentTab = e.value)} class="grow">
 		<Tabs.List class="flex justify-around text-tertiary-500 dark:text-primary-500 border-b border-surface-200-800">
-			<Tabs.Control value="0" class="flex-1">
+			<Tabs.Trigger value="0" class="flex-1">
 				<div class="flex items-center justify-center gap-1 py-4">
 					<iconify-icon icon="mdi:shield-lock-outline" width="28" class="text-black dark:text-white"></iconify-icon>
 					<span class={currentTab === '0' ? 'text-secondary-500 dark:text-tertiary-500 font-bold' : ''}>{m.system_permission()}</span>
 				</div>
-			</Tabs.Control>
-			<Tabs.Control value="1" class="flex-1">
+			</Tabs.Trigger>
+			<Tabs.Trigger value="1" class="flex-1">
 				<div class="flex items-center justify-center gap-1 py-4">
 					<iconify-icon icon="mdi:account-group" width="28" class="text-black dark:text-white"></iconify-icon>
 					<span class={currentTab === '1' ? 'text-secondary-500 dark:text-tertiary-500 font-bold' : ''}>{m.system_roles()}</span>
 				</div>
-			</Tabs.Control>
-			<Tabs.Control value="2" class="flex-1">
+			</Tabs.Trigger>
+			<Tabs.Trigger value="2" class="flex-1">
 				<div class="flex items-center justify-center gap-1 py-4">
 					<iconify-icon icon="mdi:account-cog" width="28" class="text-black dark:text-white"></iconify-icon>
 					<span class={currentTab === '2' ? 'text-secondary-500 dark:text-tertiary-500 font-bold' : ''}>Admin</span>
 				</div>
-			</Tabs.Control>
-			<Tabs.Control value="3" class="flex-1">
+			</Tabs.Trigger>
+			<Tabs.Trigger value="3" class="flex-1">
 				<div class="flex items-center justify-center gap-1 py-4">
 					<iconify-icon icon="mdi:web" width="28" class="text-black dark:text-white"></iconify-icon>
 					<span class={currentTab === '3' ? 'text-secondary-500 dark:text-tertiary-500 font-bold' : ''}>Website Tokens</span>
 				</div>
-			</Tabs.Control>
+			</Tabs.Trigger>
 		</Tabs.List>
 
 		<Tabs.Content value="0">

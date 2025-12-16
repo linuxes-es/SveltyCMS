@@ -125,9 +125,16 @@ export async function loadSettingsCache(): Promise<typeof cache> {
 
 		return cache;
 	} catch (error) {
-		// Log error but don't throw during initial load to prevent blocking server startup
 		const { logger } = await import('@utils/logger');
-		logger.error('Failed to load settings cache:', error);
+		const errMessage = error instanceof Error ? error.message : String(error);
+
+		// Suppress error logging if DB adapter is missing (expected during setup)
+		if (errMessage.includes('Database adapter') || errMessage.includes('not available')) {
+			logger.trace('Settings cache not available (expected during setup or DB init):', errMessage);
+		} else {
+			// Log unexpected errors
+			logger.error('Failed to load settings cache:', error);
+		}
 
 		// Return empty cache with PKG_VERSION to allow server to continue
 		cache.public.PKG_VERSION = await loadPkgVersion();

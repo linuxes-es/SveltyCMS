@@ -143,7 +143,7 @@
 				e.preventDefault();
 			}
 		}}
-		class="preset-filled-tertiary btn flex w-fit items-center gap-1 rounded dark:preset-ghost-primary"
+		class="preset-filled-tertiary-500 btn flex w-fit items-center gap-1 rounded dark:preset-ghost-primary-500"
 		aria-haspopup="true"
 		aria-expanded={expanded}
 		aria-controls={listboxId}

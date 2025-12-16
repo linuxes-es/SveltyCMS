@@ -39,13 +39,21 @@ functionality for image editing and basic file information display.
 	import FileInput from '@components/system/inputs/FileInput.svelte';
 	import ImageEditorModal from '@src/components/imageEditor/ImageEditorModal.svelte';
 	import { updateMediaMetadata } from '@utils/media/api';
+	import { modalState } from '@utils/modalState.svelte';
 
 	// Define reactive state
 	let isFlipped = $state(false);
 
 	let validationError: string | null = $state(null);
 	let debounceTimeout: number | undefined;
-	let showEditor = $state(false);
+
+	function openEditor() {
+		modalState.trigger(ImageEditorModal as any, {
+			image: value instanceof File || !value ? null : value,
+			onsave: handleEditorSave,
+			modalClasses: 'w-full max-w-7xl'
+		});
+	}
 
 	// Define props
 	let { field, value = $bindable<File | MediaImage | undefined>() } = $props(); // 'value' is the bindable prop
@@ -142,7 +150,7 @@ functionality for image editing and basic file information display.
 
 			// Update the widget data with the new persisted image data
 			value = result.data.data[0].data; // Assign directly to the bindable prop
-			showEditor = false;
+			modalState.close();
 		} catch (error) {
 			logger.error('Error saving edited image:', error);
 		}
@@ -296,7 +304,7 @@ functionality for image editing and basic file information display.
 					<!-- Buttons -->
 					<div class="col-span-1 flex flex-col items-end justify-between gap-2 p-2">
 						<!-- Edit -->
-						<button onclick={() => (showEditor = true)} aria-label="Edit image" class="preset-ghost btn-icon" title="Edit image">
+						<button onclick={openEditor} aria-label="Edit image" class="preset-ghost btn-icon" title="Edit image">
 							<iconify-icon icon="material-symbols:edit" width="24" class="text-primary-500"></iconify-icon>
 						</button>
 
@@ -321,11 +329,8 @@ functionality for image editing and basic file information display.
 
 	<!-- Error Message -->
 	{#if validationError}
-		<p id={`${getFieldName(field)}-error`} class="absolute bottom-[-1rem] left-0 w-full text-center text-xs text-error-500" role="alert">
+		<p id={`${getFieldName(field)}-error`} class="absolute -bottom-4 left-0 w-full text-center text-xs text-error-500" role="alert">
 			{validationError}
 		</p>
 	{/if}
-
-	<!-- Editor Modal -->
-	<ImageEditorModal bind:show={showEditor} image={value instanceof File ? null : value} onsave={handleEditorSave} />
 </div>

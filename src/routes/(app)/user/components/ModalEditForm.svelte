@@ -18,8 +18,8 @@ Efficiently manages user data updates with validation, role selection, and delet
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
 	// Skeleton & Stores
-	import { dialogState } from '@utils/dialogState.svelte';
-	import { showToast } from '@utils/toast';
+	import { modalState } from '@utils/modalState.svelte';
+	import { toaster } from '@stores/store.svelte';
 	import { Form } from '@utils/Form.svelte';
 	import { editUserSchema } from '@utils/formSchemas';
 	// ParaglideJS
@@ -65,7 +65,6 @@ Efficiently manages user data updates with validation, role selection, and delet
 	const { parent, isGivenData = false, username = null, email = null, role = null, user_id = null, title, body }: Props = $props();
 
 	// Store initialization
-	// const modalStore = getModalStore();
 
 	// Form Data Initialization
 	const editForm = new Form(
@@ -157,13 +156,15 @@ Efficiently manages user data updates with validation, role selection, and delet
 				throw new Error(result.message || 'Failed to update user.');
 			}
 
-			showToast('<iconify-icon icon="mdi:check-outline" color="white" width="26" class="mr-1"></iconify-icon> User Data Updated', 'success');
+			toaster.success({
+				description: '<iconify-icon icon="mdi:check-outline" color="white" width="26" class="mr-1"></iconify-icon> User Data Updated'
+			});
 			await invalidateAll();
 			// modalStore.close();
-			dialogState.close();
+			modalState.close();
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'An unknown error occurred.';
-			showToast(`<iconify-icon icon="mdi:alert-circle" width="24"/> ${message}`, 'error');
+			toaster.error({ description: `<iconify-icon icon="mdi:alert-circle" width="24"/> ${message}` });
 		} finally {
 			editForm.submitting = false;
 		}
@@ -188,24 +189,23 @@ Efficiently manages user data updates with validation, role selection, and delet
 
 			// Use the success message from the API response
 			const successMessage = data.message || 'User deleted successfully.';
-			showToast(`<iconify-icon icon=\"mdi:check\" width=\"24\"/> ${successMessage}`, 'success');
+			toaster.success({ description: `<iconify-icon icon=\"mdi:check\" width=\"24\"/> ${successMessage}` });
 
 			await invalidateAll();
 			// modalStore.close();
-			dialogState.close();
+			modalState.close();
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'An unknown error occurred.';
-			showToast(`<iconify-icon icon=\"mdi:alert-circle\" width=\"24\"/> ${message}`, 'error');
+			toaster.error({ description: `<iconify-icon icon=\"mdi:alert-circle\" width=\"24\"/> ${message}` });
 		}
 	}
 
 	// Base Classes
-	const cBase = 'card p-4 w-modal shadow-xl space-y-4 bg-white';
 	const cHeader = 'text-2xl font-bold';
-	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token';
+	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-xl';
 </script>
 
-<div class="modal-example-form {cBase}">
+<div class="modal-example-form space-y-4">
 	<header class="text-center dark:text-primary-500 {cHeader}">
 		{title ?? '(title missing)'}
 	</header>
@@ -313,7 +313,7 @@ Efficiently manages user data updates with validation, role selection, and delet
 								{#each roles as r}
 									<button
 										type="button"
-										class="chip {editForm.data.role === r._id ? 'preset-filled-tertiary' : 'preset-ghost-secondary'}"
+										class="chip {editForm.data.role === r._id ? 'preset-filled-tertiary-500' : 'preset-ghost-secondary-500'}"
 										onclick={() => (editForm.data.role = r._id)}
 									>
 										{#if editForm.data.role === r._id}
@@ -346,11 +346,11 @@ Efficiently manages user data updates with validation, role selection, and delet
 			{/if}
 		</PermissionGuard>
 	</form>
-	<footer class="modal-footer {parent.regionFooter} flex {showDeleteButton ? 'justify-between' : 'justify-end'}">
+	<footer class="modal-footer flex {showDeleteButton ? 'justify-between' : 'justify-end'} pt-4 border-t border-surface-500/20">
 		<!-- Delete User Button -->
 		{#if showDeleteButton}
 			<PermissionGuard config={deleteUserPermissionConfig} silent={true}>
-				<button type="button" onclick={deleteUser} class="preset-filled-error btn">
+				<button type="button" onclick={deleteUser} class="preset-filled-error-500 btn">
 					<iconify-icon icon="icomoon-free:bin" width="24"></iconify-icon>
 					<span class="hidden sm:block">{m.button_delete()}</span>
 				</button>
@@ -359,9 +359,9 @@ Efficiently manages user data updates with validation, role selection, and delet
 
 		<div class="flex gap-4">
 			<!-- Cancel -->
-			<button type="button" class="preset-outline-secondary btn" onclick={dialogState.close}>{m.button_cancel()}</button>
+			<button type="button" class="preset-outlined-secondary-500 btn" onclick={modalState.close}>{m.button_cancel()}</button>
 			<!-- Save -->
-			<button type="submit" form="change_user_form" class="preset-filled-tertiary btn dark:preset-filled-primary {parent.buttonPositive}">
+			<button type="submit" form="change_user_form" class="preset-filled-tertiary-500 btn dark:preset-filled-primary-500">
 				{m.button_save()}
 			</button>
 		</div>

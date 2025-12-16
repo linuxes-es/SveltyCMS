@@ -31,13 +31,11 @@
 	import { logger } from '@utils/logger';
 	import { untrack } from 'svelte';
 	import { deleteCurrentEntry, saveEntry } from '@utils/entryActions';
-	// Types
-	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
+	import { toaster } from '@stores/store.svelte';
+	import { showScheduleModal, showCloneModal } from '@utils/modalState.svelte';
 	import type { User } from '@src/databases/auth/types';
 	import { StatusTypes, type StatusType } from '@src/content/types';
 	import { createEntry, invalidateCollectionCache } from '@src/utils/apiClient';
-	import { showCloneModal, showScheduleModal } from '@utils/modalUtils';
-	import { showToast } from '@utils/toast';
 	import TranslationStatus from './collectionDisplay/TranslationStatus.svelte';
 	import Toggles from './system/inputs/Toggles.svelte';
 	// ParaglideJS
@@ -157,7 +155,7 @@
 	async function prepareAndSaveEntry() {
 		if (!isFormValid) {
 			logger.warn('[HeaderEdit] Save blocked due to validation errors.');
-			showToast(m.validation_fix_before_save(), 'error');
+			toaster.error({ description: m.validation_fix_before_save() });
 			return;
 		}
 
@@ -277,7 +275,7 @@
 
 	// Delete confirmation modal - use centralized function
 	function openDeleteModal(): void {
-		deleteCurrentEntry(getModalStore(), isAdmin);
+		deleteCurrentEntry(isAdmin);
 	} // Next button handler for menu creation workflow
 	function next(): void {
 		logger.debug('[HeaderEdit] Next button clicked');
@@ -292,7 +290,7 @@
 				const entry = collectionValue.value as Record<string, unknown>;
 				const coll = collection.value;
 				if (!entry || !coll?._id) {
-					showToast('No entry or collection selected.', 'warning');
+					toaster.warning({ description: 'No entry or collection selected.' });
 					return;
 				}
 				try {
@@ -306,14 +304,14 @@
 					clonedPayload.clonedFrom = entry._id;
 					const result = await createEntry(coll._id, clonedPayload);
 					if (result.success) {
-						showToast('Entry cloned successfully.', 'success');
+						toaster.success({ description: 'Entry cloned successfully.' });
 						invalidateCollectionCache(coll._id);
 						setMode('view');
 					} else {
-						showToast(result.error || 'Failed to clone entry', 'error');
+						toaster.error({ description: result.error || 'Failed to clone entry' });
 					}
 				} catch (e) {
-					showToast(`Error cloning entry: ${(e as Error).message}`, 'error');
+					toaster.error({ description: `Error cloning entry: ${(e as Error).message}` });
 				}
 			}
 		});
@@ -326,7 +324,7 @@
 </script>
 
 <header
-	class="border-secondary-600-300-token sticky top-0 z-20 flex w-full items-center justify-between overflow-visible bg-white p-2 shadow-sm dark:bg-surface-700"
+	class="border-secondary-700-300 sticky top-0 z-20 flex w-full items-center justify-between overflow-visible bg-white p-2 shadow-sm dark:bg-surface-700"
 	class:border-b={!showMore}
 >
 	<div class="flex items-center justify-start">
@@ -335,7 +333,7 @@
 				type="button"
 				onclick={() => toggleUIElement('leftSidebar', isDesktop.value ? 'full' : 'collapsed')}
 				aria-label="Toggle Sidebar"
-				class="preset-ghost-surface btn-icon mt-1"
+				class="preset-ghost-surface-500 btn-icon mt-1"
 			>
 				<iconify-icon icon="mingcute:menu-fill" width="24"></iconify-icon>
 			</button>
@@ -345,7 +343,9 @@
 			onclick={saveData}
 			aria-label="Save"
 			class={`btn-icon mt-1 ${
-				!isFormValid || !canWrite ? 'preset-filled-surface cursor-not-allowed opacity-50' : 'preset-ghost-surface hover:preset-filled-surface'
+				!isFormValid || !canWrite
+					? 'preset-filled-surface-500 cursor-not-allowed opacity-50'
+					: 'preset-ghost-surface-500 hover:preset-filled-surface-500'
 			}`}
 			disabled={!isFormValid || !canWrite}
 		>
@@ -373,7 +373,7 @@
 						type="button"
 						onclick={saveData}
 						aria-label="Save"
-						class={`preset-filled-tertiary btn-icon dark:preset-filled-primary ` + (!isFormValid || !canWrite ? 'btn:disabled' : 'btn')}
+						class={`preset-filled-tertiary-500 btn-icon dark:preset-filled-primary-500 ` + (!isFormValid || !canWrite ? 'btn:disabled' : 'btn')}
 						disabled={!isFormValid || !canWrite}
 					>
 						<iconify-icon icon="material-symbols:save" width="24" class="text-white"></iconify-icon>
@@ -385,7 +385,7 @@
 					type="button"
 					onclick={() => (showMore = !showMore)}
 					aria-label="Hide extra actions"
-					class="preset-filled-tertiary btn-icon text-white"
+					class="preset-filled-tertiary-500 btn-icon text-white"
 				>
 					<iconify-icon icon="material-symbols:filter-list-rounded" width="30"></iconify-icon>
 				</button>
@@ -396,7 +396,12 @@
 
 				{#if ['edit', 'create'].includes(mode.value)}
 					{#if shouldHideNextButton}
-						<button type="button" onclick={next} class="preset-filled-primary btn-icon dark:preset-filled-primary lg:hidden" aria-label="Next">
+						<button
+							type="button"
+							onclick={next}
+							class="preset-filled-primary-500 btn-icon dark:preset-filled-primary-500 lg:hidden"
+							aria-label="Next"
+						>
 							<iconify-icon icon="carbon:next-filled" width="24" class="text-white"></iconify-icon>
 						</button>
 					{/if}
@@ -404,7 +409,8 @@
 						<button
 							type="button"
 							onclick={saveData}
-							class={`preset-filled-tertiary btn-icon dark:preset-filled-primary lg:hidden ` + (!isFormValid || !canWrite ? 'btn:disabled' : 'btn')}
+							class={`preset-filled-tertiary-500 btn-icon dark:preset-filled-primary-500 lg:hidden ` +
+								(!isFormValid || !canWrite ? 'btn:disabled' : 'btn')}
 							aria-label="Save entry"
 							disabled={!isFormValid || !canWrite}
 						>
@@ -412,7 +418,7 @@
 						</button>
 					{/if}
 				{/if}
-				<button type="button" onclick={() => (showMore = !showMore)} aria-label="Show more actions" class="preset-ghost-surface btn-icon">
+				<button type="button" onclick={() => (showMore = !showMore)} aria-label="Show more actions" class="preset-ghost-surface-500 btn-icon">
 					<iconify-icon icon="material-symbols:filter-list-rounded" width="30"></iconify-icon>
 				</button>
 			{/if}
@@ -423,7 +429,7 @@
 		{/if}
 
 		{#if !headerActionButton.value}
-			<button type="button" onclick={handleCancel} aria-label="Cancel" class="preset-ghost-surface btn-icon">
+			<button type="button" onclick={handleCancel} aria-label="Cancel" class="preset-ghost-surface-500 btn-icon">
 				<iconify-icon icon="material-symbols:close" width="24"></iconify-icon>
 			</button>
 		{/if}
@@ -496,7 +502,7 @@
 				<input
 					type="datetime-local"
 					bind:value={createdAtDate}
-					class="preset-filled-surface w-full p-2 text-left text-sm"
+					class="preset-filled-surface-500 w-full p-2 text-left text-sm"
 					aria-label="Set creation date"
 				/>
 			</div>

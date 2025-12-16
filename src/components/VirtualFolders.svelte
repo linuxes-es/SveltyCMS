@@ -27,7 +27,7 @@
 -->
 
 <script lang="ts">
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 	import { logger } from '@utils/logger';
 	import { onMount } from 'svelte';
 	// Stores
@@ -77,7 +77,7 @@
 		} catch (err) {
 			const message = err instanceof Error ? err.message : String(err);
 			error = message;
-			showToast('Error fetching folders: ' + message, 'error');
+			toaster.error({ description: 'Error fetching folders: ' + message });
 			folders = [];
 		} finally {
 			isLoading = false;
@@ -105,7 +105,7 @@
 
 			const result = await response.json();
 			if (result.success) {
-				showToast('Folder created successfully', 'success');
+				toaster.success({ description: 'Folder created successfully' });
 				newFolderName = '';
 				await fetchVirtualFolders();
 			} else {
@@ -114,7 +114,7 @@
 		} catch (err) {
 			const message = err instanceof Error ? err.message : String(err);
 			error = message;
-			showToast('Error creating folder: ' + message, 'error');
+			toaster.error({ description: 'Error creating folder: ' + message });
 		} finally {
 			isLoading = false;
 		}
@@ -131,14 +131,14 @@
 			const result = await response.json();
 
 			if (result.success) {
-				showToast('Folder updated successfully', 'success');
+				toaster.success({ description: 'Folder updated successfully' });
 				await fetchVirtualFolders();
 			} else {
 				throw new Error(result.error || 'Failed to update folder');
 			}
 		} catch (error) {
 			logger.error('Error updating folder:', error);
-			showToast('Error updating folder', 'error');
+			toaster.error({ description: 'Error updating folder' });
 		}
 	}
 
@@ -153,14 +153,14 @@
 			const result = await response.json();
 
 			if (result.success) {
-				showToast('Folder deleted successfully', 'success');
+				toaster.success({ description: 'Folder deleted successfully' });
 				await fetchVirtualFolders();
 			} else {
 				throw new Error(result.error || 'Failed to delete folder');
 			}
 		} catch (error) {
 			logger.error('Error deleting folder:', error);
-			showToast('Error deleting folder', 'error');
+			toaster.error({ description: 'Error deleting folder' });
 		}
 	}
 
@@ -203,7 +203,7 @@
 			href="/"
 			onclick={handleReturnToCollections}
 			aria-label="Return to Collections"
-			class="btn mt-2 flex-col bg-surface-400 uppercase text-white hover:!bg-surface-300 dark:bg-surface-500"
+			class="btn mt-2 flex-col bg-surface-400 uppercase text-white hover:bg-surface-300! dark:bg-surface-500"
 			data-sveltekit-preload-data="hover"
 		>
 			<iconify-icon icon="bi:collection" width="24" class="text-error-500"></iconify-icon>
@@ -219,14 +219,14 @@
 	{:else if error}
 		<!-- Error State -->
 		<div class="w-full pt-4 text-center">
-			<p class="preset-outline-error btn w-full text-sm">{error}</p>
+			<p class="preset-outlined-error-500 btn w-full text-sm">{error}</p>
 		</div>
 	{:else if folders.length > 0}
 		<div class="relative flex flex-wrap">
 			{#each folders.filter((f) => !currentFolder || f.parentId === currentFolder?._id) as folder (folder._id)}
 				{#if uiStateManager.uiState.value.leftSidebar === 'full'}
 					<!-- Sidebar Expanded -->
-					<div class="nowrap preset-outline-surface flex w-full">
+					<div class="nowrap preset-outlined-surface-500 flex w-full">
 						<a
 							href={`/mediagallery?folderId=${folder._id}`}
 							onclick={handleMobileSidebarClose}
@@ -241,7 +241,7 @@
 				{:else}
 					<!-- Sidebar Collapsed -->
 					<div
-						class="nowrap mt-2 flex w-full flex-col items-center rounded bg-surface-400 uppercase text-white hover:!bg-surface-300 dark:bg-surface-500"
+						class="nowrap mt-2 flex w-full flex-col items-center rounded bg-surface-400 uppercase text-white hover:bg-surface-300! dark:bg-surface-500"
 					>
 						<a
 							href={`/mediagallery?folderId=${folder._id}`}
@@ -260,7 +260,7 @@
 	{:else}
 		<!-- No Folders Found Message -->
 		<div class="w-full pt-4 text-center">
-			<p class="preset-outline-secondary btn w-full text-sm text-warning-500">No folders</p>
+			<p class="preset-outlined-secondary-500 btn w-full text-sm text-warning-500">No folders</p>
 		</div>
 	{/if}
 </div>

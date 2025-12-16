@@ -44,7 +44,7 @@ Values form StatusTypes
 						: value === StatusTypes.test
 							? 'gradient-error'
 							: value === StatusTypes.draft
-								? 'preset-ghost text-surface-900-50-token'
+								? 'preset-ghost text-surface-950-50'
 								: value === StatusTypes.archive
 									? 'bg-surface-600 text-white'
 									: 'badge'}"

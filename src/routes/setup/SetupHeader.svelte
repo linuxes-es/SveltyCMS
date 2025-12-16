@@ -35,7 +35,7 @@ Displays logo, site name, language selector, and theme toggle.
 				<img src="/SveltyCMS_Logo.svg" alt="SveltyCMS Logo" class="h-12 w-auto" />
 			</a>
 			<h1 class="text-xl font-bold leading-tight sm:text-2xl lg:text-3xl">
-				<a href="https://github.com/SveltyCMS/SveltyCMS" target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-primary-500">
+				<a href="https://github.com/SveltyCMS/SveltyCMS" target="_blank" rel="noopener noreferrer" class="transition-colors">
 					<SiteName {siteName} highlight="CMS" />
 				</a>
 			</h1>

@@ -17,7 +17,7 @@
 -->
 
 <script lang="ts">
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 	import { logger } from '@utils/logger';
 
 	let remoteUrls: string[] = $state([]);
@@ -31,7 +31,7 @@
 
 	async function uploadRemoteUrls() {
 		if (remoteUrls.length === 0) {
-			showToast('No URLs entered for upload', 'warning');
+			toaster.warning({ description: 'No URLs entered for upload' });
 			return;
 		}
 
@@ -51,14 +51,14 @@
 			const result = await response.json();
 
 			if (result.success) {
-				showToast('URLs uploaded successfully', 'success');
+				toaster.success({ description: 'URLs uploaded successfully' });
 				remoteUrls = []; // Clear the remote URLs array after successful upload
 			} else {
 				throw Error(result.error || 'Upload failed');
 			}
 		} catch (error) {
 			logger.error('Error uploading URLs:', error);
-			showToast('Error uploading URLs: ' + (error instanceof Error ? error.message : 'Unknown error'), 'error');
+			toaster.error({ description: 'Error uploading URLs: ' + (error instanceof Error ? error.message : 'Unknown error') });
 		}
 	}
 </script>
@@ -72,5 +72,5 @@
 		oninput={handleRemoteUrlInput}
 	></textarea>
 	<!-- Upload Button -->
-	<button class="preset-filled-tertiary btn mt-2 dark:preset-filled-primary" onclick={uploadRemoteUrls}> Upload URLs </button>
+	<button class="preset-filled-tertiary-500 btn mt-2 dark:preset-filled-primary-500" onclick={uploadRemoteUrls}> Upload URLs </button>
 </div>

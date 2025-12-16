@@ -26,8 +26,7 @@ Key features:
 	import type { MediaImage, MediaBase } from '@utils/media/mediaModels';
 
 	// Skeleton
-	import { popup } from '@skeletonlabs/skeleton-svelte';
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 
 	// Svelte transitions
 	import { scale } from 'svelte/transition';
@@ -64,7 +63,7 @@ Key features:
 		if (!mediaId) return;
 
 		isTagging[mediaId] = true;
-		showToast('Generating AI tags...', 'info', 2000);
+		toaster.info({ description: 'Generating AI tags...' });
 
 		try {
 			const response = await fetch('/api/media/ai-tag', {
@@ -85,10 +84,10 @@ Key features:
 				filteredFiles[index] = result.data;
 			}
 
-			showToast(result.message || 'AI tags generated!', 'success');
+			toaster.success({ description: result.message || 'AI tags generated!' });
 		} catch (err) {
 			logger.error('Failed to generate AI tags', err);
-			showToast(err instanceof Error ? err.message : 'An error occurred.', 'error');
+			toaster.error({ description: err instanceof Error ? err.message : 'An error occurred.' });
 		} finally {
 			isTagging[mediaId] = false;
 		}
@@ -123,10 +122,10 @@ Key features:
 				filteredFiles[index] = result.data;
 			}
 
-			showToast('Tags saved successfully!', 'success');
+			toaster.success({ description: 'Tags saved successfully!' });
 		} catch (err) {
 			logger.error('Failed to save tags', err);
-			showToast(err instanceof Error ? err.message : 'An error occurred.', 'error');
+			toaster.error({ description: err instanceof Error ? err.message : 'An error occurred.' });
 		}
 	}
 
@@ -157,7 +156,7 @@ Key features:
 			// Data updated on server - parent component will refresh
 		} catch (err) {
 			logger.error('Failed to remove tag', err);
-			showToast(err instanceof Error ? err.message : 'An error occurred.', 'error');
+			toaster.error({ description: err instanceof Error ? err.message : 'An error occurred.' });
 		}
 	}
 
@@ -189,7 +188,7 @@ Key features:
 			editingTag = null;
 		} catch (err) {
 			logger.error('Failed to edit tag', err);
-			showToast(err instanceof Error ? err.message : 'An error occurred.', 'error');
+			toaster.error({ description: err instanceof Error ? err.message : 'An error occurred.' });
 		}
 	}
 
@@ -220,10 +219,10 @@ Key features:
 
 			// Data updated on server - parent component will refresh
 			newTagInput[mediaId] = '';
-			showToast('Tag added!', 'success');
+			toaster.success({ description: 'Tag added!' });
 		} catch (err) {
 			logger.error('Failed to add tag', err);
-			showToast(err instanceof Error ? err.message : 'An error occurred.', 'error');
+			toaster.error({ description: err instanceof Error ? err.message : 'An error occurred.' });
 		}
 	}
 
@@ -260,7 +259,7 @@ Key features:
 		} catch (err) {
 			console.error('Edit tag error:', err);
 			logger.error('Failed to edit tag', err);
-			showToast(err instanceof Error ? err.message : 'An error occurred.', 'error');
+			toaster.error({ description: err instanceof Error ? err.message : 'An error occurred.' });
 		}
 	}
 
@@ -291,7 +290,7 @@ Key features:
 			// Data updated on server - parent component will refresh
 		} catch (err) {
 			logger.error('Failed to remove tag', err);
-			showToast(err instanceof Error ? err.message : 'An error occurred.', 'error');
+			toaster.error({ description: err instanceof Error ? err.message : 'An error occurred.' });
 		}
 	}
 
@@ -388,7 +387,7 @@ Key features:
 						isSelectionMode = !isSelectionMode;
 						selectedFiles = new Set();
 					}}
-					class="preset-ghost-surface btn btn-sm"
+					class="preset-ghost-surface-500 btn btn-sm"
 					aria-label="Toggle selection mode"
 				>
 					<iconify-icon icon={isSelectionMode ? 'mdi:close' : 'mdi:checkbox-multiple-marked'} width="20"></iconify-icon>
@@ -396,11 +395,11 @@ Key features:
 				</button>
 
 				{#if isSelectionMode}
-					<button onclick={selectAll} class="preset-ghost-surface btn btn-sm">
+					<button onclick={selectAll} class="preset-ghost-surface-500 btn btn-sm">
 						<iconify-icon icon="mdi:select-all" width="20"></iconify-icon>
 						Select All
 					</button>
-					<button onclick={deselectAll} class="preset-ghost-surface btn btn-sm">
+					<button onclick={deselectAll} class="preset-ghost-surface-500 btn btn-sm">
 						<iconify-icon icon="mdi:select-off" width="20"></iconify-icon>
 						Deselect All
 					</button>
@@ -410,7 +409,7 @@ Key features:
 			{#if selectedFiles.size > 0}
 				<div class="flex items-center gap-2">
 					<span class="text-sm">{selectedFiles.size} selected</span>
-					<button onclick={handleBulkDelete} class="preset-filled-error btn btn-sm">
+					<button onclick={handleBulkDelete} class="preset-filled-error-500 btn btn-sm">
 						<iconify-icon icon="mdi:delete" width="20"></iconify-icon>
 						Delete Selected
 					</button>
@@ -444,78 +443,65 @@ Key features:
 				{/if}
 
 				<header class="m-2 flex w-auto items-center justify-between">
-					<button
-						use:popup={{
-							event: 'click',
-							target: `FileInfo-${index}`,
-							placement: 'right'
-						}}
-						aria-label="File Info"
-						class="btn-icon"
-					>
+					<button aria-label="File Info" class="btn-icon" title="File Info">
 						<iconify-icon icon="raphael:info" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
 					</button>
-
-					<div class="card preset-filled z-50 min-w-[250px] p-2" data-popup="FileInfo-{index}">
-						<table class="table-hover w-full table-auto">
-							<thead class="text-tertiary-500">
-								<tr class="divide-x divide-preset-400 border-b-2 border-surface-400 text-center">
-									<th class="text-left">Format</th>
-									<th class="">Pixel</th>
-									<th class="">Size</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#if 'width' in file && file.width && 'height' in file && file.height}
-									<tr><td class="font-semibold">Dimensions:</td><td>{file.width}x{file.height}</td></tr>
+					<table class=" w-full table-auto">
+						<thead class="text-tertiary-500">
+							<tr class="divide-x divide-preset-400 border-b-2 border-surface-400 text-center">
+								<th class="text-left">Format</th>
+								<th class="">Pixel</th>
+								<th class="">Size</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#if 'width' in file && file.width && 'height' in file && file.height}
+								<tr><td class="font-semibold">Dimensions:</td><td>{file.width}x{file.height}</td></tr>
+							{/if}
+							{#each Object.keys(getThumbnails(file)) as size (size)}
+								{@const thumbnail = getThumbnail(file, size)}
+								{#if thumbnail}
+									<tr
+										class="divide-x divide-preset-400 border-b border-surface-400 last:border-b-0 {size === gridSize
+											? 'bg-primary-50 dark:bg-primary-900/20'
+											: ''}"
+										onclick={(e) => {
+											e.preventDefault();
+											if (size === 'tiny' || size === 'small' || size === 'medium' || size === 'large') {
+												onsizechange({
+													size: size === 'tiny' ? 'small' : size === 'small' ? 'medium' : size === 'medium' ? 'large' : 'tiny',
+													type: 'grid'
+												});
+											}
+										}}
+									>
+										<td class="font-bold text-tertiary-500"
+											>{size}
+											{#if size === gridSize}
+												<span class="ml-1 text-xs text-primary-500">(active)</span>
+											{/if}
+										</td>
+										<td class="pr-1 text-right">
+											{#if thumbnail.width && thumbnail.height}
+												{thumbnail.width}x{thumbnail.height}
+											{:else}
+												N/A
+											{/if}
+										</td>
+										<td class="text-right">
+											{#if thumbnail.size}
+												{formatBytes(thumbnail.size)}
+											{:else if size === 'original' && file.size}
+												{formatBytes(file.size)}
+											{:else}
+												N/A
+											{/if}
+										</td>
+									</tr>
 								{/if}
-								{#each Object.keys(getThumbnails(file)) as size (size)}
-									{@const thumbnail = getThumbnail(file, size)}
-									{#if thumbnail}
-										<tr
-											class="divide-x divide-preset-400 border-b border-surface-400 last:border-b-0 {size === gridSize
-												? 'bg-primary-50 dark:bg-primary-900/20'
-												: ''}"
-											onclick={(e) => {
-												e.preventDefault();
-												if (size === 'tiny' || size === 'small' || size === 'medium' || size === 'large') {
-													onsizechange({
-														size: size === 'tiny' ? 'small' : size === 'small' ? 'medium' : size === 'medium' ? 'large' : 'tiny',
-														type: 'grid'
-													});
-												}
-											}}
-										>
-											<td class="font-bold text-tertiary-500"
-												>{size}
-												{#if size === gridSize}
-													<span class="ml-1 text-xs text-primary-500">(active)</span>
-												{/if}
-											</td>
-											<td class="pr-1 text-right">
-												{#if thumbnail.width && thumbnail.height}
-													{thumbnail.width}x{thumbnail.height}
-												{:else}
-													N/A
-												{/if}
-											</td>
-											<td class="text-right">
-												{#if thumbnail.size}
-													{formatBytes(thumbnail.size)}
-												{:else if size === 'original' && file.size}
-													{formatBytes(file.size)}
-												{:else}
-													N/A
-												{/if}
-											</td>
-										</tr>
-									{/if}
-								{/each}
-							</tbody>
-						</table>
-						<div class="bg-surface-100-800-token arrow"></div>
-					</div>
-
+							{/each}
+						</tbody>
+					</table>
 					{#if file.type === 'image'}
 						<button
 							onclick={() => {
@@ -644,7 +630,7 @@ Key features:
 													/>
 												{:else}
 													<span
-														class="badge preset-filled-primary flex items-center gap-1 text-xs cursor-pointer hover:ring-2 hover:ring-primary-300"
+														class="badge preset-filled-primary-500 flex items-center gap-1 text-xs cursor-pointer hover:ring-2 hover:ring-primary-300"
 														onclick={(e) => {
 															e.stopPropagation();
 															editingTag = { fileId, tagIndex, value: tag };
@@ -699,7 +685,7 @@ Key features:
 													e.stopPropagation();
 													addManualTag(file as MediaImage);
 												}}
-												class="btn btn-sm preset-ghost-primary"
+												class="btn btn-sm preset-ghost-primary-500"
 												title="Add tag"
 											>
 												<iconify-icon icon="mdi:plus" width="16"></iconify-icon>
@@ -711,7 +697,7 @@ Key features:
 												e.stopPropagation();
 												saveAITags(file as MediaImage);
 											}}
-											class="btn btn-sm preset-filled-success mt-2 w-full"
+											class="btn btn-sm preset-filled-success-500 mt-2 w-full"
 										>
 											<iconify-icon icon="mdi:check" width="16"></iconify-icon>
 											Save Tags
@@ -758,7 +744,7 @@ Key features:
 													/>
 												{:else}
 													<span
-														class="badge preset-filled-success flex items-center gap-1 text-xs cursor-pointer hover:ring-2 hover:ring-success-300"
+														class="badge preset-filled-success-500 flex items-center gap-1 text-xs cursor-pointer hover:ring-2 hover:ring-success-300"
 														onclick={(e) => {
 															e.stopPropagation();
 															editingTag = { fileId: `saved-${fileId}`, tagIndex, value: tag };
@@ -801,7 +787,7 @@ Key features:
 					<!-- Type & Size badges -->
 					<div class="flex items-center justify-between gap-1">
 						<!-- File Type Badge -->
-						<div class="preset-ghost-tertiary badge flex items-center gap-1">
+						<div class="preset-ghost-tertiary-500 badge flex items-center gap-1">
 							<iconify-icon
 								icon={file.type === 'image'
 									? 'fa-solid:image'
@@ -819,7 +805,7 @@ Key features:
 						</div>
 
 						<!-- File Size Badge -->
-						<div class="preset-ghost-tertiary badge flex items-center gap-1">
+						<div class="preset-ghost-tertiary-500 badge flex items-center gap-1">
 							{#if file.size}
 								<span class="text-tertiary-500 dark:text-primary-500">{formatBytes(file.size)}</span>
 							{:else}

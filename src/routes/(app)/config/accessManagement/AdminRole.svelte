@@ -24,7 +24,7 @@ It provides functionality to:
 	import type { Role } from '@src/databases/auth/types';
 
 	// Components
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 
 	// ParaglideJS
 	import * as m from '@src/paraglide/messages';
@@ -85,7 +85,7 @@ It provides functionality to:
 				});
 				setRoleData(result);
 			} catch (error) {
-				showToast('Network error occurred while updating config file', 'error');
+				toaster.error({ description: 'Network error occurred while updating config file' });
 			}
 			notification = 'Admin role changed. Click "Save" at the top to apply changes.';
 		} catch (err) {
@@ -130,10 +130,10 @@ It provides functionality to:
 			</p>
 			<div class="mt-4 flex justify-between">
 				<!-- Cancel -->
-				<button onclick={cancelChanges} class="preset-filled-secondary btn"> {m.button_cancel()} </button>
+				<button onclick={cancelChanges} class="preset-filled-secondary-500 btn"> {m.button_cancel()} </button>
 
 				<!-- Save -->
-				<button onclick={saveAdminRole} class="preset-filled-tertiary btn" disabled={isSaving}>
+				<button onclick={saveAdminRole} class="preset-filled-tertiary-500 btn" disabled={isSaving}>
 					{#if isSaving}
 						Saving...
 					{:else}

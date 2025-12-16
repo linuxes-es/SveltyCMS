@@ -1,3 +1,4 @@
+// src/utils/media/api.ts
 import { logger } from '@utils/logger';
 
 export async function updateMediaMetadata(id: string, metadataPatch: Record<string, unknown>) {

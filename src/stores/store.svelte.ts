@@ -6,6 +6,7 @@
 import type { Locale } from '@src/paraglide/runtime';
 import { publicEnv } from '@src/stores/globalSettings.svelte';
 import { SvelteSet } from 'svelte/reactivity';
+import { createToaster } from '@skeletonlabs/skeleton-svelte';
 
 // --- Helper Functions & Interfaces ---
 
@@ -766,3 +767,6 @@ function createDataChangeStore() {
 }
 
 export const dataChangeStore = createDataChangeStore();
+
+// Skeleton Toaster Singleton
+export const toaster = createToaster();

@@ -24,11 +24,10 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 	import { storeListboxValue } from '@stores/store.svelte';
 
 	// Skeleton
-	import { Listbox } from '@skeletonlabs/skeleton-svelte';
-	import { popup, type PopupSettings } from '@utils/popup';
-	import { showToast } from '@utils/toast';
-	// Use dialogState directly
-	import { dialogState } from '@utils/dialogState.svelte';
+	import { Menu } from '@skeletonlabs/skeleton-svelte';
+	import { toaster } from '@stores/store.svelte';
+	// Use modalState directly
+	import { modalState, showConfirm } from '@utils/modalState.svelte';
 
 	import ModalEditForm from './ModalEditForm.svelte';
 	import ModalEditToken from './ModalEditToken.svelte';
@@ -159,13 +158,6 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 		return '90d'; // Max available option
 	}
 
-	const Combobox: PopupSettings = {
-		event: 'click',
-		target: 'Combobox',
-		placement: 'bottom-end',
-		closeQuery: '.listbox-item'
-	};
-
 	// Unified batch endpoints for consistent API design
 	const actionConfig = $derived({
 		edit: {
@@ -225,7 +217,7 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 			endpoint: () => (type === 'user' ? '/api/user/batch' : '/api/token/batch'),
 			method: () => 'POST',
 			toastMessage: () => `${type === 'user' ? 'Users' : 'Tokens'} Deleted`,
-			toastBackground: 'preset-filled-success'
+			toastBackground: 'preset-filled-success-500'
 		},
 		block: {
 			buttonClass: 'gradient-pink',
@@ -264,7 +256,7 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 			endpoint: () => (type === 'user' ? '/api/user/batch' : '/api/token/batch'),
 			method: () => 'POST',
 			toastMessage: () => `${type === 'user' ? 'Users' : 'Tokens'} Blocked`,
-			toastBackground: 'preset-filled-success'
+			toastBackground: 'preset-filled-success-500'
 		},
 		unblock: {
 			buttonClass: 'gradient-yellow',
@@ -303,18 +295,9 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 			endpoint: () => (type === 'user' ? '/api/user/batch' : '/api/token/batch'),
 			method: () => 'POST',
 			toastMessage: () => `${type === 'user' ? 'Users' : 'Tokens'} Unblocked`,
-			toastBackground: 'preset-filled-success'
+			toastBackground: 'preset-filled-success-500'
 		}
 	});
-
-	interface ModalResponse {
-		username?: string;
-		email?: string;
-		role?: string;
-		token?: string;
-		user_id?: string;
-		_changes?: string[];
-	}
 
 	async function executeBatchAction(action: ActionType, config: any) {
 		try {
@@ -358,7 +341,7 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 			// Generate smart toast message based on what actually changed
 			let toastMessage = data.message || config.toastMessage();
 
-			showToast(toastMessage, 'success');
+			toaster.success({ description: toastMessage });
 
 			// Dispatch token update event for parent component to handle local state updates
 			if (type === 'token' && (action === 'block' || action === 'unblock' || action === 'delete')) {
@@ -372,24 +355,24 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 		} catch (error) {
 			logger.error(`Error during action '${action}' for type '${type}':`, error);
 			const errorMessage = error instanceof Error ? error.message : `An unknown error occurred.`;
-			showToast(errorMessage, 'error');
+			toaster.error({ description: errorMessage });
 		}
 	}
 
 	async function handleAction(action: ActionType) {
 		if (isDisabled) {
-			showToast(`Please select ${type}(s) to ${action}`, 'error');
+			toaster.error({ description: `Please select ${type}(s) to ${action}` });
 			return;
 		}
 
 		// Check if delete is disabled for users
 		if (action === 'delete' && isDeleteDisabled) {
-			showToast('Cannot delete the last user in the system', 'error');
+			toaster.error({ description: 'Cannot delete the last user in the system' });
 			return;
 		}
 
 		if (action === 'edit' && isMultipleSelected) {
-			showToast(`Please select only one ${type} to edit`, 'error');
+			toaster.error({ description: `Please select only one ${type} to edit` });
 			return;
 		}
 
@@ -397,10 +380,10 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 		if (!availableActions.includes(action)) {
 			const currentBlockState = blockState;
 			if (currentBlockState() === 'all-blocked' && action === 'block') {
-				showToast('All selected items are already blocked', 'warning');
+				toaster.warning({ description: 'All selected items are already blocked' });
 				return;
 			} else if (currentBlockState() === 'all-unblocked' && action === 'unblock') {
-				showToast('All selected items are already unblocked', 'warning');
+				toaster.warning({ description: 'All selected items are already unblocked' });
 				return;
 			}
 		}
@@ -409,7 +392,7 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 		if (action === 'edit' && type === 'token') {
 			const tokenData = isToken(safeSelectedRows[0]) ? safeSelectedRows[0] : undefined;
 			if (!tokenData?.token) {
-				showToast('Invalid token data selected', 'error');
+				toaster.error({ description: 'Invalid token data selected' });
 				return;
 			}
 		}
@@ -420,45 +403,39 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 		if (isEdit) {
 			// Component Dialog
 			if (type === 'user') {
-				dialogState.showComponent({
-					component: ModalEditForm,
-					props: {
-						isGivenData: true,
-						username: isUser(safeSelectedRows[0]) ? ((safeSelectedRows[0] as User).username ?? null) : null,
-						email: safeSelectedRows[0].email,
-						role: safeSelectedRows[0].role,
-						user_id: (safeSelectedRows[0] as User)._id,
-						title: config.modalTitle(),
-						body: config.modalBody() // Pass body if ModalEditForm supports it
-					}
+				modalState.trigger(ModalEditForm as any, {
+					isGivenData: true,
+					username: isUser(safeSelectedRows[0]) ? ((safeSelectedRows[0] as User).username ?? null) : null,
+					email: safeSelectedRows[0].email,
+					role: safeSelectedRows[0].role,
+					user_id: (safeSelectedRows[0] as User)._id,
+					title: config.modalTitle(),
+					body: config.modalBody() // Pass body if ModalEditForm supports it
 				});
 			} else {
-				dialogState.showComponent({
-					component: ModalEditToken,
-					props: {
-						token: (safeSelectedRows[0] as Token).token,
-						email: safeSelectedRows[0].email,
-						role: safeSelectedRows[0].role,
-						user_id: (safeSelectedRows[0] as Token).user_id,
-						expires: convertDateToExpiresFormat((safeSelectedRows[0] as Token).expires),
-						title: config.modalTitle(),
-						body: config.modalBody(),
-						onClose: (res: any) => {
-							if (res && res.success) {
-								onTokenUpdate();
-							}
+				modalState.trigger(ModalEditToken as any, {
+					token: (safeSelectedRows[0] as Token).token,
+					email: safeSelectedRows[0].email,
+					role: safeSelectedRows[0].role,
+					user_id: (safeSelectedRows[0] as Token).user_id,
+					expires: convertDateToExpiresFormat((safeSelectedRows[0] as Token).expires),
+					title: config.modalTitle(),
+					body: config.modalBody(),
+					onClose: (res: any) => {
+						if (res && res.success) {
+							onTokenUpdate();
 						}
 					}
 				});
 			}
 		} else {
 			// Confirm Dialog
-			dialogState.showConfirm({
+			showConfirm({
 				title: config.modalTitle(),
 				body: config.modalBody(),
 				onConfirm: async () => {
 					await executeBatchAction(action, config);
-					dialogState.close();
+					modalState.close();
 				}
 			});
 		}
@@ -471,7 +448,7 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 </script>
 
 <!-- Multibutton group-->
-<div class="btn-group relative rounded-md text-white" role="group" aria-label="{type} management actions">
+<div class=" relative rounded-md text-white" role="group" aria-label="{type} management actions">
 	<!-- Action button  -->
 	<button
 		type="button"
@@ -488,38 +465,25 @@ Manages actions (edit, delete, block, unblock) with debounced submissions.
 	<span class="border border-white" aria-hidden="true"></span>
 
 	<!-- Dropdown button -->
-	<button
-		use:popup={Combobox}
-		aria-label="Open actions menu"
-		aria-haspopup="true"
-		aria-expanded="false"
-		class="divide-x-2 rounded-r-sm bg-surface-500 hover:!bg-surface-800"
-	>
-		<iconify-icon icon="mdi:chevron-down" width="20" class="text-white" role="presentation" aria-hidden="true"></iconify-icon>
-	</button>
-</div>
-
-<!-- Dropdown/Listbox -->
-<div class="overflow-hidden card z-10 w-48 rounded-sm bg-surface-500 text-white" data-popup="Combobox" role="menu" aria-label="Available actions">
-	<Listbox
-		value={[listboxValue]}
-		onValueChange={(details) => {
-			const selected = details.value[0] as ActionType;
-			if (selected) {
-				handleAction(selected);
-			}
-		}}
-		class="divide-y text-black"
-	>
-		{#each filteredActions as action (action)}
-			{@const actionKey = action as ActionType}
-			{@const config = actionConfig[actionKey]}
-			<Listbox.Item value={action} class="hover:bg-surface-700 hover:text-white">
-				{#snippet lead()}
+	<Menu>
+		<Menu.Trigger>
+			<button aria-label="Open actions menu" class="divide-x-2 rounded-r-sm bg-surface-500 hover:bg-surface-800!">
+				<iconify-icon icon="mdi:chevron-down" width="20" class="text-white" role="presentation" aria-hidden="true"></iconify-icon>
+			</button>
+		</Menu.Trigger>
+		<Menu.Content class="z-10 w-48 rounded-sm bg-surface-500 text-black divide-y">
+			{#each filteredActions as action (action)}
+				{@const actionKey = action as ActionType}
+				{@const config = actionConfig[actionKey]}
+				<Menu.Item
+					value={action}
+					class="w-full text-left px-4 py-2 hover:bg-surface-700 hover:text-white flex items-center cursor-pointer"
+					onclick={() => handleAction(action as ActionType)}
+				>
 					<iconify-icon icon={config.iconValue} width="20" class="mr-1" role="presentation" aria-hidden="true"></iconify-icon>
-				{/snippet}
-				{action}
-			</Listbox.Item>
-		{/each}
-	</Listbox>
+					{action}
+				</Menu.Item>
+			{/each}
+		</Menu.Content>
+	</Menu>
 </div>

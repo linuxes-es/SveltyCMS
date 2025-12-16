@@ -60,7 +60,7 @@ Controls for the FineTune tool, including a dropdown for adjustment type and a s
 	<!-- Value & Reset -->
 	<div class="flex w-20 items-center justify-end gap-2">
 		<span class="text-sm font-medium">{value}</span>
-		<button onclick={onReset} class="btn-icon btn-icon-sm preset-ghost-surface" title="Reset this adjustment">
+		<button onclick={onReset} class="btn-icon btn-icon-sm preset-ghost-surface-500" title="Reset this adjustment">
 			<iconify-icon icon="mdi:restore"></iconify-icon>
 		</button>
 	</div>
@@ -68,7 +68,7 @@ Controls for the FineTune tool, including a dropdown for adjustment type and a s
 	<div class="h-6 w-px bg-surface-300 dark:bg-surface-600"></div>
 
 	<!-- Apply -->
-	<button class="btn preset-filled-success" onclick={onApply}>
+	<button class="btn preset-filled-success-500" onclick={onApply}>
 		<iconify-icon icon="mdi:check"></iconify-icon>
 		<span>Apply</span>
 	</button>

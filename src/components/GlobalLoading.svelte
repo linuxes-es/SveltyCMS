@@ -106,10 +106,10 @@
 	aria-label="{loadingText.top} - {loadingText.bottom}"
 >
 	<!-- Animated loading circles -->
-	<div class="loader loader-1" aria-hidden="true"></div>
-	<div class="loader loader-2" aria-hidden="true"></div>
-	<div class="loader loader-3" aria-hidden="true"></div>
-	<div class="loader loader-4" aria-hidden="true"></div>
+	<div class="loader loader-1 border-error-500 h-[150px] w-[150px] border-[7px]" aria-hidden="true"></div>
+	<div class="loader loader-2 border-success-400 h-[170px] w-[170px] border-[6px]" aria-hidden="true"></div>
+	<div class="loader loader-3 border-tertiary-400 h-[190px] w-[190px] border-[5px]" aria-hidden="true"></div>
+	<div class="loader loader-4 border-surface-400 h-[210px] w-[210px] border-4" aria-hidden="true"></div>
 
 	<!-- Loading content -->
 	<div class="absolute flex flex-col items-center justify-center space-y-2 rounded-full bg-transparent p-6 text-center">
@@ -129,30 +129,32 @@
 	/* Base loader styles */
 	.loader {
 		position: absolute;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+		z-index: 99999999;
 		border-radius: 50%;
 		border-style: solid;
-		border-left-color: transparent;
-		border-right-color: transparent;
+		border-color: transparent;
+		box-sizing: border-box;
 	}
 
 	/* Individual loader animations */
 	.loader-1 {
-		@apply border-error-500 h-[150px] w-[150px] border-[7px];
 		animation: rotate 3s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
 	}
 
 	.loader-2 {
-		@apply border-success-400 h-[170px] w-[170px] border-[6px];
 		animation: rotate-reverse 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
 	}
 
 	.loader-3 {
-		@apply border-tertiary-400 h-[190px] w-[190px] border-[5px];
 		animation: rotate 3s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
 	}
 
 	.loader-4 {
-		@apply border-surface-400 h-[210px] w-[210px] border-[4px];
 		animation: rotate-reverse 3s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
 	}
 

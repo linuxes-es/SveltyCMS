@@ -22,10 +22,6 @@ Features:
 	// Components
 	import InputSwitch from '@components/system/builder/InputSwitch.svelte';
 
-	// Skeleton Stores
-	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
-	const modalStore = getModalStore();
-
 	// Stores
 	import { targetWidget } from '@src/stores/collectionStore.svelte';
 
@@ -64,11 +60,11 @@ Features:
 	}
 </script>
 
-{#if $modalStore[0]}
+{#if targetWidget.value}
 	<!-- Default section -->
 	<div class="mb-2 border-y text-center text-primary-500">
 		<div class="text-xl text-primary-500">
-			Widget <span class="font-bold text-black dark:text-white">{$modalStore[0].value.widget.Name}</span> Input Options
+			Widget <span class="font-bold text-black dark:text-white">{(targetWidget.value.widget as any).Name}</span> Input Options
 		</div>
 		<div class="my-1 text-xs text-error-500">* Required</div>
 	</div>

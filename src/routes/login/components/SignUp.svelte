@@ -3,7 +3,18 @@
 @component
 **SignUP with optional OAuth support**
 
-Features:
+### Props
+- `active`: boolean
+- `isInviteFlow`: boolean
+- `token`: string
+- `invitedEmail`: string
+- `inviteError`: string
+- `onClick`: () => void
+- `onPointerEnter`: () => void
+- `onBack`: () => void
+- `firstCollectionPath`: string
+
+### Features:
  - Dynamic language selection with a debounced input field or dropdown for multiple languages
  - Demo mode support with auto-reset timer 
  - Initial form display adapts based on environment variables (`SEASON`, `DEMO`, and `firstUserExists`)
@@ -242,8 +253,8 @@ Features:
 					<SveltyCMSLogo className="w-14" fill="red" />
 
 					<h1 class="text-3xl font-bold text-white lg:text-4xl">
-						<div class="text-xs text-surface-300"><SiteName highlight="CMS" /></div>
-						<div class="break-words lg:-mt-1">
+						<div class="text-xs text-surface-200"><SiteName highlight="CMS" /></div>
+						<div class="wrap-break-word lg:-mt-1">
 							{#if isInviteFlow}
 								{m.form_signup()}
 								<span class="text-2xl text-primary-500 sm:text-3xl">: Complete Invitation</span>
@@ -259,7 +270,7 @@ Features:
 				<div class="-mt-2 flex items-center justify-end gap-2 text-right text-xs text-error-500">
 					{m.form_required()}
 
-					<button onclick={handleBack} aria-label="Back" class="preset-outline-secondary btn-icon">
+					<button onclick={handleBack} aria-label="Back" class="btn-icon rounded-full preset-outlined-secondary-500">
 						<iconify-icon icon="ri:arrow-left-line" width="20" class="text-white"></iconify-icon>
 					</button>
 				</div>
@@ -410,7 +421,7 @@ Features:
 
 					{#if !showOAuth}
 						<!-- Email SignIn only -->
-						<button type="submit" class="preset-filled btn mt-4 uppercase" aria-label={isInviteFlow ? 'Accept Invitation' : m.form_signup()}>
+						<button type="submit" class="btn bg-white text-black mt-4 uppercase" aria-label={isInviteFlow ? 'Accept Invitation' : m.form_signup()}>
 							{isInviteFlow ? 'Accept Invitation & Create Account' : m.form_signup()}
 							{#if isSubmitting || isRedirecting}<img src="/Spinner.svg" alt="" aria-hidden="true" decoding="async" class="ml-4 h-6" />{/if}
 						</button>
@@ -460,7 +471,7 @@ Features:
 	section {
 		--width: 0%;
 		background: #242728;
-		grow: 1;
+		flex-grow: 1;
 		width: var(--width);
 		transition: 0.4s;
 	}

@@ -45,7 +45,7 @@
 	import ThemeToggle from '@components/ThemeToggle.svelte';
 
 	// Skeleton components
-	import { Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton-svelte';
+	import { Avatar, Portal, Tooltip } from '@skeletonlabs/skeleton-svelte';
 
 	// Language and messaging
 	import * as m from '@src/paraglide/messages';
@@ -98,15 +98,6 @@
 		if (src.startsWith('data:')) return src;
 		return `${src}?t=${AVATAR_CACHE_BUSTER}`;
 	});
-
-	// Tooltip configurations
-	const tooltips = {
-		user: { event: 'hover', target: 'User', placement: 'right' } as PopupSettings,
-		github: { event: 'hover', target: 'Github', placement: 'right' } as PopupSettings,
-		signOut: { event: 'hover', target: 'SignOutButton', placement: 'right' } as PopupSettings,
-		config: { event: 'hover', target: 'Config', placement: 'right' } as PopupSettings,
-		systemLanguage: { event: 'hover', target: 'SystemLanguage', placement: 'right' } as PopupSettings
-	};
 
 	// Helper functions
 	function isMobile(): boolean {
@@ -221,12 +212,12 @@
 	}
 </script>
 
-<div class="flex h-full w-full flex-col justify-between">
+<div class="flex h-full w-full flex-col justify-between bg-white dark:bg-surface-900 border-r border-surface-200 dark:border-surface-700">
 	<!-- Corporate Identity -->
 	{#if isSidebarFull}
-		<a href="/" aria-label="SveltyCMS Logo" class="flex pt-2 !no-underline" data-sveltekit-preload-data="hover">
+		<a href="/" aria-label="SveltyCMS Logo" class="flex pt-2 no-underline!" data-sveltekit-preload-data="hover">
 			<SveltyCMSLogo fill="red" className="h-9 -ml-2" />
-			<span class="text-token relative text-2xl font-bold">
+			<span class="base-font-color relative text-2xl font-bold">
 				<SiteName highlight="CMS" />
 			</span>
 		</a>
@@ -236,12 +227,12 @@
 				type="button"
 				onclick={() => toggleUIElement('leftSidebar', 'hidden')}
 				aria-label="Close Sidebar"
-				class="preset-ghost-surface btn-icon mt-1"
+				class="preset-ghost-surface-500 btn-icon mt-1"
 			>
 				<iconify-icon icon="mingcute:menu-fill" width="24"></iconify-icon>
 			</button>
 
-			<a href="/" aria-label="SveltyCMS Logo" class="flex justify-center pt-2 !no-underline">
+			<a href="/" aria-label="SveltyCMS Logo" class="flex justify-center pt-2 no-underline!">
 				<SveltyCMSLogo fill="red" className="h-9 -ml-2 ltr:mr-2 rtl:ml-2 rtl:-mr-2" />
 			</a>
 		</div>
@@ -253,7 +244,7 @@
 		onclick={toggleSidebar}
 		aria-label={isSidebarFull ? 'Collapse Sidebar' : 'Expand Sidebar'}
 		aria-expanded={isSidebarFull}
-		class="absolute top-2 z-20 flex h-10 w-10 items-center justify-center !rounded-full border border-black p-0 dark:border-black ltr:-right-4 rtl:-left-4"
+		class="absolute top-2 z-20 flex h-10 w-10 items-center justify-center rounded-full! border border-black p-0 dark:border-black ltr:-right-4 rtl:-left-4"
 	>
 		<iconify-icon
 			icon="bi:arrow-left-circle-fill"
@@ -312,106 +303,126 @@
 	<div class="mb-2 mt-auto">
 		<div class="mx-1 mb-1 border-0 border-t border-surface-500"></div>
 
-		<div class="grid items-center justify-center {isSidebarFull ? 'grid-cols-3 grid-rows-3' : 'grid-cols-2 grid-rows-2'}">
+		<div class="grid items-center justify-center gap-1 {isSidebarFull ? 'grid-cols-3' : 'grid-cols-2'}">
 			<!-- Avatar -->
 			<div class="{isSidebarFull ? 'order-1 row-span-2' : 'order-1'} flex justify-center">
-				<button
-					use:popup={tooltips.user}
-					onclick={handleUserClick}
-					onkeypress={(e) => handleKeyPress(e, handleUserClick)}
-					aria-label="User Profile"
-					class="{isSidebarFull
-						? 'flex w-full flex-col items-center justify-center rounded-lg p-2 hover:bg-surface-500 hover:text-white'
-						: 'btn-icon flex-col items-center justify-center'} relative text-center !no-underline md:row-span-2"
-				>
-					<Avatar src={avatarUrl} alt="User Avatar" initials="AV" class="mx-auto {isSidebarFull ? 'w-[40px]' : 'w-[35px]'}" />
-					{#if isSidebarFull && user?.username}
-						<div
-							class="mt-1 w-full overflow-hidden text-ellipsis whitespace-nowrap text-center text-[11px] font-medium leading-tight text-black dark:text-white"
-							title={user.username}
+				<Tooltip positioning={{ placement: 'right' }}>
+					<Tooltip.Trigger>
+						<button
+							onclick={handleUserClick}
+							onkeypress={(e) => handleKeyPress(e, handleUserClick)}
+							aria-label="User Profile"
+							class="{isSidebarFull
+								? 'flex w-full flex-col items-center justify-center rounded-lg p-2 hover:bg-surface-500 hover:text-white'
+								: 'btn-icon flex-col items-center justify-center'} relative text-center no-underline! md:row-span-2"
 						>
-							{user.username}
-						</div>
-					{/if}
-				</button>
-
-				<div class="card preset-filled z-50 max-w-sm p-2" data-popup="User">
-					{m.applayout_userprofile()}
-					<div class="preset-filled arrow"></div>
-				</div>
+							<Avatar class="mx-auto {isSidebarFull ? 'w-[40px]' : 'w-[35px]'}">
+								<Avatar.Image src={avatarUrl} alt="User Avatar" />
+								<Avatar.Fallback>AV</Avatar.Fallback>
+							</Avatar>
+							{#if isSidebarFull && user?.username}
+								<div
+									class="mt-1 w-full overflow-hidden text-ellipsis whitespace-nowrap text-center text-[11px] font-medium leading-tight text-black dark:text-white"
+									title={user.username}
+								>
+									{user.username}
+								</div>
+							{/if}
+						</button>
+					</Tooltip.Trigger>
+					<Portal>
+						<Tooltip.Positioner>
+							<Tooltip.Content class="card preset-filled-surface-900 z-50 rounded-md p-2 text-sm text-white shadow-xl">
+								{m.applayout_userprofile()}
+								<Tooltip.Arrow class="[--arrow-size:--spacing(2)]">
+									<Tooltip.ArrowTip />
+								</Tooltip.Arrow>
+							</Tooltip.Content>
+						</Tooltip.Positioner>
+					</Portal>
+				</Tooltip>
 			</div>
 
 			<!-- Language Selector -->
-			<div class={isSidebarFull ? 'order-3 row-span-2 mx-auto pb-4' : 'order-2 mx-auto'} use:popup={tooltips.systemLanguage}>
-				<div class="language-selector relative" bind:this={dropdownRef}>
-					{#if showLanguageDropdown}
-						<button
-							class="preset-filled-surface btn-icon flex items-center justify-between uppercase text-white {isSidebarFull
-								? 'px-2.5 py-2'
-								: 'px-1.5 py-0'}"
-							onclick={toggleLanguageDropdown}
-							aria-label="Select language"
-							data-testid="language-selector"
-							aria-expanded={isDropdownOpen}
-						>
-							<span>{languageTag}</span>
-							<svg
-								class="h-4 w-4 transition-transform {isDropdownOpen ? 'rotate-180' : ''}"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-								aria-hidden="true"
-							>
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-							</svg>
-						</button>
+			<div class={isSidebarFull ? 'order-3 row-span-2 mx-auto pb-4' : 'order-2 mx-auto'}>
+				<Tooltip positioning={{ placement: 'right' }}>
+					<Tooltip.Trigger>
+						<div class="language-selector relative" bind:this={dropdownRef}>
+							{#if showLanguageDropdown}
+								<button
+									class="preset-filled-surface-500 btn-icon flex items-center justify-between uppercase text-white {isSidebarFull
+										? 'px-2.5 py-2'
+										: 'px-1.5 py-0'}"
+									onclick={toggleLanguageDropdown}
+									aria-label="Select language"
+									data-testid="language-selector"
+									aria-expanded={isDropdownOpen}
+								>
+									<span>{languageTag}</span>
+									<svg
+										class="h-4 w-4 transition-transform {isDropdownOpen ? 'rotate-180' : ''}"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+										aria-hidden="true"
+									>
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+									</svg>
+								</button>
 
-						{#if isDropdownOpen}
-							<div class="absolute -top-40 left-20 z-50 mt-1 w-48 rounded-lg border bg-surface-700 shadow-lg">
-								<div class="border-b border-surface-600 p-2">
-									<input
-										type="text"
-										bind:value={searchQuery}
-										placeholder="Search language..."
-										class="w-full rounded-md bg-surface-800 px-3 py-2 text-white placeholder:text-surface-400 focus:outline-none focus:ring-2"
-										aria-label="Search languages"
-									/>
-								</div>
+								{#if isDropdownOpen}
+									<div class="absolute -top-40 left-20 z-50 mt-1 w-48 rounded-lg border bg-surface-700 shadow-lg">
+										<div class="border-b border-surface-600 p-2">
+											<input
+												type="text"
+												bind:value={searchQuery}
+												placeholder="Search language..."
+												class="w-full rounded-md bg-surface-800 px-3 py-2 text-white placeholder:text-surface-400 focus:outline-none focus:ring-2"
+												aria-label="Search languages"
+											/>
+										</div>
 
-								<div class="max-h-48 divide-y divide-preset-600 overflow-y-auto py-1">
-									{#each filteredLanguages as lang (lang)}
-										<button
-											class="flex w-full items-center justify-between px-4 py-2 text-left text-white hover:bg-surface-600 {languageTag === lang
-												? 'bg-surface-600'
-												: ''}"
-											onclick={() => handleLanguageSelection(lang)}
-										>
-											<span>{getLanguageName(lang)} ({lang.toUpperCase()})</span>
-										</button>
+										<div class="max-h-48 divide-y divide-preset-600 overflow-y-auto py-1">
+											{#each filteredLanguages as lang (lang)}
+												<button
+													class="flex w-full items-center justify-between px-4 py-2 text-left text-white hover:bg-surface-600 {languageTag === lang
+														? 'bg-surface-600'
+														: ''}"
+													onclick={() => handleLanguageSelection(lang)}
+												>
+													<span>{getLanguageName(lang)} ({lang.toUpperCase()})</span>
+												</button>
+											{/each}
+										</div>
+									</div>
+								{/if}
+							{:else}
+								<select
+									bind:value={languageTag}
+									onchange={handleLanguageSelectChange}
+									aria-label="Select language"
+									class="preset-filled-surface-500 appearance-none! rounded-full uppercase text-white {isSidebarFull
+										? 'btn-icon px-2.5 py-2'
+										: 'btn-icon-sm px-1.5 py-0'}"
+								>
+									{#each availableLanguages as lang (lang)}
+										<option value={lang}>{lang.toUpperCase()}</option>
 									{/each}
-								</div>
-							</div>
-						{/if}
-					{:else}
-						<select
-							bind:value={languageTag}
-							onchange={handleLanguageSelectChange}
-							aria-label="Select language"
-							class="preset-filled-surface !appearance-none rounded-full uppercase text-white {isSidebarFull
-								? 'btn-icon px-2.5 py-2'
-								: 'btn-icon-sm px-1.5 py-0'}"
-						>
-							{#each availableLanguages as lang (lang)}
-								<option value={lang}>{lang.toUpperCase()}</option>
-							{/each}
-						</select>
-					{/if}
-				</div>
-
-				<div class="card preset-filled z-50 max-w-sm p-2" data-popup="SystemLanguage">
-					{m.applayout_systemlanguage()}
-					<div class="preset-filled arrow"></div>
-				</div>
+								</select>
+							{/if}
+						</div>
+					</Tooltip.Trigger>
+					<Portal>
+						<Tooltip.Positioner>
+							<Tooltip.Content class="card preset-filled-surface-900 z-50 rounded-md p-2 text-sm text-white shadow-xl">
+								{m.applayout_systemlanguage()}
+								<Tooltip.Arrow class="[--arrow-size:--spacing(2)]">
+									<Tooltip.ArrowTip />
+								</Tooltip.Arrow>
+							</Tooltip.Content>
+						</Tooltip.Positioner>
+					</Portal>
+				</Tooltip>
 			</div>
 
 			<!-- Theme Toggle -->
@@ -421,38 +432,49 @@
 
 			<!-- Sign Out -->
 			<div class="order-4">
-				<button
-					use:popup={tooltips.signOut}
-					onclick={signOut}
-					type="button"
-					aria-label="Sign Out"
-					class="btn-icon hover:bg-surface-500 hover:text-white"
-				>
-					<iconify-icon icon="uil:signout" width="26"></iconify-icon>
-				</button>
-
-				<div class="card preset-filled z-50 max-w-sm p-2" data-popup="SignOutButton">
-					{m.applayout_signout()}
-					<div class="preset-filled arrow"></div>
-				</div>
+				<Tooltip positioning={{ placement: 'right' }}>
+					<Tooltip.Trigger>
+						<button onclick={signOut} type="button" aria-label="Sign Out" class="btn-icon hover:bg-surface-500 hover:text-white">
+							<iconify-icon icon="uil:signout" width="26"></iconify-icon>
+						</button>
+					</Tooltip.Trigger>
+					<Portal>
+						<Tooltip.Positioner>
+							<Tooltip.Content class="card preset-filled-surface-900 z-50 rounded-md p-2 text-sm text-white shadow-xl">
+								{m.applayout_signout()}
+								<Tooltip.Arrow class="[--arrow-size:--spacing(2)]">
+									<Tooltip.ArrowTip />
+								</Tooltip.Arrow>
+							</Tooltip.Content>
+						</Tooltip.Positioner>
+					</Portal>
+				</Tooltip>
 			</div>
 
 			<!-- Config -->
 			<div class={isSidebarFull ? 'order-5' : 'order-6'}>
-				<button
-					use:popup={tooltips.config}
-					onclick={handleConfigClick}
-					onkeypress={(e) => handleKeyPress(e, handleConfigClick)}
-					aria-label="System Configuration"
-					class="btn-icon hover:bg-surface-500 hover:text-white"
-				>
-					<iconify-icon icon="material-symbols:build-circle" width="34"></iconify-icon>
-				</button>
-
-				<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Config">
-					{m.applayout_systemconfiguration()}
-					<div class="preset-filled arrow"></div>
-				</div>
+				<Tooltip positioning={{ placement: 'right' }}>
+					<Tooltip.Trigger>
+						<button
+							onclick={handleConfigClick}
+							onkeypress={(e) => handleKeyPress(e, handleConfigClick)}
+							aria-label="System Configuration"
+							class="btn-icon hover:bg-surface-500 hover:text-white"
+						>
+							<iconify-icon icon="material-symbols:build-circle" width="34"></iconify-icon>
+						</button>
+					</Tooltip.Trigger>
+					<Portal>
+						<Tooltip.Positioner>
+							<Tooltip.Content class="card preset-filled-surface-900 z-50 rounded-md p-2 text-sm text-white shadow-xl">
+								{m.applayout_systemconfiguration()}
+								<Tooltip.Arrow class="[--arrow-size:--spacing(2)]">
+									<Tooltip.ArrowTip />
+								</Tooltip.Arrow>
+							</Tooltip.Content>
+						</Tooltip.Positioner>
+					</Portal>
+				</Tooltip>
 			</div>
 
 			<!-- Version -->
@@ -463,15 +485,15 @@
 			<!-- GitHub (only when expanded) -->
 			{#if isSidebarFull}
 				<div class="order-7">
-					<a href="https://github.com/SveltyCMS/SveltyCMS/discussions" target="_blank" rel="noopener noreferrer">
-						<button use:popup={tooltips.github} aria-label="GitHub Discussions" class="btn-icon hover:bg-surface-500 hover:text-white">
-							<iconify-icon icon="grommet-icons:github" width="30"></iconify-icon>
-						</button>
-
-						<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Github">
-							{m.applayout_githubdiscussion()}
-							<div class="preset-filled arrow"></div>
-						</div>
+					<a
+						href="https://github.com/SveltyCMS/SveltyCMS/discussions"
+						target="_blank"
+						rel="noopener noreferrer"
+						title={m.applayout_githubdiscussion()}
+						aria-label="GitHub Discussions"
+						class="btn-icon flex items-center justify-center hover:bg-surface-500 hover:text-white"
+					>
+						<iconify-icon icon="grommet-icons:github" width="30"></iconify-icon>
 					</a>
 				</div>
 			{/if}

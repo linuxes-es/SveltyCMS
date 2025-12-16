@@ -342,8 +342,7 @@ export default defineConfig((): UserConfig => {
 				showWarnings: true,
 				extensions: ['.svelte', '.ts', '.js']
 			}),
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			sveltekit() as any,
+			sveltekit(),
 			!setupComplete ? setupWizardPlugin() : cmsWatcherPlugin(),
 			paraglideVitePlugin({
 				project: './project.inlang',

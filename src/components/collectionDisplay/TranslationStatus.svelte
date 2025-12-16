@@ -455,7 +455,7 @@ FIXES:
 			<button
 				type="button"
 				onclick={toggleDropdown}
-				class="preset-outline-surface btn flex w-full items-center gap-1 p-1.5 transition-all duration-200 hover:scale-105"
+				class="preset-outlined-surface-500 btn flex w-full items-center gap-1 p-1.5 transition-all duration-200 hover:scale-105"
 				aria-haspopup="true"
 				aria-expanded={isOpen}
 				aria-controls="translation-menu"
@@ -472,9 +472,8 @@ FIXES:
 
 			<div class="mt-0.5 transition-all duration-300">
 				<Progress
-					class="preset-outline-secondary transition-all duration-300 hover:shadow-sm"
+					class="preset-outlined-secondary-500 transition-all duration-300 hover:shadow-sm"
 					value={overallPercentage}
-					meter={getProgressColor(overallPercentage)}
 					aria-label={m.translationsstatus_overall_progress({ percentage: overallPercentage })}
 				/>
 				<div class="mt-1 text-center text-xs text-tertiary-500 dark:text-primary-500">
@@ -523,9 +522,9 @@ FIXES:
 							{#if showProgress && translationProgress.value?.[lang as Locale]}
 								<div class="ml-2 flex flex-1 items-center gap-2">
 									<div class="flex-1">
-										<Progress class="transition-all duration-300" value={percentage} meter={getProgressColor(percentage)} aria-hidden="true" />
+										<Progress class="transition-all duration-300" value={percentage} aria-hidden="true" />
 									</div>
-									<span class="min-w-[2.5rem] text-right text-sm font-semibold">
+									<span class="min-w-10 text-right text-sm font-semibold">
 										{percentage}%
 									</span>
 								</div>
@@ -543,15 +542,10 @@ FIXES:
 					<div class="flex items-center justify-between gap-3">
 						{#if overallPercentage}
 							<div class="flex-1">
-								<Progress
-									class="transition-all duration-300"
-									value={overallPercentage}
-									meter={getProgressColor(overallPercentage)}
-									aria-hidden="true"
-								/>
+								<Progress class="transition-all duration-300" value={overallPercentage} aria-hidden="true" />
 							</div>
 						{/if}
-						<span class="min-w-[2.5rem] text-right text-sm font-bold {getTextColor(overallPercentage)}">
+						<span class="min-w-10 text-right text-sm font-bold {getTextColor(overallPercentage)}">
 							{overallPercentage}%
 						</span>
 					</div>

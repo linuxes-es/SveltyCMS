@@ -86,24 +86,24 @@
 	--color-primary-contrast-950: var(--color-primary-contrast-light);
 
 	/* Secondary | #757575 (Neutral Gray) */
-	--color-secondary-50: oklch(86.66% 0.05 300.15deg);
-	--color-secondary-100: oklch(78.51% 0.09 303.57deg);
-	--color-secondary-200: oklch(70.44% 0.13 304.44deg);
-	--color-secondary-300: oklch(62.83% 0.17 303.81deg);
-	--color-secondary-400: oklch(55.48% 0.2 302.75deg);
-	--color-secondary-500: oklch(49.07% 0.23 300.46deg);
-	--color-secondary-600: oklch(45.39% 0.21 299.6deg);
-	--color-secondary-700: oklch(41.75% 0.19 298.26deg);
-	--color-secondary-800: oklch(37.84% 0.17 296.27deg);
-	--color-secondary-900: oklch(34.08% 0.15 293.97deg);
-	--color-secondary-950: oklch(30.18% 0.13 291.16deg);
+	--color-secondary-50: oklch(94.91% 0 none);
+	--color-secondary-100: oklch(87.61% 0 none);
+	--color-secondary-200: oklch(80.15% 0 none);
+	--color-secondary-300: oklch(72.19% 0 none);
+	--color-secondary-400: oklch(64.34% 0 none);
+	--color-secondary-500: oklch(56.24% 0 none);
+	--color-secondary-600: oklch(49.26% 0 none);
+	--color-secondary-700: oklch(41.65% 0 none);
+	--color-secondary-800: oklch(34.07% 0 none);
+	--color-secondary-900: oklch(25.62% 0 none);
+	--color-secondary-950: oklch(16.84% 0 none);
 	--color-secondary-contrast-dark: var(--color-secondary-950);
 	--color-secondary-contrast-light: var(--color-secondary-50);
 	--color-secondary-contrast-50: var(--color-secondary-contrast-dark);
 	--color-secondary-contrast-100: var(--color-secondary-contrast-dark);
 	--color-secondary-contrast-200: var(--color-secondary-contrast-dark);
 	--color-secondary-contrast-300: var(--color-secondary-contrast-dark);
-	--color-secondary-contrast-400: var(--color-secondary-contrast-light);
+	--color-secondary-contrast-400: var(--color-secondary-contrast-dark);
 	--color-secondary-contrast-500: var(--color-secondary-contrast-light);
 	--color-secondary-contrast-600: var(--color-secondary-contrast-light);
 	--color-secondary-contrast-700: var(--color-secondary-contrast-light);
@@ -242,31 +242,8 @@
 	--color-surface-contrast-950: var(--color-surface-contrast-light);
 }
 
-/**
- * Theme-specific body styles
- * Optimized for dark mode (default for enterprise/developers)
- */
-[data-theme='sveltycms'] body {
-	height: 100%;
-	overflow: hidden;
-	background-color: white;
-}
-
-/* Dark mode - use compound selector since both .dark and data-theme are on <html> */
-html.dark[data-theme='sveltycms'] body,
-.dark [data-theme='sveltycms'] body {
-	background-color: #0a0a0a;
-}
-
-/**
- * Enhanced dark mode backgrounds for enterprise feel
- */
-[data-theme='sveltycms'] {
-	/* Dark mode surface colors - slightly warmer than pure black */
-	--body-background-color-dark: 10 10 10; /* #0a0a0a */
-	--surface-dark-100: 20 20 22; /* #141416 */
-	--surface-dark-200: 30 30 33; /* #1e1e21 */
-	--surface-dark-300: 40 40 44; /* #28282c */
+.btn {
+	padding: --spacing(2);
 }
 
 /**
@@ -275,8 +252,8 @@ html.dark[data-theme='sveltycms'] body,
  * Using :where(.dark) for dark mode to work with class on same element
  * 
  * COLOR SCHEME:
- * - Light mode: Green gradients (tertiary colors)
- * - Dark mode: Blue gradients (primary colors)
+ * - Light mode: Blue gradients (tertiary colors)
+ * - Dark mode: Green gradients (primary colors)
  */
 @layer components {
 	/* Primary Gradients - Blue in light, stays blue (for specific use cases) */
@@ -359,130 +336,4 @@ html.dark[data-theme='sveltycms'] body,
 	.dark.gradient-success {
 		background-image: linear-gradient(to bottom right, var(--color-success-700), var(--color-success-600), var(--color-success-400));
 	}
-}
-
-/* Global styles */
-html,
-body {
-	height: 100%;
-}
-
-/**
- * Dark mode overrides for form inputs
- * Fix Skeleton v4 input styling for class-based dark mode
- */
-.dark .input,
-.dark input.input,
-.dark select.input,
-.dark textarea.input,
-html.dark .input,
-html.dark input.input,
-html.dark select.input,
-html.dark textarea.input {
-	background-color: var(--color-surface-800) !important;
-	border-color: var(--color-surface-600) !important;
-	color: var(--color-surface-50) !important;
-}
-
-.dark .input::placeholder,
-html.dark .input::placeholder {
-	color: var(--color-surface-400) !important;
-}
-
-/* Light mode inputs should have white background */
-:not(.dark) .input,
-:not(.dark) input.input,
-:not(.dark) select.input,
-:not(.dark) textarea.input,
-html:not(.dark) .input,
-html:not(.dark) input.input,
-html:not(.dark) select.input,
-html:not(.dark) textarea.input {
-	background-color: white !important;
-	border-color: #e2e8f0 !important;
-	color: #1e293b !important;
-}
-
-/* Dark mode card backgrounds */
-.dark .bg-white,
-html.dark .bg-white {
-	background-color: var(--color-surface-800) !important;
-}
-
-/* Fix the setup page card in dark mode */
-.dark .border-surface-200,
-html.dark .border-surface-200 {
-	border-color: var(--color-surface-600) !important;
-}
-
-/**
- * Color scheme: Green (tertiary) in Dark mode for all accent elements
- */
-
-/* Keep CMS logo text always green */
-h1 .text-tertiary-500,
-h1 span .text-tertiary-500,
-.site-name-cms {
-	color: var(--color-tertiary-500) !important;
-}
-
-/* Dark mode: CMS name should be blue */
-.dark h1 .text-tertiary-500,
-.dark h1 span .text-tertiary-500 {
-	color: var(--color-primary-500) !important;
-}
-
-/* Keep legend checkmark green in light, blue in dark */
-.bg-tertiary-500 {
-	background-color: var(--color-tertiary-500) !important;
-}
-
-.dark .bg-tertiary-500 {
-	background-color: var(--color-primary-500) !important;
-}
-
-/* NOTE: Removed forced text-tertiary-500 override to allow dark:text-primary-500 to work properly
-   Dark mode text colors are now controlled by Tailwind utility classes:
-   - text-tertiary-500 dark:text-primary-500 = green in light, blue in dark */
-
-/* Light mode: GREEN buttons */
-html:not(.dark) .preset-filled-tertiary,
-:not(.dark) .preset-filled-tertiary {
-	background-color: var(--color-tertiary-500) !important;
-	color: white !important;
-}
-
-html:not(.dark) .preset-filled-tertiary:hover,
-:not(.dark) .preset-filled-tertiary:hover {
-	background-color: var(--color-tertiary-600) !important;
-}
-
-/* Dark mode: BLUE buttons */
-.dark .preset-filled-primary,
-html.dark .preset-filled-primary,
-.dark .preset-filled-tertiary,
-html.dark .preset-filled-tertiary {
-	background-color: var(--color-primary-500) !important;
-	color: white !important;
-}
-
-.dark .preset-filled-primary:hover,
-html.dark .preset-filled-primary:hover,
-.dark .preset-filled-tertiary:hover,
-html.dark .preset-filled-tertiary:hover {
-	background-color: var(--color-primary-400) !important;
-}
-
-/* Light mode: Green border accents */
-html:not(.dark) .border-tertiary-500,
-:not(.dark) .border-tertiary-500 {
-	border-color: var(--color-tertiary-500) !important;
-}
-
-/* Dark mode: Blue border accents */
-.dark .border-primary-500,
-html.dark .border-primary-500,
-.dark .border-tertiary-500,
-html.dark .border-tertiary-500 {
-	border-color: var(--color-primary-500) !important;
 }

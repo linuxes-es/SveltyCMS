@@ -21,29 +21,32 @@
 
 <script lang="ts">
 	// Skeleton
-	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
 	import { logger } from '@utils/logger';
 	import { untrack } from 'svelte';
-	const modalStore = getModalStore();
+	// import { modalState } from '@utils/modalState.svelte';
 
 	// ParaglideJS
 	import * as m from '@src/paraglide/messages';
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 
 	interface Props {
-		parent: {
+		parent?: {
 			type: string;
 			id?: string;
 			name?: string;
+			regionFooter?: string;
+			buttonPositive?: string;
 			[key: string]: unknown;
 		};
 		sectionName: string;
-		files?: File[]; // Initial files from parent
+		files?: File[];
 		onDelete: (file: File) => void;
 		uploadFiles: (files: File[]) => Promise<void>;
+		body?: string;
+		close?: (result?: any) => void;
 	}
 
-	const { parent, sectionName, files: initialFiles = [], onDelete, uploadFiles }: Props = $props();
+	const { sectionName, files: initialFiles = [], onDelete, uploadFiles, body, close }: Props = $props();
 
 	// Use internal state to prevent $bindable loop
 	let files = $state<File[]>([]);
@@ -164,7 +167,7 @@
 
 		// If that was the last file, just close the modal
 		if (files.length === 0) {
-			modalStore.close(); // Close the modal directly
+			close?.(); // Close the modal directly
 		}
 	}
 
@@ -211,14 +214,14 @@
 		// Clear the files array and fileSet
 		files = []; // This will also trigger the $effect cleanup, but revoking first ensures immediate removal
 		fileSet.clear();
-		modalStore.close(); // Close the modal
+		close?.(); // Close the modal
 	}
 
 	const onFormSubmit = async () => {
 		// Prevent submission if there are no files
 		if (files.length === 0) {
 			// Optionally show a message to the user
-			showToast('No files selected for upload.', 'warning');
+			toaster.warning({ description: 'No files selected for upload.' });
 			// You might want to set a warning message state here instead of just logging
 			duplicateWarning = 'No files selected for upload.'; // Reuse existing warning state for simplicity
 			return; // Stop the submission
@@ -235,102 +238,97 @@
 			// Keep the modal open and display an error message
 			// You might want a dedicated error state instead of reusing duplicateWarning
 			duplicateWarning = `Upload failed: ${error instanceof Error ? error.message : String(error)}`;
-			showToast(duplicateWarning, 'error');
+			toaster.error({ description: duplicateWarning });
 		}
 	};
 
 	// Base Classes
-	const cBase = 'border bg-surface-100-800-token w-full md:w-3/4 rounded p-4 flex flex-col justify-center items-center';
 	const cHeader = 'text-2xl font-bold text-center text-tertiary-500 dark:text-primary-500 ';
-	const cForm = 'w-full mt-3 border border-surface-500 p-2 space-y-4 rounded-container-token flex flex-col'; // Added w-full, flex, flex-col
+	const cForm = 'w-full mt-3 border border-surface-500 p-2 space-y-4 flex flex-col'; // Added w-full, flex, flex-col
 </script>
 
-{#if $modalStore[0]}
-	<div class={cBase} style="max-height: 90vh;">
-		<!-- Added max-height to outer div -->
-		<header class={cHeader}>
-			{sectionName}
-		</header>
-		<article class="hidden shrink-0 text-center sm:block">
-			{$modalStore[0]?.body ?? '(body missing)'}
-		</article>
-		<!-- Enable for debugging: -->
+<div class="modal-upload-media space-y-4 w-full flex flex-col justify-center items-center" style="max-height: 90vh;">
+	<header class={cHeader}>
+		{sectionName}
+	</header>
+	<article class="hidden shrink-0 text-center sm:block">
+		{body ?? '(body missing)'}
+	</article>
+	<!-- Enable for debugging: -->
 
-		<form id="upload-form" class="{cForm} grow overflow-hidden" onsubmit={onFormSubmit}>
-			<!-- Scrollable content area -->
-			<div class="grow overflow-y-auto">
-				<!-- Show all media as cards with delete buttons on hover -->
-				<div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-					{#each files as file (file.name + file.size)}
-						{@const fileKey = `${file.name}-${file.size}`}
-						{@const previewUrl = objectUrls.get(fileKey)}
-						{@const iconName = getFileIcon(file)}
-						<div class="card card-hover relative">
-							<!-- Delete buttons -->
-							<div class="absolute right-0 top-2 flex w-full justify-end px-2 opacity-0 hover:opacity-100">
-								<button type="button" onclick={() => handleDelete(file)} aria-label="Delete" class="preset-ghost-surface btn-icon">
-									<iconify-icon icon="material-symbols:delete" width="24" class="text-error-500"></iconify-icon>
-								</button>
-							</div>
-
-							<!-- Media preview -->
-							<div class="card-header flex h-32 flex-col items-center justify-center">
-								{#if file.type?.startsWith('image/') && previewUrl}
-									<img src={previewUrl} alt={file.name} class="max-h-full max-w-full object-contain" />
-								{:else if file.type?.startsWith('audio/') && previewUrl}
-									<!-- Audio player -->
-									<audio controls class="max-h-full max-w-full">
-										<source src={previewUrl} type={file.type} />
-										Your browser does not support the audio element.
-									</audio>
-								{:else}
-									<!-- Fallback Icon -->
-									<iconify-icon icon={iconName} width="80" height="80"></iconify-icon>
-								{/if}
-							</div>
-
-							<!-- Media Filename -->
-							<div
-								class="label mt-1 overflow-hidden overflow-ellipsis whitespace-normal bg-gray-100 p-2 text-center text-tertiary-500 dark:bg-surface-600 dark:text-primary-500"
-							>
-								{file.name}
-							</div>
-
-							<!-- Media Type & Size -->
-							<div class="flex grow items-center justify-between p-1 dark:bg-surface-700">
-								<div class="preset-ghost-tertiary badge flex items-center gap-1">
-									<!-- Media Icon & type  -->
-									<iconify-icon icon={iconName} width="16" height="16"></iconify-icon>
-									<span class="text-tertiary-500 dark:text-primary-500">{formatMimeType(file.type)}</span>
-								</div>
-								<!-- File Size in KB -->
-								<p class="preset-ghost-tertiary badge flex items-center gap-1">
-									<span class="text-tertiary-500 dark:text-primary-500">{(file.size / 1024).toFixed(2)}</span>
-									KB
-								</p>
-							</div>
+	<form id="upload-form" class="{cForm} grow overflow-hidden" onsubmit={onFormSubmit}>
+		<!-- Scrollable content area -->
+		<div class="grow overflow-y-auto">
+			<!-- Show all media as cards with delete buttons on hover -->
+			<div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+				{#each files as file (file.name + file.size)}
+					{@const fileKey = `${file.name}-${file.size}`}
+					{@const previewUrl = objectUrls.get(fileKey)}
+					{@const iconName = getFileIcon(file)}
+					<div class="card card-hover relative">
+						<!-- Delete buttons -->
+						<div class="absolute right-0 top-2 flex w-full justify-end px-2 opacity-0 hover:opacity-100">
+							<button type="button" onclick={() => handleDelete(file)} aria-label="Delete" class="preset-ghost-surface-500 btn-icon">
+								<iconify-icon icon="material-symbols:delete" width="24" class="text-error-500"></iconify-icon>
+							</button>
 						</div>
-					{/each}
-				</div>
 
-				<!-- File input for adding more files -->
-				<div class="flex w-full items-center justify-between border-t border-surface-400">
-					<div class="mb-4 mt-2 flex w-full items-center gap-2">
-						<label for="file-input" class="text-nowrap text-tertiary-500 dark:text-primary-500">Add more files:</label>
-						<input id="file-input" type="file" class="input" onchange={handleFileInputChange} />
+						<!-- Media preview -->
+						<div class="card-header flex h-32 flex-col items-center justify-center">
+							{#if file.type?.startsWith('image/') && previewUrl}
+								<img src={previewUrl} alt={file.name} class="max-h-full max-w-full object-contain" />
+							{:else if file.type?.startsWith('audio/') && previewUrl}
+								<!-- Audio player -->
+								<audio controls class="max-h-full max-w-full">
+									<source src={previewUrl} type={file.type} />
+									Your browser does not support the audio element.
+								</audio>
+							{:else}
+								<!-- Fallback Icon -->
+								<iconify-icon icon={iconName} width="80" height="80"></iconify-icon>
+							{/if}
+						</div>
+
+						<!-- Media Filename -->
+						<div
+							class="label mt-1 overflow-hidden overflow-ellipsis whitespace-normal bg-gray-100 p-2 text-center text-tertiary-500 dark:bg-surface-600 dark:text-primary-500"
+						>
+							{file.name}
+						</div>
+
+						<!-- Media Type & Size -->
+						<div class="flex grow items-center justify-between p-1 dark:bg-surface-700">
+							<div class="preset-ghost-tertiary-500 badge flex items-center gap-1">
+								<!-- Media Icon & type  -->
+								<iconify-icon icon={iconName} width="16" height="16"></iconify-icon>
+								<span class="text-tertiary-500 dark:text-primary-500">{formatMimeType(file.type)}</span>
+							</div>
+							<!-- File Size in KB -->
+							<p class="preset-ghost-tertiary-500 badge flex items-center gap-1">
+								<span class="text-tertiary-500 dark:text-primary-500">{(file.size / 1024).toFixed(2)}</span>
+								KB
+							</p>
+						</div>
 					</div>
-					{#if duplicateWarning}
-						<p class="preset-filled-error rounded px-2 py-4">{duplicateWarning}</p>
-					{/if}
-				</div>
+				{/each}
 			</div>
-		</form>
 
-		<footer class="modal-footer m-4 flex w-full justify-between {parent.regionFooter} shrink-0">
-			<button type="button" class="preset-outline-secondary btn" onclick={handleCancel}>{m.button_cancel()}</button>
-			<button type="submit" form="upload-form" class="preset-filled-tertiary btn dark:preset-filled-primary {parent.buttonPositive}"
-				>{m.button_save()}</button
-			>
-		</footer>
-	</div>
-{/if}
+			<!-- File input for adding more files -->
+			<div class="flex w-full items-center justify-between border-t border-surface-400">
+				<div class="mb-4 mt-2 flex w-full items-center gap-2">
+					<label for="file-input" class="text-nowrap text-tertiary-500 dark:text-primary-500">Add more files:</label>
+					<input id="file-input" type="file" class="input" onchange={handleFileInputChange} />
+				</div>
+				{#if duplicateWarning}
+					<p class="preset-filled-error-500 rounded px-2 py-4">{duplicateWarning}</p>
+				{/if}
+			</div>
+		</div>
+	</form>
+
+	<footer class="modal-footer m-4 flex w-full justify-between pt-4 border-t border-surface-500/20 shrink-0">
+		<button type="button" class="preset-outlined-secondary-500 btn" onclick={handleCancel}>{m.button_cancel()}</button>
+		<button type="submit" form="upload-form" class="preset-filled-tertiary-500 btn dark:preset-filled-primary-500">{m.button_save()}</button>
+	</footer>
+</div>
+```

@@ -62,8 +62,8 @@ Features:
 	import EntryListMultiButton from './EntryList_MultiButton.svelte';
 	import TranslationStatus from './TranslationStatus.svelte';
 	// Skeleton
-	import { showDeleteConfirm, showStatusChangeConfirm } from '@utils/modalUtils';
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
+	import { showStatusChangeConfirm, showDeleteConfirm } from '@utils/modalState.svelte';
 	// Svelte-dnd-action
 	import { dndzone } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
@@ -518,7 +518,7 @@ Features:
 	setModifyEntry(async (status?: keyof typeof statusMap): Promise<void> => {
 		const selectedIds = getSelectedIds();
 		if (!selectedIds.length) {
-			showToast('No entries selected', 'warning');
+			toaster.warning({ description: 'No entries selected' });
 			return;
 		}
 
@@ -589,7 +589,7 @@ Features:
 	const onDelete = (isPermanent = false) => {
 		const selectedIds = getSelectedIds();
 		if (!selectedIds.length) {
-			showToast('No entries selected', 'warning');
+			toaster.warning({ description: 'No entries selected' });
 			return;
 		}
 
@@ -609,7 +609,7 @@ Features:
 							if (collId) {
 								const result = await batchDeleteEntries(collId, selectedIds);
 								if (result.success) {
-									showToast(`${selectedIds.length} ${selectedIds.length === 1 ? 'entry' : 'entries'} deleted successfully`, 'success');
+									toaster.success({ description: `${selectedIds.length} ${selectedIds.length === 1 ? 'entry' : 'entries'} deleted successfully` });
 								} else {
 									throw new Error('Batch delete failed');
 								}
@@ -625,14 +625,14 @@ Features:
 									return Promise.resolve();
 								})
 							);
-							showToast(`${selectedIds.length} ${selectedIds.length === 1 ? 'entry' : 'entries'} deleted successfully`, 'success');
+							toaster.success({ description: `${selectedIds.length} ${selectedIds.length === 1 ? 'entry' : 'entries'} deleted successfully` });
 						}
 					} else {
 						await setEntriesStatus(selectedIds, StatusTypes.archive, () => {});
 					}
 					onActionSuccess();
 				} catch (error) {
-					showToast(`Failed to ${actionVerb} entries: ${(error as Error).message}`, 'error');
+					toaster.error({ description: `Failed to ${actionVerb} entries: ${(error as Error).message}` });
 				}
 			}
 		});
@@ -690,7 +690,7 @@ Features:
 					onkeydown={() => {}}
 					onclick={() => toggleUIElement('leftSidebar', isDesktop.value ? 'full' : 'collapsed')}
 					aria-label="Open Sidebar"
-					class="preset-ghost-surface btn-icon mt-1"
+					class="preset-ghost-surface-500 btn-icon mt-1"
 				>
 					<iconify-icon icon="mingcute:menu-fill" width="24"></iconify-icon>
 				</button>
@@ -726,7 +726,7 @@ Features:
 				type="button"
 				onkeydown={() => {}}
 				onclick={() => (expand = !expand)}
-				class="preset-ghost-surface btn-icon p-1 sm:hidden"
+				class="preset-ghost-surface-500 btn-icon p-1 sm:hidden"
 				aria-label="Expand/Collapse Filters"
 			>
 				<iconify-icon icon="material-symbols:filter-list-rounded" width="30"> </iconify-icon>
@@ -783,7 +783,7 @@ Features:
 						{m.entrylist_all()}
 					</label>
 
-					<button class="preset-ghost-surface btn btn-sm" onclick={resetViewSettings}>
+					<button class="preset-ghost-surface-500 btn btn-sm" onclick={resetViewSettings}>
 						<iconify-icon icon="material-symbols-light:device-reset" width="20" class="mr-1 text-tertiary-500"></iconify-icon>
 						Reset View
 					</button>
@@ -796,7 +796,9 @@ Features:
 				>
 					{#each displayTableHeaders as header (header.id)}
 						<button
-							class="chip {header.visible ? 'preset-filled-secondary' : 'preset-ghost-secondary'} mr-1 flex items-center justify-center text-xs"
+							class="chip {header.visible
+								? 'preset-filled-secondary-500'
+								: 'preset-ghost-secondary-500'} mr-1 flex items-center justify-center text-xs"
 							animate:flip={{ duration: flipDurationMs }}
 							onclick={() => handleColumnVisibilityToggle(header)}
 						>
@@ -812,7 +814,7 @@ Features:
 	{#if tableData.length > 0}
 		<div class="table-container max-h-[calc(100dvh)] overflow-auto">
 			<table
-				class="table table-interactive table-hover {entryListPaginationSettings.density === 'compact'
+				class="table table-interactive {entryListPaginationSettings.density === 'compact'
 					? 'table-compact'
 					: entryListPaginationSettings.density === 'comfortable'
 						? 'table-comfortable'
@@ -832,7 +834,7 @@ Features:
 											entryListPaginationSettings.filters = clearedFilters;
 										}}
 										aria-label="Clear All Filters"
-										class="preset-ghost-surface btn-icon btn-sm"
+										class="preset-ghost-surface-500 btn-icon btn-sm"
 									>
 										<iconify-icon icon="material-symbols:close" width="18"></iconify-icon>
 									</button>
@@ -947,14 +949,14 @@ Features:
 																if (!collId) return;
 																const result = await updateEntryStatus(collId, entry._id, String(nextStatus));
 																if (result.success) {
-																	showToast(`Entry status updated to ${nextStatus}`, 'success');
+																	toaster.success({ description: `Entry status updated to ${nextStatus}` });
 																	onActionSuccess();
 																} else {
-																	showToast(result.error || 'Failed to update entry status', 'error');
+																	toaster.error({ description: result.error || 'Failed to update entry status' });
 																}
 															} catch (error) {
 																logger.error('Error updating entry status:', error);
-																showToast('An error occurred while updating entry status', 'error');
+																toaster.error({ description: 'An error occurred while updating entry status' });
 															}
 														}
 													});

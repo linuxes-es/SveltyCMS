@@ -1,49 +1,55 @@
+<!--
+@files src/components/system/DialogManager.svelte
+@component 
+**DialogManager for handling modals**
+
+### Props
+- `modalState` 
+
+### Features
+- Handles opening and closing modals
+- Closes modals on backdrop click or Escape key press	
+
+-->
+
 <script lang="ts">
-	import { Modal } from '@skeletonlabs/skeleton-svelte';
-	import { dialogState } from '@utils/dialogState.svelte';
+	import { Dialog } from '@skeletonlabs/skeleton-svelte';
+	import { modalState } from '@utils/modalState.svelte';
 
-	let open = $state(false);
-
-	$effect(() => {
-		open = dialogState.open;
-	});
-
-	function handleOpenChange(e: any) {
-		dialogState.open = e.open;
+	// Handle closing via the Store
+	function onClose() {
+		modalState.close();
 	}
 
-	function handleClose() {
-		dialogState.close();
-	}
-
-	function handleConfirm() {
-		dialogState.submit(true);
+	// Handle open change from the Dialog (e.g. clicking backdrop or pressing Escape)
+	function onOpenChange(details: { open: boolean }) {
+		if (!details.open) onClose();
 	}
 </script>
 
-<Modal.Root {open} onOpenChange={handleOpenChange}>
-	<Modal.Content>
-		<Modal.Header>
-			<h2 class="h3">{dialogState.title}</h2>
-		</Modal.Header>
-		<Modal.Body>
-			{#if dialogState.type === 'component' && dialogState.component}
-				<dialogState.component {...dialogState.props} />
-			{:else if dialogState.type === 'image'}
-				<img src={dialogState.image} alt={dialogState.title} class="max-h-[80vh] w-auto rounded-lg" />
-			{:else}
-				<p>{dialogState.body}</p>
-			{/if}
-		</Modal.Body>
-		{#if dialogState.type !== 'component' && dialogState.type !== 'image'}
-			<Modal.Footer>
-				<button type="button" class="btn preset-tonal" onclick={handleClose}>
-					{dialogState.type === 'confirm' ? 'Cancel' : 'Close'}
-				</button>
-				{#if dialogState.type === 'confirm'}
-					<button type="button" class="btn preset-filled-primary" onclick={handleConfirm}>Confirm</button>
+{#if modalState.isOpen && modalState.active}
+	<Dialog open={true} {onOpenChange}>
+		<Dialog.Backdrop class="fixed inset-0 z-50 bg-black/40 transition-opacity" />
+
+		<Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center p-4">
+			<Dialog.Content class="card w-full space-y-4 p-4 shadow-xl bg-surface-100-900 {modalState.active.props?.modalClasses ?? 'max-w-lg'}">
+				{#if modalState.active.props?.title}
+					<div class="flex items-center justify-between">
+						<Dialog.Title class="h3 font-bold">
+							{modalState.active.props.title}
+						</Dialog.Title>
+						<Dialog.CloseTrigger class="btn-icon btn-sm variant-soft hover:variant-filled">
+							<iconify-icon icon="mingcute:close-fill"></iconify-icon>
+						</Dialog.CloseTrigger>
+					</div>
 				{/if}
-			</Modal.Footer>
-		{/if}
-	</Modal.Content>
-</Modal.Root>
+
+				{#if modalState.active.component}
+					<div class="modal-body">
+						<svelte:component this={modalState.active.component} {...modalState.active.props || {}} close={modalState.close.bind(modalState)} />
+					</div>
+				{/if}
+			</Dialog.Content>
+		</Dialog.Positioner>
+	</Dialog>
+{/if}

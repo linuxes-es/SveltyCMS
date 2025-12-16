@@ -41,13 +41,15 @@ Displays a collection of media files (images, documents, audio, video) with:
 	import AdvancedSearchModal from './AdvancedSearchModal.svelte';
 	import ImageEditorModal from '@src/components/imageEditor/ImageEditorModal.svelte';
 	// Skeleton
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 	// Import types
 	import type { SystemVirtualFolder } from '@src/databases/dbInterface';
 	import type { SearchCriteria } from '@utils/media/advancedSearch';
 
 	// Initialize modal store
-	const modalStore = getModalStore();
+	// const modalStore = getModalStore();
+	import { modalState, showConfirm } from '@utils/modalState.svelte';
+	import ModalPrompt from '@components/ModalPrompt.svelte';
 
 	import type { PageData } from './$types';
 
@@ -68,7 +70,6 @@ Displays a collection of media files (images, documents, audio, video) with:
 	let isLoading = $state(false);
 
 	// Enterprise features state
-	let showAdvancedSearch = $state(false);
 	let advancedSearchCriteria: SearchCriteria | null = $state(null);
 	let showEditor = $state(false);
 	let imageToEdit = $state<MediaImage | null>(null);
@@ -249,17 +250,17 @@ Displays a collection of media files (images, documents, audio, video) with:
 		// Validate folder name
 		const trimmedName = folderName.trim();
 		if (!trimmedName) {
-			showToast('Folder name cannot be empty', 'error');
+			toaster.error({ description: 'Folder name cannot be empty' });
 			return;
 		}
 
 		if (/[\\/:"*?<>|]/.test(trimmedName)) {
-			showToast('Folder name contains invalid characters (\\ / : * ? " < > |)', 'error');
+			toaster.error({ description: 'Folder name contains invalid characters (\\ / : * ? " < > |)' });
 			return;
 		}
 
 		if (trimmedName.length > 50) {
-			showToast('Folder name must be 50 characters or less', 'error');
+			toaster.error({ description: 'Folder name must be 50 characters or less' });
 			return;
 		}
 
@@ -292,7 +293,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 					})
 				);
 
-				showToast('Folder created successfully', 'success');
+				toaster.success({ description: 'Folder created successfully' });
 			} else {
 				throw new Error(result.error || 'Failed to create folder');
 			}
@@ -304,7 +305,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 					: error instanceof Error && error.message.includes('invalid')
 						? 'Invalid folder name'
 						: 'Failed to create folder';
-			showToast(errorMessage, 'error');
+			toaster.error({ description: errorMessage });
 		} finally {
 			isLoading = false;
 			globalLoadingStore.stopLoading(loadingOperations.dataFetch);
@@ -327,7 +328,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 			}
 		} catch (error) {
 			logger.error('Error fetching updated folders:', error);
-			showToast('Failed to fetch folders', 'error');
+			toaster.error({ description: 'Failed to fetch folders' });
 			return [];
 		}
 	}
@@ -366,7 +367,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 					errorMessage = 'Network error - please check your connection';
 				}
 			}
-			showToast(errorMessage, 'error');
+			toaster.error({ description: errorMessage });
 			files = [];
 		} finally {
 			isLoading = false;
@@ -391,7 +392,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 			await fetchMediaFiles();
 		} catch (error) {
 			logger.error('Error opening folder:', error);
-			showToast('Failed to open folder', 'error');
+			toaster.error({ description: 'Failed to open folder' });
 		}
 	}
 
@@ -421,28 +422,25 @@ Displays a collection of media files (images, documents, audio, video) with:
 				? currentSystemVirtualFolder.path.join('/')
 				: currentSystemVirtualFolder.path
 			: publicEnv?.MEDIA_FOLDER || 'mediaFiles';
-		const modal: ModalSettings = {
-			type: 'prompt',
-			title: 'Add Folder',
-			body: `Creating subfolder in: <span class="text-tertiary-500 dark:text-primary-500">${currentFolderPath}</span>`,
-			response: (r: string) => {
+		modalState.trigger(
+			ModalPrompt as any,
+			{
+				title: 'Add Folder',
+				body: `Creating subfolder in: <span class="text-tertiary-500 dark:text-primary-500">${currentFolderPath}</span>`
+			},
+			(r: string) => {
 				if (r) createSystemVirtualFolder(r);
 			}
-		};
-
-		modalStore.trigger(modal);
+		);
 	}
 
 	// Handle delete image
 	async function handleDeleteImage(file: MediaBase) {
 		// Show confirmation modal
-		const modal: ModalSettings = {
-			type: 'confirm',
+		showConfirm({
 			title: 'Delete Media',
 			body: `Are you sure you want to delete "${file.filename}"? This action cannot be undone.`,
-			response: async (confirmed: boolean) => {
-				if (!confirmed) return;
-
+			onConfirm: async () => {
 				try {
 					logger.info('Delete image request:', { _id: file._id, filename: file.filename });
 
@@ -476,7 +474,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 					const success = Array.isArray(data) ? data[0]?.success : data?.success;
 
 					if (success) {
-						showToast('Media deleted successfully.', 'success');
+						toaster.success({ description: 'Media deleted successfully.' });
 
 						// Reactively remove the deleted file from the files array
 						// Svelte 5 runes will automatically update all derived state
@@ -489,24 +487,19 @@ Displays a collection of media files (images, documents, audio, video) with:
 				} catch (error) {
 					const errorMessage = error instanceof Error ? error.message : String(error);
 					logger.error('Error deleting media:', errorMessage);
-					showToast(`Error deleting media: ${errorMessage}`, 'error');
+					toaster.error({ description: `Error deleting media: ${errorMessage}` });
 				}
 			}
-		};
-
-		modalStore.trigger(modal);
+		});
 	}
 
 	// Handle bulk delete
 	async function handleBulkDelete(filesToDelete: MediaBase[]) {
 		// Show confirmation modal
-		const modal: ModalSettings = {
-			type: 'confirm',
+		showConfirm({
 			title: 'Delete Multiple Media',
 			body: `Are you sure you want to delete ${filesToDelete.length} file${filesToDelete.length > 1 ? 's' : ''}? This action cannot be undone.`,
-			response: async (confirmed: boolean) => {
-				if (!confirmed) return;
-
+			onConfirm: async () => {
 				try {
 					logger.info('Bulk delete request:', { count: filesToDelete.length });
 
@@ -549,11 +542,11 @@ Displays a collection of media files (images, documents, audio, video) with:
 
 					// Show result
 					if (failCount === 0) {
-						showToast(`Successfully deleted ${successCount} file${successCount > 1 ? 's' : ''}`, 'success');
+						toaster.success({ description: `Successfully deleted ${successCount} file${successCount > 1 ? 's' : ''}` });
 					} else if (successCount === 0) {
-						showToast(`Failed to delete ${failCount} file${failCount > 1 ? 's' : ''}`, 'error');
+						toaster.error({ description: `Failed to delete ${failCount} file${failCount > 1 ? 's' : ''}` });
 					} else {
-						showToast(`Deleted ${successCount} file${successCount > 1 ? 's' : ''}, ${failCount} failed`, 'warning');
+						toaster.warning({ description: `Deleted ${successCount} file${successCount > 1 ? 's' : ''}, ${failCount} failed` });
 					}
 
 					// Reactively remove only successfully deleted files
@@ -564,12 +557,10 @@ Displays a collection of media files (images, documents, audio, video) with:
 				} catch (error) {
 					const errorMessage = error instanceof Error ? error.message : String(error);
 					logger.error('Error in bulk delete:', errorMessage);
-					showToast(`Error deleting media: ${errorMessage}`, 'error');
+					toaster.error({ description: `Error deleting media: ${errorMessage}` });
 				}
 			}
-		};
-
-		modalStore.trigger(modal);
+		});
 	}
 
 	// Handle advanced search
@@ -588,12 +579,14 @@ Displays a collection of media files (images, documents, audio, video) with:
 			// Update files with search results
 			files = result.files;
 			advancedSearchCriteria = criteria;
-			showAdvancedSearch = false;
+			modalState.close(); // Close the modal
 
-			showToast(`Found ${result.totalCount} file${result.totalCount === 1 ? '' : 's'} matching ${result.matchedCriteria.length} criteria`, 'success');
+			toaster.success({
+				description: `Found ${result.totalCount} file${result.totalCount === 1 ? '' : 's'} matching ${result.matchedCriteria.length} criteria`
+			});
 		} catch (error) {
 			logger.error('Advanced search error:', error);
-			showToast('Search failed. Please try again.', 'error');
+			toaster.error({ description: 'Search failed. Please try again.' });
 		}
 	}
 
@@ -603,14 +596,36 @@ Displays a collection of media files (images, documents, audio, video) with:
 		fetchMediaFiles(); // Reload all files
 	}
 
-	function handleEditImage(image: MediaImage) {
-		imageToEdit = image;
-		showEditor = true;
+	function openAdvancedSearch() {
+		modalState.trigger(AdvancedSearchModal as any, {
+			files,
+			onSearch: handleAdvancedSearch,
+			modalClasses: 'max-w-4xl max-h-[95vh]' // Override default width
+		});
+	}
+
+	/*
+	-------------------------------------------------------------------------
+	IMAGE EDITOR HANDLERS (Via Modal)
+	-------------------------------------------------------------------------
+	*/
+
+	// Define state for Image Editor
+	// let imageToEdit: any = $state(null); // No longer needed
+	// let showEditor = $state(false);      // No longer needed
+
+	async function handleEditImage(detail: any) {
+		const file = detail.file;
+		// Trigger the modal via modalState
+		modalState.trigger(ImageEditorModal as any, {
+			image: file,
+			onsave: handleEditorSave,
+			modalClasses: 'w-full max-w-7xl'
+		});
 	}
 
 	async function handleEditorSave(detail: { dataURL: string; file: File }) {
 		const { file } = detail;
-		showEditor = false;
 
 		const formData = new FormData();
 		formData.append('files', file);
@@ -621,13 +636,13 @@ Displays a collection of media files (images, documents, audio, video) with:
 				body: formData
 			});
 			if (response.ok) {
-				showToast('Image saved successfully!', 'success');
+				toaster.success({ description: 'Image saved successfully!' });
 				fetchMediaFiles(true); // Force refresh
 			} else {
 				throw new Error('Failed to save edited image');
 			}
 		} catch (err) {
-			showToast('Error saving image', 'error');
+			toaster.error({ description: 'Error saving image' });
 			logger.error('Error saving edited image', err);
 		}
 	}
@@ -656,7 +671,13 @@ Displays a collection of media files (images, documents, audio, video) with:
 	<!-- Row 2: Action Buttons -->
 	<div class="lgd:mt-0 flex items-center justify-center gap-4 lg:justify-end">
 		<!-- Add folder with loading state -->
-		<button onclick={openAddFolderModal} aria-label="Add folder" class="preset-filled-tertiary btn gap-2" disabled={isLoading} aria-busy={isLoading}>
+		<button
+			onclick={openAddFolderModal}
+			aria-label="Add folder"
+			class="preset-filled-tertiary-500 btn gap-2"
+			disabled={isLoading}
+			aria-busy={isLoading}
+		>
 			<iconify-icon icon="mdi:folder-add-outline" width="24"></iconify-icon>
 			{isLoading ? 'Creating...' : 'Add folder'}
 			{#if isLoading}
@@ -665,7 +686,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 		</button>
 
 		<!-- Add Media -->
-		<button onclick={() => handleMobileNavigation('/mediagallery/uploadMedia')} aria-label="Add Media" class="preset-filled-primary btn gap-2">
+		<button onclick={() => handleMobileNavigation('/mediagallery/uploadMedia')} aria-label="Add Media" class="preset-filled-primary-500 btn gap-2">
 			<iconify-icon icon="carbon:add-filled" width="24"></iconify-icon>
 			Add Media
 		</button>
@@ -682,13 +703,13 @@ Displays a collection of media files (images, documents, audio, video) with:
 			<div class="input-group input-group-divider grid flex-1 grid-cols-[auto_1fr_auto]">
 				<input id="globalSearch" type="text" placeholder="Search Media" class="input" bind:value={globalSearchValue} />
 				{#if globalSearchValue}
-					<button onclick={() => (globalSearchValue = '')} aria-label="Clear search" class="preset-filled-surface w-12">
+					<button onclick={() => (globalSearchValue = '')} aria-label="Clear search" class="preset-filled-surface-500 w-12">
 						<iconify-icon icon="ic:outline-search-off" width="24"></iconify-icon>
 					</button>
 				{/if}
 			</div>
 			<!-- Advanced Search Button (Mobile) - Outside input group -->
-			<button onclick={() => (showAdvancedSearch = true)} aria-label="Advanced search" class="preset-filled-surface btn" title="Advanced Search">
+			<button onclick={openAdvancedSearch} aria-label="Advanced search" class="preset-filled-surface-500 btn" title="Advanced Search">
 				<iconify-icon icon="mdi:magnify-plus-outline" width="24"></iconify-icon>
 			</button>
 		</div>
@@ -705,7 +726,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 
 			<div class="flex flex-col text-center">
 				<label for="sortButton">Sort</label>
-				<button id="sortButton" aria-label="Sort" class="preset-ghost-surface btn">
+				<button id="sortButton" aria-label="Sort" class="preset-ghost-surface-500 btn">
 					<iconify-icon icon="flowbite:sort-outline" width="24"></iconify-icon>
 				</button>
 			</div>
@@ -880,7 +901,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 			<div class="input-group input-group-divider grid max-w-md grid-cols-[auto_1fr_auto_auto]">
 				<input bind:value={globalSearchValue} id="globalSearchMd" type="text" placeholder="Search" class="input" />
 				{#if globalSearchValue}
-					<button onclick={clearSearch} class="preset-filled-surface w-12" aria-label="Clear search">
+					<button onclick={clearSearch} class="preset-filled-surface-500 w-12" aria-label="Clear search">
 						<iconify-icon icon="ic:outline-search-off" width="24"></iconify-icon>
 					</button>
 				{/if}
@@ -888,7 +909,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 		</div>
 
 		<!-- Advanced Search Button (Desktop) -->
-		<button onclick={() => (showAdvancedSearch = true)} aria-label="Advanced search" class="preset-filled-surface btn gap-2" title="Advanced Search">
+		<button onclick={openAdvancedSearch} aria-label="Advanced search" class="preset-filled-surface-500 btn gap-2" title="Advanced Search">
 			<iconify-icon icon="mdi:magnify-plus-outline" width="24"></iconify-icon>
 			Advanced
 		</button>
@@ -906,7 +927,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 
 		<div class="mb-8 flex flex-col justify-center gap-1 text-center">
 			<label for="sortButton">Sort</label>
-			<button id="sortButton" class="preset-ghost-surface btn" aria-label="Sort">
+			<button id="sortButton" class="preset-ghost-surface-500 btn" aria-label="Sort">
 				<iconify-icon icon="flowbite:sort-outline" width="24"></iconify-icon>
 			</button>
 		</div>
@@ -1077,7 +1098,7 @@ Displays a collection of media files (images, documents, audio, video) with:
 		{#if useVirtualScrolling}
 			<!-- Enterprise Virtual Scrolling for Large Collections (100+ files) -->
 			<VirtualMediaGrid {filteredFiles} {gridSize} ondeleteImage={handleDeleteImage} onBulkDelete={handleBulkDelete} onEditImage={handleEditImage} />
-			<div class="alert preset-ghost-surface mt-4">
+			<div class="alert preset-ghost-surface-500 mt-4">
 				<iconify-icon icon="mdi:lightning-bolt" width="20"></iconify-icon>
 				<span class="text-sm">
 					Virtual scrolling enabled for optimal performance with {filteredFiles.length} files
@@ -1100,22 +1121,18 @@ Displays a collection of media files (images, documents, audio, video) with:
 </div>
 
 <!-- Editor Modal -->
-<ImageEditorModal bind:show={showEditor} image={imageToEdit} onsave={handleEditorSave} />
 
 <!-- Modals -->
-{#if showAdvancedSearch}
-	<AdvancedSearchModal {files} onSearch={handleAdvancedSearch} onClose={() => (showAdvancedSearch = false)} />
-{/if}
 
 <!-- Active Search Indicator -->
 {#if advancedSearchCriteria}
-	<div class="alert preset-filled-warning fixed bottom-4 right-4 z-40 max-w-sm">
+	<div class="alert preset-filled-warning-500 fixed bottom-4 right-4 z-40 max-w-sm">
 		<iconify-icon icon="mdi:filter" width="20"></iconify-icon>
 		<div class="flex-1">
 			<p class="font-semibold">Advanced search active</p>
 			<p class="text-sm opacity-90">Showing filtered results</p>
 		</div>
-		<button onclick={clearAdvancedSearch} class="preset-ghost-surface btn-icon btn-sm" aria-label="Clear search">
+		<button onclick={clearAdvancedSearch} class="preset-ghost-surface-500 btn-icon btn-sm" aria-label="Clear search">
 			<iconify-icon icon="mdi:close" width="18"></iconify-icon>
 		</button>
 	</div>

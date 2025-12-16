@@ -33,8 +33,8 @@
 	// Skeleton
 	import { Avatar } from '@skeletonlabs/skeleton-svelte';
 	import { setCollection } from '@src/stores/collectionStore.svelte';
-	import { dialogState } from '@utils/dialogState.svelte';
-	import { showToast } from '@utils/toast';
+	import { modalState, showConfirm } from '@utils/modalState.svelte';
+	import { toaster } from '@stores/store.svelte';
 	import ModalEditAvatar from './components/ModalEditAvatar.svelte';
 	import ModalEditForm from './components/ModalEditForm.svelte';
 
@@ -59,16 +59,10 @@
 
 	// Function to open 2FA modal
 	function open2FAModal(): void {
-		dialogState.showComponent({
-			title: 'Two-Factor Authentication',
-			body: 'Add an extra layer of security to your account by requiring a verification code from your mobile device.',
-			component: ModalTwoFactorAuth,
-			props: { user },
-			response: async (r: any) => {
-				if (r) {
-					// Refresh user data after 2FA changes
-					await invalidateAll();
-				}
+		modalState.trigger(ModalTwoFactorAuth, { user }, async (r: any) => {
+			if (r) {
+				// Refresh user data after 2FA changes
+				await invalidateAll();
 			}
 		});
 	}
@@ -99,62 +93,43 @@
 
 	// Modal Trigger - User Form
 	function modalUserForm(): void {
-		dialogState.showComponent({
-			title: m.usermodaluser_edittitle(),
-			body: m.usermodaluser_editbody(),
-			component: ModalEditForm,
-			props: {
-				slot: '<p>Edit Form</p>'
-			}
+		modalState.trigger(ModalEditForm, {
+			slot: '<p>Edit Form</p>'
 		});
 	}
 
 	// Modal Trigger - Edit Avatar
 	function modalEditAvatar(): void {
-		dialogState.showComponent({
-			title: m.usermodaluser_settingtitle(),
-			body: m.usermodaluser_settingbody(),
-			component: ModalEditAvatar,
-			props: {
-				// avatarSrc store is imported directly in ModalEditAvatar now, typically.
-				// But keeping props if needed. The new ModalEditAvatar imports avatarSrc.
-				// However, I should pass title/body here potentially or rely on dialogState wrapper.
-				// Wait, dialogState passes 'props' to the component.
-				// ModalEditAvatar expects 'title' and 'body' props?
-				// Step 1587 ModalEditAvatar Props: { title, body, parent }
-				// So I should pass them here if I want them to appear inside the component template manually?
-				// The ModalEditAvatar template uses {title} and {body}.
+		modalState.trigger(
+			ModalEditAvatar,
+			{
 				title: m.usermodaluser_settingtitle(),
-				body: m.usermodaluser_settingbody(),
-				slot: '<p>Edit Form</p>'
+				body: m.usermodaluser_settingbody()
 			},
-			response: async (r: any) => {
-				// Avatar is already updated by the ModalEditAvatar component
-				// No need to set avatarSrc here since the modal handles it
+			async (r: any) => {
 				if (r) {
-					showToast('<iconify-icon icon="radix-icons:avatar" color="white" width="26" class="mr-1"></iconify-icon> Avatar Updated', 'success');
-					// invalidateAll is already called by the ModalEditAvatar component
+					toaster.success({
+						description: '<iconify-icon icon="radix-icons:avatar" color="white" width="26" class="mr-1"></iconify-icon> Avatar Updated'
+					});
 				}
 			}
-		});
+		);
 	}
 
 	// Modal Confirm
 	function modalConfirm(): void {
-		dialogState.showConfirm({
+		showConfirm({
 			title: m.usermodalconfirmtitle(),
 			body: m.usermodalconfirmbody(),
 			// confirmText: m.usermodalconfirmdeleteuser(),
-			onConfirm: async (confirmed: boolean) => {
-				if (confirmed) {
-					const res = await fetch(`/api/user/deleteUsers`, {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify([user])
-					});
-					if (res.status === 200) {
-						await invalidateAll();
-					}
+			onConfirm: async () => {
+				const res = await fetch(`/api/user/deleteUsers`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify([user])
+				});
+				if (res.status === 200) {
+					await invalidateAll();
 				}
 			}
 		});
@@ -189,7 +164,7 @@
 				</div>
 				<!-- Two-Factor Authentication Status -->
 				{#if is2FAEnabledGlobal}
-					<button onclick={open2FAModal} class="preset-ghost-surface btn-sm w-full max-w-xs">
+					<button onclick={open2FAModal} class="preset-ghost-surface-500 btn-sm w-full max-w-xs">
 						<div class="flex w-full items-center justify-between">
 							<span>Two-Factor Auth</span>
 							<div class="flex items-center gap-1">

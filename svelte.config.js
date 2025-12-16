@@ -26,6 +26,7 @@ const config = {
 			'@api': './src/routes/api',
 			'@auth': './src/databases/auth',
 			'@collections': './config/collections',
+			'@config': './config',
 			'@components': './src/components',
 			'@content': './src/content',
 			'@databases': './src/databases',

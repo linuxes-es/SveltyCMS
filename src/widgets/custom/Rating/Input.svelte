@@ -59,7 +59,7 @@ Interactive star rating with hover states and click selection
 		<RatingGroup value={ratingValue} onValueChange={(e) => (ratingValue = e.value)} aria-label={field.label}>
 			<RatingGroup.Control>
 				{#each { length: Number(field.max) || 5 } as _, i}
-					<RatingGroup.Item value={i + 1}>
+					<RatingGroup.Item index={i + 1}>
 						{#snippet empty()}
 							<iconify-icon icon={field.iconEmpty || 'material-symbols:star-outline'} width="24" class="text-surface-400"></iconify-icon>
 						{/snippet}

@@ -14,21 +14,15 @@
 	// Components
 	import Input from '@components/system/inputs/Input.svelte';
 	import Toggles from '@components/system/inputs/Toggles.svelte';
-	import Progress from '@components/system/Progress.svelte';
-	// Skeleton components
-	// getToastStore deprecated - use custom toaster from @stores/toasterStore;
+	import Progress from '@components/system/ProgressBar.svelte';
+	import { toaster } from '@stores/store.svelte';
 
 	// Utils
 	import { getCollections } from '@utils/apiClient';
 	import { logger } from '@utils/logger';
 
 	// Types
-	interface Collection {
-		id: string;
-		name: string;
-		label: string;
-		description?: string;
-	}
+	import type { Schema } from '@src/content/types';
 
 	interface ExportOptions {
 		format: 'json' | 'csv';
@@ -55,7 +49,7 @@
 	}
 
 	// --- State using Svelte 5 Runes ---
-	let collections = $state<Collection[]>([]);
+	let collections = $state<Partial<Schema>[]>([]);
 	let loading = $state(false);
 	let showExportModal = $state(false);
 	let showImportModal = $state(false);
@@ -115,14 +109,14 @@
 
 				// Map to our Collection interface
 				collections = rawCollections.map((col) => ({
-					id: col.id || col.name,
+					_id: col.id || col.name,
 					name: col.name,
 					label: col.label || col.name,
 					description: col.description
 				}));
 
 				// Select all collections by default
-				exportOptions.collections = collections.map((c) => c.id);
+				exportOptions.collections = collections.map((c) => c._id || '').filter(Boolean);
 			} else {
 				showAlertMessage('Failed to load collections', 'error');
 			}
@@ -281,24 +275,9 @@
 		}
 	}
 
-	// --- UI & Utility Functions ---
-	const toastStore = getToastStore();
-
 	function showAlertMessage(message: string, type: 'success' | 'error' | 'info' | 'warning') {
-		const background =
-			type === 'success'
-				? 'preset-filled-success'
-				: type === 'error'
-					? 'preset-filled-error'
-					: type === 'warning'
-						? 'preset-filled-warning'
-						: 'preset-filled-secondary';
-
-		toastStore.trigger({
-			message,
-			background,
-			timeout: 5000
-		});
+		// @ts-ignore
+		toaster[type]({ description: message });
 	}
 
 	function downloadExport() {
@@ -324,7 +303,7 @@
 	}
 
 	function selectAllCollections() {
-		exportOptions.collections = collections.map((c) => c.id);
+		exportOptions.collections = collections.map((c) => c._id || '').filter(Boolean);
 	}
 
 	function clearCollectionSelection() {
@@ -340,12 +319,12 @@
 		</div>
 
 		<div class="flex gap-3">
-			<button onclick={() => (showExportModal = true)} class="preset-ghost-secondary btn" disabled={loading}>
+			<button onclick={() => (showExportModal = true)} class="preset-ghost-secondary-500 btn" disabled={loading}>
 				<iconify-icon icon="mdi:export" width="24" class=""></iconify-icon>
 				Export Data
 			</button>
 
-			<button onclick={() => (showImportModal = true)} class="preset-ghost-primary btn" disabled={loading}>
+			<button onclick={() => (showImportModal = true)} class="preset-ghost-primary-500 btn" disabled={loading}>
 				<iconify-icon icon="mdi:import" width="24" class=""></iconify-icon>
 
 				Import Data
@@ -356,7 +335,7 @@
 	<div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
 		<div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
 			<div class="mb-4 flex items-center">
-				<div class="preset-filled-tertiary btn-icon mr-3">
+				<div class="preset-filled-tertiary-500 btn-icon mr-3">
 					<iconify-icon icon="mdi:database-export" width="24" class=""></iconify-icon>
 				</div>
 				<div>
@@ -365,12 +344,12 @@
 				</div>
 			</div>
 
-			<button onclick={exportAllData} disabled={loading} class="preset-outline-secondary btn mt-4 w-full">Export Everything</button>
+			<button onclick={exportAllData} disabled={loading} class="preset-outlined-secondary-500 btn mt-4 w-full">Export Everything</button>
 		</div>
 
 		<div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
 			<div class="mb-4 flex items-center">
-				<div class="preset-filled-primary btn-icon mr-3">
+				<div class="preset-filled-primary-500 btn-icon mr-3">
 					<iconify-icon icon="mdi:folder-multiple" width="24" class=""></iconify-icon>
 				</div>
 				<div>
@@ -382,7 +361,7 @@
 			</div>
 
 			<div class="space-y-2">
-				{#each collections.slice(0, 3) as collection (collection.id)}
+				{#each collections.slice(0, 3) as collection (collection._id)}
 					<div class="flex items-center justify-between text-sm">
 						<span class="text-tertiary-500 dark:text-primary-500">{collection.label}</span>
 						<iconify-icon icon="mdi:chevron-right" width="24" class=""></iconify-icon>
@@ -403,7 +382,7 @@
 
 	{#if exportUrl}
 		<div class="mb-6">
-			<div class="alert preset-filled-success">
+			<div class="alert preset-filled-success-500">
 				<div class="flex items-center justify-between">
 					<span>Export completed successfully!</span>
 					<button onclick={downloadExport}>
@@ -438,20 +417,20 @@
 					<div class="mb-3 flex items-center justify-between">
 						<p class="block text-sm font-medium">Select Collections</p>
 						<div class="space-x-2">
-							<button onclick={selectAllCollections} class="preset-ghost-secondary btn">Select All</button>
-							<button onclick={clearCollectionSelection} class="preset-ghost-secondary btn">Clear All</button>
+							<button onclick={selectAllCollections} class="preset-ghost-secondary-500 btn">Select All</button>
+							<button onclick={clearCollectionSelection} class="preset-ghost-secondary-500 btn">Clear All</button>
 						</div>
 					</div>
 
 					<div class="max-h-48 overflow-y-auto rounded-md border border-gray-200 p-3 dark:border-gray-700">
-						{#each collections as collection (collection.id)}
-							{@const inputId = `export-collection-${collection.id}`}
+						{#each collections as collection (collection._id)}
+							{@const inputId = `export-collection-${collection._id}`}
 							<label for={inputId} class="flex cursor-pointer items-center space-x-3 py-2">
 								<input
 									id={inputId}
 									type="checkbox"
-									checked={exportOptions.collections.includes(collection.id)}
-									onchange={() => toggleCollectionSelection(collection.id)}
+									checked={collection._id ? exportOptions.collections.includes(collection._id) : false}
+									onchange={() => collection._id && toggleCollectionSelection(collection._id)}
 									class="rounded"
 								/>
 
@@ -477,8 +456,12 @@
 			</div>
 
 			<div class="flex justify-end space-x-3 border-t bg-surface-100 p-6 dark:bg-surface-700">
-				<button onclick={() => (showExportModal = false)} class="preset-ghost-secondary btn">Cancel</button>
-				<button onclick={exportSelectedCollections} class="preset-filled-primary btn" disabled={loading || exportOptions.collections.length === 0}>
+				<button onclick={() => (showExportModal = false)} class="preset-ghost-secondary-500 btn">Cancel</button>
+				<button
+					onclick={exportSelectedCollections}
+					class="preset-filled-primary-500 btn"
+					disabled={loading || exportOptions.collections.length === 0}
+				>
 					Export Selected
 				</button>
 			</div>
@@ -528,8 +511,8 @@
 			</div>
 
 			<div class="flex justify-end space-x-3 border-t bg-surface-100 p-6 dark:bg-surface-700">
-				<button onclick={() => (showImportModal = false)} class="preset-ghost-secondary btn">Cancel</button>
-				<button onclick={handleImport} class="preset-filled-primary btn" disabled={loading || !importFiles}>Import Data</button>
+				<button onclick={() => (showImportModal = false)} class="preset-ghost-secondary-500 btn">Cancel</button>
+				<button onclick={handleImport} class="preset-filled-primary-500 btn" disabled={loading || !importFiles}>Import Data</button>
 			</div>
 		</div>
 	</div>

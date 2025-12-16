@@ -27,7 +27,7 @@
 
 <script lang="ts">
 	// Selected theme:
-	import './app.css';
+	import '@src/app.css';
 
 	// Icons from https://icon-sets.iconify.design/
 	import 'iconify-icon';
@@ -89,8 +89,6 @@
 
 	const { children, data }: Props = $props();
 
-	// Initialize global stores
-	// setGlobalModalStore(getModalStore());
 	// setGlobalToastStore(getToastStore());
 
 	// Component State
@@ -364,7 +362,7 @@
 
 			<!-- Footer (Optional) -->
 			{#if uiStateManager.uiState.value.footer !== 'hidden'}
-				<footer class="bg-blue-500">
+				<footer class="bg-tertiary-500">
 					<!-- Footer content goes here -->
 				</footer>
 			{/if}

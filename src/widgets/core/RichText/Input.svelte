@@ -12,9 +12,8 @@
 	import type { FieldType } from './';
 	import type { RichTextData } from './types';
 	import { contentLanguage } from '@src/stores/store.svelte';
-
-	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
-	import type { MediaFile } from '../MediaUpload/types';
+	import { modalState } from '@utils/modalState.svelte';
+	import MediaLibraryModal from '@components/MediaLibraryModal.svelte';
 	import { tokenTarget } from '@src/services/token/tokenTarget';
 
 	let {
@@ -28,7 +27,6 @@
 	} = $props();
 
 	const lang = $derived(field.translated ? $contentLanguage : 'default');
-	const modalStore = getModalStore();
 
 	$effect(() => {
 		if (!value) value = {};
@@ -64,17 +62,18 @@
 
 	// New Feature Functions
 	function openMediaLibrary() {
-		modalStore.trigger({
-			type: 'component',
-			component: 'mediaLibraryModal',
-			response: (files: MediaFile[] | undefined) => {
+		modalState.trigger(
+			MediaLibraryModal as any,
+			{}, // No specific props needed for single select?
+			(files: any) => {
+				// Using any for result to avoid type complexity for now
 				if (files && files.length > 0) {
 					// Insert the first selected image
 					const file = files[0];
 					editor?.chain().focus().setImage({ src: file.url, alt: file.name }).run();
 				}
 			}
-		});
+		);
 	}
 
 	async function pasteUnformatted() {

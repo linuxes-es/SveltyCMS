@@ -2,6 +2,12 @@
  @file src/routes/+layout.svelte
  @component
  **This Svelte component serves as the layout for the entire application**
+
+ ### Props
+ - `children?`: import('svelte').Snippet
+
+ ### Features
+ - Theme Management
  -->
 
 <script lang="ts">
@@ -15,47 +21,15 @@
 
 	// Paraglide locale bridge
 	import { locales as availableLocales, getLocale, setLocale } from '@src/paraglide/runtime';
-	import { systemLanguage } from '@stores/store.svelte';
 
+	import { systemLanguage } from '@stores/store.svelte';
 	// Centralized theme management
 	import { themeStore, initializeThemeStore, initializeDarkMode } from '@stores/themeStore.svelte';
-
-	// Toast support
-	import { Toast } from '@skeletonlabs/skeleton-svelte';
-	import { toaster } from '@utils/toast';
-
-	// Dialog support
 	import DialogManager from '@components/system/DialogManager.svelte';
-	import TokenPicker from '@components/TokenPicker.svelte';
 
-	// Store toaster for usage in utils
-	// Note: getToastContext must be called at component init.
-	// But we need to pass it to the util.
-	// Is getToastContext available here in root layout?
-	// Usually only available UNDER the Provider.
-	// So we need a component INSIDE Toast.Provider to capture the context.
-
-	// Strategy: Create a tiny component <ToastBinder /> inside Provider?
-	// OR: Just rely on importing getToastContext in components?
-	// BUT we need it in async functions (utils).
-
-	// Better: The Layout renders Toast.Provider.
-	// Children can access it.
-	// But showToast is imported in +page.svelte (script module code?)
-	// No, +page.svelte components.
-
-	// If I use `getToastContext` in `ModalEditForm`, it works.
-	// But `showToast` is a utility function.
-	// Svelte 5 context is fine in components.
-	// But calling `showToast` from an async fetch handler...
-	// The handler is defined inside the component, so `getToastContext` called at top level of component
-	// can capture the toaster, and then the handler uses that captured toaster.
-
-	// SO `showToast` utility needs to be passed the toaster instance?
-	// OR `showToast` utility should assume it's set globally.
-	// I am setting it globally in Layout but I need to be inside the Provider.
-
-	// I'll create a component `ToastSetup.svelte` inside Provider.
+	// Skeleton Toaster
+	import { toaster } from '@stores/store.svelte';
+	import { Toast } from '@skeletonlabs/skeleton-svelte';
 
 	// Initialize theme and other client-side logic on mount
 	onMount(() => {
@@ -101,11 +75,25 @@
 	<title>{siteName}</title>
 </svelte:head>
 
-<!-- Toast Provider -->
-<Toast.Provider {toaster}>
-	{#key currentLocale}
-		{@render children?.()}
-	{/key}
-	<TokenPicker />
+{#key currentLocale}
 	<DialogManager />
-</Toast.Provider>
+	<Toast.Group {toaster}>
+		{#snippet children(toast)}
+			<Toast
+				{toast}
+				class="min-w-[300px] max-w-[400px] shadow-lg backdrop-blur-md dark:bg-surface-800/90 bg-white/90 border border-surface-200 dark:border-surface-700 rounded-lg overflow-hidden"
+			>
+				<Toast.Message class="flex flex-col gap-1 p-4 pr-8 relative">
+					{#if toast.title}
+						<Toast.Title class="font-bold text-base">{toast.title}</Toast.Title>
+					{/if}
+					<Toast.Description class="text-sm opacity-90">{toast.description}</Toast.Description>
+				</Toast.Message>
+				<Toast.CloseTrigger
+					class="absolute right-2 top-2 p-1.5 hover:bg-surface-500/10 rounded-full transition-colors opacity-60 hover:opacity-100"
+				/>
+			</Toast>
+		{/snippet}
+	</Toast.Group>
+	{@render children?.()}
+{/key}

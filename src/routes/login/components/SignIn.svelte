@@ -3,7 +3,14 @@
 @component
 **SignIn component with OAuth support**
 
-Features:
+### Props
+- `active`: number
+- `onClick`: () => void
+- `onPointerEnter`: () => void
+- `onBack`: () => void
+- `firstCollectionPath`: string
+
+### Features:
  - User authentication with password or OAuth
  - Dynamic language selection with debounced input field or dropdown for multiple languages
  - Demo mode support with auto-reset timer displayed when active
@@ -38,7 +45,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 	let FloatingPathsComponent: Component | null = $state(null);
 
 	// Skeleton
-	import { showToast } from '@utils/toast';
+	import { toaster } from '@stores/store.svelte';
 	import type { Component } from 'svelte';
 
 	// ParaglideJS
@@ -124,7 +131,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 				isAuthenticating = true;
 
 				// Trigger the toast
-				showToast(m.signin_signinsuccess(), 'success');
+				toaster.success({ description: m.signin_signinsuccess() });
 
 				// Cancel default redirect behavior so we can use client-side navigation
 				// cancel(); // Form class doesn't support cancelling redirect in onResult easily without preventing update?
@@ -152,7 +159,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 				globalLoadingStore.stopLoading(loadingOperations.authentication);
 
 				// Show 2FA required message
-				showToast(m.twofa_verify_title(), 'warning');
+				toaster.warning({ description: m.twofa_verify_title() });
 				return;
 			}
 
@@ -162,7 +169,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 
 			if (result.type === 'failure' || result.type === 'error') {
 				// Trigger the toast
-				showToast(m.signin_wrong_user_or_password(), 'error');
+				toaster.error({ description: m.signin_wrong_user_or_password() });
 
 				// add wiggle animation to form element
 				formElement?.classList.add('wiggle');
@@ -204,7 +211,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 				// If it's 400 with errors, it's 'failure'
 
 				// For now, just show generic error or message from result
-				showToast(result.error?.message || 'An error occurred', 'info');
+				toaster.info({ description: result.error?.message || 'An error occurred' });
 				return;
 			}
 
@@ -213,13 +220,13 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 				// Check if user exists
 				if (result.data && result.data.userExists === false) {
 					PWreset = false;
-					showToast('No account found with this email address.', 'error');
+					toaster.error({ description: 'No account found with this email address.' });
 					formElement?.classList.add('wiggle');
 					setTimeout(() => formElement?.classList.remove('wiggle'), 300);
 					return;
 				} else if (result.data && result.data.userExists === true) {
 					PWreset = true;
-					showToast(m.signin_forgottontoast(), 'success');
+					toaster.success({ description: m.signin_forgottontoast() });
 					return;
 				} else {
 					// Fallback
@@ -229,7 +236,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 						setTimeout(() => formElement?.classList.remove('wiggle'), 300);
 					} else {
 						PWreset = true;
-						showToast(m.signin_forgottontoast(), 'success');
+						toaster.success({ description: m.signin_forgottontoast() });
 					}
 				}
 			}
@@ -263,7 +270,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 			PWforgot = false;
 
 			if (result.type === 'success' || result.type === 'redirect') {
-				showToast(m.signin_restpasswordtoast(), 'success');
+				toaster.success({ description: m.signin_restpasswordtoast() });
 				if (result.type === 'redirect') {
 					if (result.location) goto(result.location);
 					return;
@@ -286,12 +293,12 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 		if (!twoFACode.trim() || isVerifying2FA) return;
 
 		if (!useBackupCode && twoFACode.length !== 6) {
-			showToast(m.twofa_error_invalid_code(), 'error');
+			toaster.error({ description: m.twofa_error_invalid_code() });
 			return;
 		}
 
 		if (useBackupCode && twoFACode.length < 8) {
-			showToast('Invalid backup code format', 'error');
+			toaster.error({ description: 'Invalid backup code format' });
 			return;
 		}
 
@@ -310,7 +317,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 			// Parse response
 			if (response.ok) {
 				// Success - redirect will be handled by SvelteKit
-				showToast(m.twofa_success_verified(), 'success');
+				toaster.success({ description: m.twofa_success_verified() });
 
 				// The server will redirect on successful verification
 				window.location.reload();
@@ -319,7 +326,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 				throw new Error(errorData.message || m.twofa_error_invalid_code());
 			}
 		} catch (error) {
-			showToast(error instanceof Error ? error.message : m.twofa_error_invalid_code(), 'error');
+			toaster.error({ description: error instanceof Error ? error.message : m.twofa_error_invalid_code() });
 		} finally {
 			isVerifying2FA = false;
 		}
@@ -472,8 +479,8 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 				<div class="-mt-2 flex items-center justify-end gap-2 text-right text-xs text-error-500">
 					{m.form_required()}
 
-					<button onclick={handleBack} aria-label="Back" class="preset-outline-secondary btn-icon">
-						<iconify-icon icon="ri:arrow-right-line" width="20" class=""></iconify-icon>
+					<button onclick={handleBack} aria-label="Back" class="btn-icon preset-outlined-secondary-500 rounded-full">
+						<iconify-icon icon="ri:arrow-right-line" width="20" class="text-black"></iconify-icon>
 					</button>
 				</div>
 
@@ -502,8 +509,6 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 							label={m.email()}
 							required
 							icon="mdi:email"
-							iconColor="black"
-							textColor="black"
 						/>
 						{#if loginForm.errors.email}<span class="invalid text-xs text-error-500">{loginForm.errors.email[0]}</span>{/if}
 
@@ -528,7 +533,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 					<div class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
 						<!-- Row 1 -->
 						<div class="flex w-full justify-between gap-2 sm:w-auto">
-							<button type="submit" form="signin-form" class="preset-filled-surface btn w-full sm:w-auto" aria-label={m.form_signin()}>
+							<button type="submit" form="signin-form" class="preset-filled-surface-500 btn w-full text-white sm:w-auto" aria-label={m.form_signin()}>
 								{m.form_signin()}
 								<!-- Optimized loading indicators -->
 								{#if isSubmitting || isAuthenticating}
@@ -543,7 +548,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 						<div class="mt-4 flex w-full justify-between sm:mt-0 sm:w-auto">
 							<button
 								type="button"
-								class="preset-ringed-surface btn w-full text-black sm:w-auto"
+								class="btn preset-outlined-surface-500 w-full text-black sm:w-auto"
 								aria-label={m.signin_forgottenpassword()}
 								tabindex={forgotPasswordTabIndex}
 								onclick={handleForgotPassword}
@@ -606,7 +611,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 
 							<!-- Action Buttons -->
 							<div class="flex gap-3">
-								<button type="button" onclick={back2FAToLogin} class="preset-soft-surface btn flex-1" aria-label={m.button_back()}>
+								<button type="button" onclick={back2FAToLogin} class="btn preset-soft-surface-500 flex-1" aria-label={m.button_back()}>
 									<iconify-icon icon="mdi:arrow-left" width="20" class="mr-2"></iconify-icon>
 									{m.button_back()}
 								</button>
@@ -618,7 +623,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 										isVerifying2FA ||
 										(!useBackupCode && twoFACode.length !== 6) ||
 										(useBackupCode && twoFACode.length < 8)}
-									class="preset-filled-primary btn flex-1"
+									class="btn preset-filled-primary-500 flex-1"
 									aria-label={m.twofa_verify_button()}
 								>
 									{#if isVerifying2FA}
@@ -669,8 +674,6 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 							label={m.email()}
 							required
 							icon="mdi:email"
-							iconColor="black"
-							textColor="black"
 						/>
 						{#if forgotForm.errors.email}
 							<span class="invalid text-xs text-error-500">
@@ -685,7 +688,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 						{/if}
 
 						<div class="mt-4 flex items-center justify-between">
-							<button type="submit" class="preset-filled-surface btn" aria-label={m.form_resetpassword()}>
+							<button type="submit" class="preset-filled-surface-500 text-white btn" aria-label={m.form_resetpassword()}>
 								{m.form_resetpassword()}
 								<!-- Optimized loading indicators -->
 								{#if isSubmitting}
@@ -696,7 +699,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 							<!-- Back button  -->
 							<button
 								type="button"
-								class="preset-filled-surface btn-icon"
+								class="btn-icon preset-filled-surface-500 rounded-full"
 								aria-label="Back"
 								onclick={() => {
 									PWforgot = false;
@@ -791,7 +794,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 						<input type="email" name="email" bind:value={resetForm.data.email} hidden />
 
 						<div class="mt-4 flex items-center justify-between">
-							<button type="submit" aria-label={m.signin_savenewpassword()} class="preset-filled-surface btn ml-2 mt-6">
+							<button type="submit" aria-label={m.signin_savenewpassword()} class="btn preset-filled-surface-500 ml-2 mt-6 text-white">
 								{m.signin_savenewpassword()}
 								<!-- Optimized loading indicators -->
 								{#if isSubmitting}
@@ -803,7 +806,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 							<button
 								type="button"
 								aria-label={m.button_back()}
-								class="preset-filled-surface btn-icon"
+								class="preset-filled-surface-500 btn-icon"
 								onclick={() => {
 									PWforgot = false;
 									PWreset = false;
@@ -829,7 +832,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 	section {
 		--width: 0%;
 		background: white;
-		grow: 1;
+		flex-grow: 1;
 		width: var(--width);
 		transition: 0.4s;
 	}

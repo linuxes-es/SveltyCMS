@@ -92,11 +92,11 @@
 
 		<div class="flex items-center gap-2">
 			<!-- Device Toggle -->
-			<div class="preset-filled-surface btn-group [&>*+*]:border-surface-500">
+			<div class="preset-filled-surface-500  [&>*+*]:border-surface-500">
 				<button
 					type="button"
 					onclick={() => !SeoPreviewToggle && handleTogglePreview()}
-					class="{!SeoPreviewToggle ? 'preset-filled-primary' : ''} btn btn-sm"
+					class="{!SeoPreviewToggle ? 'preset-filled-primary-500' : ''} btn btn-sm"
 					title="Desktop View"
 				>
 					<iconify-icon icon="mdi:monitor" width="18"></iconify-icon>
@@ -104,7 +104,7 @@
 				<button
 					type="button"
 					onclick={() => SeoPreviewToggle && handleTogglePreview()}
-					class="{SeoPreviewToggle ? 'preset-filled-primary' : ''} btn btn-sm"
+					class="{SeoPreviewToggle ? 'preset-filled-primary-500' : ''} btn btn-sm"
 					title="Mobile View"
 				>
 					<iconify-icon icon="mdi:cellphone" width="18"></iconify-icon>
@@ -114,7 +114,7 @@
 			<!-- Heatmap Toggle -->
 			<button
 				type="button"
-				class="btn btn-sm {heatmapMode ? 'preset-filled-warning' : 'preset-filled-surface'}"
+				class="btn btn-sm {heatmapMode ? 'preset-filled-warning-500' : 'preset-filled-surface-500'}"
 				onclick={() => (heatmapMode = !heatmapMode)}
 				title="Toggle Heatmap Visualization"
 			>

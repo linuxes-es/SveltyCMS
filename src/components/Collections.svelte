@@ -431,7 +431,7 @@
 			<div class="flex flex-col items-center justify-center space-y-3 p-6 text-center" role="alert" aria-live="assertive">
 				<iconify-icon icon="ic:outline-error" width="32" class="text-error-500"></iconify-icon>
 				<p class="text-sm text-error-500">{error}</p>
-				<button type="button" class="preset-filled-error btn btn-sm" onclick={() => window.location.reload()}>
+				<button type="button" class="preset-filled-error-500 btn btn-sm" onclick={() => window.location.reload()}>
 					<iconify-icon icon="ic:outline-refresh" width="16" class="mr-1"></iconify-icon>
 					Retry
 				</button>

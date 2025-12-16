@@ -75,7 +75,7 @@ is handled in reusable backend APIs.
 		<section class="card p-4 md:p-6">
 			<h3 class="h3 mb-4">Export Configuration</h3>
 			<p class="mb-4 text-sm">Download a JSON backup of all your collections and settings.</p>
-			<button onclick={handleExport} class="preset-filled-primary btn" disabled={isExporting}>
+			<button onclick={handleExport} class="preset-filled-primary-500 btn" disabled={isExporting}>
 				<iconify-icon icon="mdi:database-export" class="mr-2"></iconify-icon>
 				<span>{isExporting ? 'Exporting...' : 'Download Export'}</span>
 			</button>

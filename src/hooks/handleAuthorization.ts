@@ -138,6 +138,14 @@ export const handleAuthorization: Handle = async ({ event, resolve }) => {
 
 	// --- Redirect to setup if database not initialized (no roles found) ---
 	if (rolesData.length === 0 && !pathname.startsWith('/setup') && !pathname.startsWith('/api/setup')) {
+		// Also check system state to avoid spam during initialization
+		const { getSystemState } = await import('@src/stores/system');
+		const systemState = getSystemState();
+
+		if (systemState.overallState === 'INITIALIZING') {
+			throw error(503, 'System Initializing: Please wait a moment...');
+		}
+
 		logger.warn('No roles found in database - redirecting to setup', { pathname, tenantId: locals.tenantId });
 		if (isApi) {
 			throw error(503, 'Service Unavailable: System not initialized. Please run setup.');

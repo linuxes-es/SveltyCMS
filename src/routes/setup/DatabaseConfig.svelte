@@ -13,12 +13,6 @@ Provides DB type, host, port, name, user, password inputs, validation display, t
 	import { dbConfigSchema } from '@utils/formSchemas';
 
 	// Popup settings (click to toggle)
-	const popupDbType: PopupSettings = { event: 'click', target: 'popupDbType', placement: 'top' };
-	const popupDbHost: PopupSettings = { event: 'click', target: 'popupDbHost', placement: 'top' };
-	const popupDbPort: PopupSettings = { event: 'click', target: 'popupDbPort', placement: 'top' };
-	const popupDbName: PopupSettings = { event: 'click', target: 'popupDbName', placement: 'top' };
-	const popupDbUser: PopupSettings = { event: 'click', target: 'popupDbUser', placement: 'top' };
-	const popupDbPassword: PopupSettings = { event: 'click', target: 'popupDbPassword', placement: 'top' };
 
 	// Props from parent wizard (destructure via $props to allow internal mutation without warnings)
 	let {
@@ -302,19 +296,13 @@ Provides DB type, host, port, name, user, password inputs, validation display, t
 					<button
 						type="button"
 						tabindex="-1"
-						use:popup={popupDbType}
+						title="Help available"
 						aria-label="Help: Database Type"
 						class="ml-1 text-slate-400 hover:text-primary-500"
 						><iconify-icon icon="mdi:help-circle-outline" width="14" aria-hidden="true"></iconify-icon></button
 					>
 				</label>
-				<div
-					data-popup="popupDbType"
-					class="card z-30 hidden w-72 rounded-md border border-slate-300/50 bg-surface-50 p-3 text-xs shadow-xl dark:border-slate-600 dark:bg-surface-700"
-				>
-					<p>{m.setup_help_database_type?.() || 'Select the database engine to use. Ensure the server & driver are installed.'}</p>
-					<div class="arrow border border-slate-300/50 bg-surface-50 dark:border-slate-600 dark:bg-surface-700"></div>
-				</div>
+
 				<select id="db-type" bind:value={dbConfig.type} onchange={clearDbTestError} class="input rounded">
 					<option value="mongodb">MongoDB (localhost/Docker)</option>
 					<option value="mongodb+srv">MongoDB Atlas (SRV)</option>
@@ -354,22 +342,11 @@ Provides DB type, host, port, name, user, password inputs, validation display, t
 				<label for="db-host" class="mb-1 flex items-center gap-1 text-sm font-medium">
 					<iconify-icon icon="mdi:server-network" width="18" class="text-tertiary-500 dark:text-primary-500" aria-hidden="true"></iconify-icon>
 					<span>{isAtlas ? 'Atlas Cluster Host' : m.setup_database_host()}</span>
-					<button type="button" tabindex="-1" use:popup={popupDbHost} aria-label="Help: Host" class="ml-1 text-slate-400 hover:text-primary-500"
+					<button type="button" tabindex="-1" title="Help available" aria-label="Help: Host" class="ml-1 text-slate-400 hover:text-primary-500"
 						><iconify-icon icon="mdi:help-circle-outline" width="14" aria-hidden="true"></iconify-icon></button
 					>
 				</label>
-				<div
-					data-popup="popupDbHost"
-					class="card z-30 hidden w-80 rounded-md border border-slate-300/50 bg-surface-50 p-3 text-xs shadow-xl dark:border-slate-600 dark:bg-surface-700"
-				>
-					<p>
-						{isAtlas
-							? "Enter your Atlas cluster hostname (e.g., cluster0.abcde.mongodb.net) OR paste your full connection string (mongodb+srv://username:password@cluster0.abcde.mongodb.net/) and we'll extract the credentials automatically."
-							: m.setup_help_database_host?.() ||
-								'Hostname or IP address where the database server is reachable. You can also paste a full MongoDB connection string.'}
-					</p>
-					<div class="arrow border border-slate-300/50 bg-surface-50 dark:border-slate-600 dark:bg-surface-700"></div>
-				</div>
+
 				<input
 					id="db-host"
 					bind:value={dbConfig.host}
@@ -411,17 +388,11 @@ Provides DB type, host, port, name, user, password inputs, validation display, t
 					<label for="db-port" class="mb-1 flex items-center gap-1 text-sm font-medium">
 						<iconify-icon icon="mdi:ethernet" width="18" class="text-tertiary-500 dark:text-primary-500" aria-hidden="true"></iconify-icon>
 						<span>{m.setup_database_port()}</span>
-						<button type="button" tabindex="-1" use:popup={popupDbPort} aria-label="Help: Port" class="ml-1 text-slate-400 hover:text-primary-500"
+						<button type="button" tabindex="-1" title="Help available" aria-label="Help: Port" class="ml-1 text-slate-400 hover:text-primary-500"
 							><iconify-icon icon="mdi:help-circle-outline" width="14" aria-hidden="true"></iconify-icon></button
 						>
 					</label>
-					<div
-						data-popup="popupDbPort"
-						class="card z-30 hidden w-72 rounded-md border border-slate-300/50 bg-surface-50 p-3 text-xs shadow-xl dark:border-slate-600 dark:bg-surface-700"
-					>
-						<p>{m.setup_help_database_port?.() || 'Network port the database server listens on. Defaults vary by engine.'}</p>
-						<div class="arrow border border-slate-300/50 bg-surface-50 dark:border-slate-600 dark:bg-surface-700"></div>
-					</div>
+
 					<input
 						id="db-port"
 						bind:value={dbConfig.port}
@@ -443,19 +414,13 @@ Provides DB type, host, port, name, user, password inputs, validation display, t
 					<button
 						type="button"
 						tabindex="-1"
-						use:popup={popupDbName}
+						title="Help available"
 						aria-label="Help: Database Name"
 						class="ml-1 text-slate-400 hover:text-primary-500"
 						><iconify-icon icon="mdi:help-circle-outline" width="14" aria-hidden="true"></iconify-icon></button
 					>
 				</label>
-				<div
-					data-popup="popupDbName"
-					class="card z-30 hidden w-72 rounded-md border border-slate-300/50 bg-surface-50 p-3 text-xs shadow-xl dark:border-slate-600 dark:bg-surface-700"
-				>
-					<p>{m.setup_help_database_name?.() || 'Name of the database/schema to use or create.'}</p>
-					<div class="arrow border border-slate-300/50 bg-surface-50 dark:border-slate-600 dark:bg-surface-700"></div>
-				</div>
+
 				<input
 					id="db-name"
 					bind:value={dbConfig.name}
@@ -482,19 +447,13 @@ Provides DB type, host, port, name, user, password inputs, validation display, t
 					<button
 						type="button"
 						tabindex="-1"
-						use:popup={popupDbUser}
+						title="Help available"
 						aria-label="Help: Database User"
 						class="ml-1 text-slate-400 hover:text-primary-500"
 						><iconify-icon icon="mdi:help-circle-outline" width="14" aria-hidden="true"></iconify-icon></button
 					>
 				</label>
-				<div
-					data-popup="popupDbUser"
-					class="card z-30 hidden w-72 rounded-md border border-slate-300/50 bg-surface-50 p-3 text-xs shadow-xl dark:border-slate-600 dark:bg-surface-700"
-				>
-					<p>{m.setup_help_database_user?.() || 'Database user with rights to create tables and read/write data.'}</p>
-					<div class="arrow border border-slate-300/50 bg-surface-50 dark:border-slate-600 dark:bg-surface-700"></div>
-				</div>
+
 				<input
 					id="db-user"
 					name="username"
@@ -523,19 +482,13 @@ Provides DB type, host, port, name, user, password inputs, validation display, t
 					<button
 						type="button"
 						tabindex="-1"
-						use:popup={popupDbPassword}
+						title="Help available"
 						aria-label="Help: Database Password"
 						class="ml-1 text-slate-400 hover:text-primary-500"
 						><iconify-icon icon="mdi:help-circle-outline" width="14" aria-hidden="true"></iconify-icon></button
 					>
 				</label>
-				<div
-					data-popup="popupDbPassword"
-					class="card z-30 hidden w-80 rounded-md border border-slate-300/50 bg-surface-50 p-3 text-xs shadow-xl dark:border-slate-600 dark:bg-surface-700"
-				>
-					<p>{m.setup_help_database_password?.() || 'Password for the database user. Store securely; not shown in logs.'}</p>
-					<div class="arrow border border-slate-300/50 bg-surface-50 dark:border-slate-600 dark:bg-surface-700"></div>
-				</div>
+
 				<div class="relative">
 					<input
 						id="db-password"
@@ -577,7 +530,7 @@ Provides DB type, host, port, name, user, password inputs, validation display, t
 				type="submit"
 				disabled={isLoading}
 				aria-label={isLoading ? 'Testing database connection, please wait' : 'Test database connection'}
-				class="preset-filled-tertiary btn w-full dark:preset-filled-primary"
+				class="btn w-full preset-filled-tertiary-500 dark:preset-filled-primary-500 font-bold"
 			>
 				{#if isLoading}
 					<div

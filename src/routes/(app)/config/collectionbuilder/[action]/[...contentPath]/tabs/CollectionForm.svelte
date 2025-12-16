@@ -27,39 +27,9 @@
 	import * as m from '@src/paraglide/messages';
 
 	// Skeleton
-	// import { popup } from '@skeletonlabs/skeleton-svelte';
-	// import type { PopupSettings } from '@skeletonlabs/skeleton-svelte';
-	import { popup, type PopupSettings } from '@utils/popup';
 	// Collection Manager
 
 	const props = $props();
-
-	// Popup Tooltips
-	const NameTooltip: PopupSettings = {
-		event: 'hover',
-		target: 'Name',
-		placement: 'right'
-	};
-	const IconTooltip: PopupSettings = {
-		event: 'hover',
-		target: 'Icon',
-		placement: 'right'
-	};
-	const SlugTooltip: PopupSettings = {
-		event: 'hover',
-		target: 'Slug',
-		placement: 'right'
-	};
-	const DescriptionTooltip: PopupSettings = {
-		event: 'hover',
-		target: 'Description',
-		placement: 'right'
-	};
-	const StatusTooltip: PopupSettings = {
-		event: 'hover',
-		target: 'Status',
-		placement: 'right'
-	};
 
 	//action
 	const action = page.params.action;
@@ -205,7 +175,7 @@
 				{m.collection_name()} <span class="mx-1 text-error-500">*</span>
 				<iconify-icon
 					icon="material-symbols:info"
-					use:popup={NameTooltip}
+					title={`${m.collection_name_tooltip1()} ${m.collection_name_tooltip2()}`}
 					width="18"
 					class="ml-1 cursor-pointer text-tertiary-500 dark:text-primary-500"
 				></iconify-icon>
@@ -229,18 +199,12 @@
 					<span class="font-bold text-tertiary-500 dark:text-primary-500">{DBName}</span>
 				</p>
 			{/if}
-			<!-- Name Tooltip -->
-			<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Name">
-				<p>{m.collection_name_tooltip1()}</p>
-				<p>{m.collection_name_tooltip2()}</p>
-				<div class="preset-filled arrow"></div>
-			</div>
 		</div>
 
 		<!-- Separator (Optional) -->
 		<hr class="my-2 border-gray-300 dark:border-gray-600" />
 
-		<p class="text-token mb-0 text-center font-bold">{m.collectionname_optional()}:</p>
+		<p class="base-font-color mb-0 text-center font-bold">{m.collectionname_optional()}:</p>
 
 		<!-- Icon -->
 		<div class="flex flex-col">
@@ -248,17 +212,12 @@
 				{m.collectionname_labelicon()}
 				<iconify-icon
 					icon="material-symbols:info"
-					use:popup={IconTooltip}
+					title={m.collection_icon_tooltip()}
 					width="18"
 					class="ml-1 cursor-pointer text-tertiary-500 dark:text-primary-500"
 				></iconify-icon>
 			</label>
 			<IconifyPicker bind:iconselected={selectedIcon} bind:searchQuery />
-			<!-- Icon Tooltip -->
-			<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Icon">
-				<p>{m.collection_icon_tooltip()}</p>
-				<div class="preset-filled arrow"></div>
-			</div>
 		</div>
 
 		<!-- Slug -->
@@ -267,17 +226,12 @@
 				{m.collection_slug()}
 				<iconify-icon
 					icon="material-symbols:info"
-					use:popup={SlugTooltip}
+					title={m.collection_slug_tooltip()}
 					width="18"
 					class="ml-1 cursor-pointer text-tertiary-500 dark:text-primary-500"
 				></iconify-icon>
 			</label>
 			<input type="text" id="slug" bind:value={slug} placeholder={m.collection_slug_input()} class="input w-full text-black dark:text-primary-500" />
-			<!-- Slug Tooltip -->
-			<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Slug">
-				<p>{m.collection_slug_tooltip()}</p>
-				<div class="preset-filled arrow"></div>
-			</div>
 		</div>
 
 		<!-- Description -->
@@ -286,7 +240,7 @@
 				{m.collectionname_description()}
 				<iconify-icon
 					icon="material-symbols:info"
-					use:popup={DescriptionTooltip}
+					title={m.collection_description()}
 					width="18"
 					class="ml-1 cursor-pointer text-tertiary-500 dark:text-primary-500"
 				></iconify-icon>
@@ -298,11 +252,6 @@
 				placeholder={m.collection_description_placeholder()}
 				class="input w-full text-black dark:text-primary-500"
 			></textarea>
-			<!-- Description Tooltip -->
-			<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Description">
-				<p>{m.collection_description()}</p>
-				<div class="preset-filled arrow"></div>
-			</div>
 		</div>
 
 		<!-- Status -->
@@ -311,7 +260,7 @@
 				{m.collection_status()}
 				<iconify-icon
 					icon="material-symbols:info"
-					use:popup={StatusTooltip}
+					title={m.collection_status_tooltip()}
 					width="18"
 					class="ml-1 cursor-pointer text-tertiary-500 dark:text-primary-500"
 				></iconify-icon>
@@ -321,17 +270,12 @@
 					<option value={statusOption}>{statusOption}</option>
 				{/each}
 			</select>
-			<!-- Status Tooltip -->
-			<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Status">
-				<p>{m.collection_status_tooltip()}</p>
-				<div class="preset-filled arrow"></div>
-			</div>
 		</div>
 	</div>
 
 	<!-- Buttons Section -->
 	<div class="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-between">
-		<a href="/config/collectionbuilder" class="preset-outline-secondary btn sm:w-auto">{m.button_cancel()}</a>
-		<button type="button" onclick={handleNextClick} class="preset-filled-tertiary btn dark:preset-filled-primary sm:w-auto">{m.button_next()}</button>
+		<a href="/config/collectionbuilder" class="preset-outlined-secondary-500 btn sm:w-auto">{m.button_cancel()}</a>
+		<button type="button" onclick={handleNextClick} class="preset-filled-tertiary-500 btn dark:preset-filled-primary-500 sm:w-auto">{m.button_next()}</button>
 	</div>
 </div>

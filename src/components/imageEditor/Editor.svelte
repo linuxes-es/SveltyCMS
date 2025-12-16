@@ -28,44 +28,23 @@ and unified tool experiences (crop includes rotation, scale, flip).
 	// Konva
 	import Konva from 'konva';
 
+	// Widgets registry
+	import { editorWidgets } from './widgets/registry';
+
 	let activeToolComponent = $state<any>(null);
 
 	$effect(() => {
-		const loadTool = async () => {
-			const state = imageEditorStore.state.activeState;
-			if (state) {
-				try {
-					switch (state) {
-						case 'crop':
-							activeToolComponent = (await import('./widgets/Crop/Tool.svelte')).default;
-							break;
-						case 'blur':
-							activeToolComponent = (await import('./widgets/Blur/Tool.svelte')).default;
-							break;
-						case 'rotate':
-							activeToolComponent = (await import('./widgets/Rotate/Tool.svelte')).default;
-							break;
-						case 'finetune':
-							activeToolComponent = (await import('./widgets/FineTune/Tool.svelte')).default;
-							break;
-						case 'watermark':
-							activeToolComponent = (await import('./widgets/Watermark/Tool.svelte')).default;
-							break;
-						case 'annotate':
-							activeToolComponent = (await import('./widgets/Annotate/Tool.svelte')).default;
-							break;
-						default:
-							activeToolComponent = null;
-					}
-				} catch (e) {
-					logger.error(`Failed to load tool ${state}`, e);
-					activeToolComponent = null;
-				}
+		const state = imageEditorStore.state.activeState;
+		if (state) {
+			const widget = editorWidgets.find((w) => w.key === state);
+			if (widget) {
+				activeToolComponent = widget.tool;
 			} else {
 				activeToolComponent = null;
 			}
-		};
-		loadTool();
+		} else {
+			activeToolComponent = null;
+		}
 	});
 
 	// Props
@@ -175,13 +154,13 @@ and unified tool experiences (crop includes rotation, scale, flip).
 				const currentState = imageEditorStore.state.activeState;
 				if (currentState === 'textoverlay') {
 					// Trigger delete for selected text
-					const deleteBtn = document.querySelector('.preset-filled-error.btn') as HTMLButtonElement;
+					const deleteBtn = document.querySelector('.preset-filled-error-500.btn') as HTMLButtonElement;
 					if (deleteBtn && !deleteBtn.disabled) {
 						deleteBtn.click();
 					}
 				} else if (currentState === 'shapeoverlay') {
 					// Trigger delete for selected shape
-					const deleteBtn = document.querySelector('.preset-filled-error.btn') as HTMLButtonElement;
+					const deleteBtn = document.querySelector('.preset-filled-error-500.btn') as HTMLButtonElement;
 					if (deleteBtn && !deleteBtn.disabled) {
 						deleteBtn.click();
 					}
@@ -553,22 +532,6 @@ and unified tool experiences (crop includes rotation, scale, flip).
 </div>
 
 <style>
-	.image-editor {
-		@apply flex h-full w-full flex-col overflow-hidden;
-	}
-
-	.editor-layout {
-		@apply flex h-full overflow-hidden;
-	}
-
-	.editor-main {
-		@apply flex min-w-0 flex-1 flex-col;
-	}
-
-	.canvas-wrapper {
-		@apply relative flex flex-1 flex-col;
-	}
-
 	/* Tool-specific overrides */
 	:global(.crop-bottom-bar) {
 		position: absolute;
