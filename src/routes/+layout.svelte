@@ -5,17 +5,13 @@
  -->
 
 <script lang="ts">
-	import '../app.postcss';
+	// Selected theme:
+	import '../app.css';
 	// Register Iconify custom element globally
 	import 'iconify-icon';
 
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-
-	// Initializing Skeleton stores
-	import { initializeStores, storePopup } from '@skeletonlabs/skeleton';
-	// Import from Floating UI
-	import { arrow, autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
 
 	// Paraglide locale bridge
 	import { locales as availableLocales, getLocale, setLocale } from '@src/paraglide/runtime';
@@ -25,8 +21,41 @@
 	import { themeStore, initializeThemeStore, initializeDarkMode } from '@stores/themeStore.svelte';
 
 	// Toast support
-	import { setGlobalToastStore } from '@utils/toast';
-	import { getToastStore, Toast } from '@skeletonlabs/skeleton';
+	import { Toast } from '@skeletonlabs/skeleton-svelte';
+	import { toaster } from '@utils/toast';
+
+	// Dialog support
+	import DialogManager from '@components/system/DialogManager.svelte';
+	import TokenPicker from '@components/TokenPicker.svelte';
+
+	// Store toaster for usage in utils
+	// Note: getToastContext must be called at component init.
+	// But we need to pass it to the util.
+	// Is getToastContext available here in root layout?
+	// Usually only available UNDER the Provider.
+	// So we need a component INSIDE Toast.Provider to capture the context.
+
+	// Strategy: Create a tiny component <ToastBinder /> inside Provider?
+	// OR: Just rely on importing getToastContext in components?
+	// BUT we need it in async functions (utils).
+
+	// Better: The Layout renders Toast.Provider.
+	// Children can access it.
+	// But showToast is imported in +page.svelte (script module code?)
+	// No, +page.svelte components.
+
+	// If I use `getToastContext` in `ModalEditForm`, it works.
+	// But `showToast` is a utility function.
+	// Svelte 5 context is fine in components.
+	// But calling `showToast` from an async fetch handler...
+	// The handler is defined inside the component, so `getToastContext` called at top level of component
+	// can capture the toaster, and then the handler uses that captured toaster.
+
+	// SO `showToast` utility needs to be passed the toaster instance?
+	// OR `showToast` utility should assume it's set globally.
+	// I am setting it globally in Layout but I need to be inside the Provider.
+
+	// I'll create a component `ToastSetup.svelte` inside Provider.
 
 	// Initialize theme and other client-side logic on mount
 	onMount(() => {
@@ -57,13 +86,7 @@
 		};
 	});
 
-	initializeStores();
-	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
-	setGlobalToastStore(getToastStore());
-
 	// Props
-	import TokenPicker from '@components/TokenPicker.svelte';
-
 	interface Props {
 		children?: import('svelte').Snippet;
 	}
@@ -78,10 +101,11 @@
 	<title>{siteName}</title>
 </svelte:head>
 
-<div>
+<!-- Toast Provider -->
+<Toast.Provider {toaster}>
 	{#key currentLocale}
 		{@render children?.()}
 	{/key}
 	<TokenPicker />
-	<Toast />
-</div>
+	<DialogManager />
+</Toast.Provider>

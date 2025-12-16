@@ -9,11 +9,11 @@ Handles Previous, Next, and Complete buttons and their states.
 	const { currentStep, totalSteps, canProceed, isLoading, onprev = () => {}, onnext = () => {}, oncomplete = () => {} } = $props();
 </script>
 
-<div class="flex flex-shrink-0 items-center justify-between border-t border-slate-200 px-4 pb-4 pt-4 sm:px-8 sm:pb-6 sm:pt-6">
+<div class="flex shrink-0 items-center justify-between border-t border-slate-200 px-4 pb-4 pt-4 sm:px-8 sm:pb-6 sm:pt-6">
 	<!-- Previous Button -->
 	<div class="flex-1">
 		{#if currentStep > 0}
-			<button onclick={() => onprev()} class="variant-filled-tertiary btn dark:variant-filled-primary">
+			<button onclick={() => onprev()} class="preset-filled-tertiary btn dark:preset-filled-primary">
 				<iconify-icon icon="mdi:arrow-left-bold" class="mr-1 h-4 w-4" aria-hidden="true"></iconify-icon>
 				{m.button_previous()}
 			</button>
@@ -21,7 +21,7 @@ Handles Previous, Next, and Complete buttons and their states.
 	</div>
 
 	<!-- Step Indicator -->
-	<div class="flex-shrink-0 text-center text-sm font-medium">
+	<div class="shrink-0 text-center text-sm font-medium">
 		{m.setup_progress_step_of({ current: String(currentStep + 1), total: String(totalSteps) })}
 	</div>
 
@@ -32,7 +32,7 @@ Handles Previous, Next, and Complete buttons and their states.
 				onclick={() => onnext()}
 				disabled={!canProceed || isLoading}
 				aria-disabled={!canProceed || isLoading}
-				class="variant-filled-tertiary btn transition-all dark:variant-filled-primary {canProceed ? '' : 'cursor-not-allowed opacity-60'}"
+				class="preset-filled-tertiary btn transition-all dark:preset-filled-primary {canProceed ? '' : 'cursor-not-allowed opacity-60'}"
 			>
 				{#if isLoading && currentStep === 0}
 					<div class="h-4 w-4 animate-spin rounded-full border-2 border-t-2 border-transparent border-t-white" role="status"></div>
@@ -47,7 +47,7 @@ Handles Previous, Next, and Complete buttons and their states.
 				onclick={() => oncomplete()}
 				disabled={isLoading}
 				aria-disabled={isLoading}
-				class="variant-filled-tertiary btn transition-all dark:variant-filled-primary {isLoading ? 'cursor-not-allowed opacity-60' : ''}"
+				class="preset-filled-tertiary btn transition-all dark:preset-filled-primary {isLoading ? 'cursor-not-allowed opacity-60' : ''}"
 			>
 				{#if isLoading}
 					<div class="h-4 w-4 animate-spin rounded-full border-2 border-t-2 border-transparent border-t-white" role="status"></div>

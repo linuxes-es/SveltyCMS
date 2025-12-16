@@ -22,7 +22,6 @@
 	import { logger } from '@utils/logger';
 	import { dndzone } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
-	import { getModalStore, type ModalStore } from '@skeletonlabs/skeleton'; // Import ModalStore type
 	import type { FieldType } from './';
 	import type { MediaFile } from './types';
 

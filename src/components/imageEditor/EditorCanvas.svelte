@@ -32,7 +32,7 @@ for the image editor canvas with responsive behavior.
 </script>
 
 <div
-	class="editor-canvas-wrapper relative flex-1 overflow-hidden rounded-lg border border-surface-200 transition-all duration-300 ease-in-out focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 focus-within:ring-offset-surface-50 dark:focus-within:ring-offset-surface-900 md:rounded-lg md:border md:border-surface-200 max-md:rounded-none max-md:border-0 max-md:border-b max-md:border-t"
+	class="editor-canvas-wrapper relative flex-1 overflow-hidden rounded-lg border border-surface-200 transition-all duration-300 ease-in-out focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 focus-within:ring-offset-preset-50 dark:focus-within:ring-offset-preset-900 md:rounded-lg md:border md:border-surface-200 max-md:rounded-none max-md:border-0 max-md:border-b max-md:border-t"
 >
 	<!-- Canvas container - ALWAYS present for Konva stage -->
 	<div class="canvas-container h-full w-full transition-all duration-300 ease-in-out" bind:this={containerRef}>
@@ -44,7 +44,7 @@ for the image editor canvas with responsive behavior.
 		<div class="empty-state pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
 			<div class="empty-state-content flex max-w-md flex-col items-center gap-6 p-8 text-center max-md:p-6">
 				<div
-					class="empty-icon flex h-20 w-20 items-center justify-center rounded-full bg-surface-200 ring-4 ring-surface-300 dark:bg-surface-700 dark:ring-surface-600 max-md:h-16 max-md:w-16"
+					class="empty-icon flex h-20 w-20 items-center justify-center rounded-full bg-surface-200 ring-4 ring-preset-300 dark:bg-surface-700 dark:ring-preset-600 max-md:h-16 max-md:w-16"
 				>
 					<iconify-icon icon="mdi:image-plus" width="48" class="text-surface-400 dark:text-surface-500"></iconify-icon>
 				</div>
@@ -82,20 +82,20 @@ for the image editor canvas with responsive behavior.
 	{/if}
 </div>
 
-<style lang="postcss">
+<style>
 	.editor-canvas-wrapper {
-		background-color: rgb(var(--color-surface-50) / 1);
-		border-color: rgb(var(--color-surface-200) / 1);
+		background-color: rgb(var(--color-preset-50) / 1);
+		border-color: rgb(var(--color-preset-200) / 1);
 		min-height: 400px;
 	}
 
 	:global(.dark) .editor-canvas-wrapper {
-		background-color: rgb(var(--color-surface-900) / 1);
-		border-color: rgb(var(--color-surface-700) / 1);
+		background-color: rgb(var(--color-preset-900) / 1);
+		border-color: rgb(var(--color-preset-700) / 1);
 	}
 
 	.canvas-container {
-		background-color: rgb(var(--color-surface-100) / 1);
+		background-color: rgb(var(--color-preset-100) / 1);
 		/* Checkered pattern for transparency visualization */
 		background-image:
 			linear-gradient(45deg, rgba(0, 0, 0, 0.05) 25%, transparent 25%), linear-gradient(-45deg, rgba(0, 0, 0, 0.05) 25%, transparent 25%),
@@ -109,18 +109,18 @@ for the image editor canvas with responsive behavior.
 	}
 
 	:global(.dark) .canvas-container {
-		background-color: rgb(var(--color-surface-800) / 1);
+		background-color: rgb(var(--color-preset-800) / 1);
 		background-image:
 			linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%), linear-gradient(-45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%),
 			linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.03) 75%), linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.03) 75%);
 	}
 
 	.empty-state {
-		background: linear-gradient(to bottom right, rgb(var(--color-surface-50) / 0.95), rgb(var(--color-surface-100) / 0.95));
+		background: linear-gradient(to bottom right, rgb(var(--color-preset-50) / 0.95), rgb(var(--color-preset-100) / 0.95));
 	}
 
 	:global(.dark) .empty-state {
-		background: linear-gradient(to bottom right, rgb(var(--color-surface-900) / 1), rgb(var(--color-surface-800) / 1));
+		background: linear-gradient(to bottom right, rgb(var(--color-preset-900) / 1), rgb(var(--color-preset-800) / 1));
 	}
 
 	/* Responsive adjustments */

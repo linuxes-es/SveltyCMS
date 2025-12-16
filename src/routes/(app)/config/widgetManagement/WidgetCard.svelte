@@ -26,7 +26,7 @@
 	<div class="flex items-start justify-between gap-4 p-4">
 		<div class="flex min-w-0 flex-1 items-start gap-3">
 			<div
-				class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-tertiary-50 text-tertiary-500 dark:bg-primary-900/20 dark:text-primary-500"
+				class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-tertiary-50 text-tertiary-500 dark:bg-primary-900/20 dark:text-primary-500"
 			>
 				<iconify-icon icon={widget.icon} class="text-2xl"></iconify-icon>
 			</div>
@@ -88,7 +88,7 @@
 
 			<!-- Uninstall (only for inactive custom widgets) -->
 			{#if canManage && !widget.isCore && !widget.isActive && onUninstall}
-				<button type="button" onclick={() => onUninstall?.(widget.name)} class="variant-ghost-secondary btn-icon" title="Uninstall widget">
+				<button type="button" onclick={() => onUninstall?.(widget.name)} class="preset-ghost-secondary btn-icon" title="Uninstall widget">
 					<iconify-icon icon="mdi:delete" class="text-xl"></iconify-icon>
 				</button>
 			{/if}

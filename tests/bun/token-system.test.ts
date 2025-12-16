@@ -30,4 +30,12 @@ describe('Token System', () => {
 	it('supports escaping', async () => {
 		expect(await replaceTokens('Use \\{{token}}', context)).toBe('Use {{token}}');
 	});
+
+	it('applies multiple modifiers in chain', async () => {
+		expect(await replaceTokens('{{entry.title | lower | upper}}', context)).toBe('HELLO');
+	});
+
+	it('handles unknown tokens gracefully', async () => {
+		expect(await replaceTokens('Unknown: {{entry.unknown}}', context)).toBe('Unknown: {{entry.unknown}}');
+	});
 });

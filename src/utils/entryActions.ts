@@ -3,7 +3,6 @@
  * @description Centralized functions for performing actions on collection entries.
  */
 
-import type { ModalSettings, ModalStore } from '@skeletonlabs/skeleton';
 import type { StatusType } from '@src/content/types';
 import { StatusTypes } from '@src/content/types';
 import { publicEnv } from '@src/stores/globalSettings.svelte';

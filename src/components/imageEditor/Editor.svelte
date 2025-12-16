@@ -175,13 +175,13 @@ and unified tool experiences (crop includes rotation, scale, flip).
 				const currentState = imageEditorStore.state.activeState;
 				if (currentState === 'textoverlay') {
 					// Trigger delete for selected text
-					const deleteBtn = document.querySelector('.variant-filled-error.btn') as HTMLButtonElement;
+					const deleteBtn = document.querySelector('.preset-filled-error.btn') as HTMLButtonElement;
 					if (deleteBtn && !deleteBtn.disabled) {
 						deleteBtn.click();
 					}
 				} else if (currentState === 'shapeoverlay') {
 					// Trigger delete for selected shape
-					const deleteBtn = document.querySelector('.variant-filled-error.btn') as HTMLButtonElement;
+					const deleteBtn = document.querySelector('.preset-filled-error.btn') as HTMLButtonElement;
 					if (deleteBtn && !deleteBtn.disabled) {
 						deleteBtn.click();
 					}
@@ -552,7 +552,7 @@ and unified tool experiences (crop includes rotation, scale, flip).
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
 	.image-editor {
 		@apply flex h-full w-full flex-col overflow-hidden;
 	}

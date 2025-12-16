@@ -30,7 +30,7 @@
 			href: '/config/collectionbuilder',
 			label: m.config_collectionbuilder(),
 			icon: 'fluent-mdl2:build-definition',
-			classes: 'variant-outline-tertiary dark:variant-outline-secondary border-2 border-tertiary-500/50 dark:border-secondary-500/50',
+			classes: 'preset-outline-tertiary dark:preset-outline-secondary border-2 border-tertiary-500/50 dark:border-secondary-500/50',
 			iconColor: 'text-tertiary-600',
 			permission: {
 				contextId: 'config:collectionManagement',
@@ -46,7 +46,7 @@
 			href: '/api/graphql',
 			label: m.config_graphql(),
 			icon: 'teenyicons:graphql-solid',
-			classes: 'variant-outline-tertiary dark:variant-outline-secondary border-2 border-tertiary-500/50 dark:border-secondary-500/50',
+			classes: 'preset-outline-tertiary dark:preset-outline-secondary border-2 border-tertiary-500/50 dark:border-secondary-500/50',
 			iconColor: 'text-warning-600',
 			target: '_blank',
 			permission: {
@@ -63,7 +63,7 @@
 			href: '/email-previews',
 			label: m.config_emailPreviews(),
 			icon: 'mdi:email-outline',
-			classes: 'variant-outline-tertiary dark:variant-outline-secondary border-2 border-tertiary-500/50 dark:border-secondary-500/50',
+			classes: 'preset-outline-tertiary dark:preset-outline-secondary border-2 border-tertiary-500/50 dark:border-secondary-500/50',
 			iconColor: 'text-primary-600',
 			target: '_blank',
 			permission: {
@@ -80,7 +80,7 @@
 			href: '/dashboard',
 			label: m.dashboard(),
 			icon: 'bi:bar-chart-line',
-			classes: 'variant-ghost-primary dark:text-white',
+			classes: 'preset-ghost-primary dark:text-white',
 			iconColor: 'text-error-600',
 			permission: {
 				contextId: 'system:dashboard',
@@ -96,7 +96,7 @@
 			href: 'https://www.sveltyCMS.com',
 			label: m.marketplace(),
 			icon: 'icon-park-outline:shopping-bag',
-			classes: 'variant-ghost-primary dark:text-white',
+			classes: 'preset-ghost-primary dark:text-white',
 			target: '_blank',
 			permission: null
 		},
@@ -105,7 +105,7 @@
 			href: '/config/widgetManagement',
 			label: m.config_widgetManagement(),
 			icon: 'mdi:widgets',
-			classes: 'variant-ghost-primary dark:text-white',
+			classes: 'preset-ghost-primary dark:text-white',
 			permission: {
 				contextId: 'config:widgetManagement',
 				name: 'Widget Management',
@@ -120,7 +120,7 @@
 			href: '/config/themeManagement',
 			label: m.config_themeManagement(),
 			icon: 'ph:layout',
-			classes: 'variant-ghost-primary dark:text-white',
+			classes: 'preset-ghost-primary dark:text-white',
 			permission: {
 				contextId: 'config:themeManagement',
 				name: 'Theme Management',
@@ -135,7 +135,7 @@
 			href: '/config/systemsetting',
 			label: m.config_settings(),
 			icon: 'uil:setting',
-			classes: 'variant-ghost-error dark:text-white',
+			classes: 'preset-ghost-error dark:text-white',
 			permission: {
 				// FIX: Changed from 'system:settings' to 'config:settings' to match +page.server.ts
 				contextId: 'config:settings',
@@ -151,7 +151,7 @@
 			href: '/config/import-export',
 			label: 'Import & Export',
 			icon: 'mdi:database-import',
-			classes: 'variant-ghost-warning dark:text-white',
+			classes: 'preset-ghost-warning dark:text-white',
 			permission: {
 				contextId: 'config:importExport',
 				name: 'Import & Export',
@@ -167,7 +167,7 @@
 			href: '/config/configurationManager',
 			label: 'Config Manager',
 			icon: 'mdi:sync-circle',
-			classes: 'variant-ghost-secondary dark:text-white',
+			classes: 'preset-ghost-secondary dark:text-white',
 			permission: {
 				contextId: 'config:synchronization',
 				name: 'Configuration Manager',
@@ -184,7 +184,7 @@
 			href: '/config/system-health',
 			label: 'System Health',
 			icon: 'mdi:heart-pulse',
-			classes: 'variant-ghost-success dark:text-white',
+			classes: 'preset-ghost-success dark:text-white',
 			permission: {
 				contextId: 'config:systemHealth',
 				name: 'System Health',
@@ -201,7 +201,7 @@
 			href: '/config/accessManagement',
 			label: m.config_accessManagement(),
 			icon: 'mdi:account-group',
-			classes: 'variant-ghost-error dark:text-white',
+			classes: 'preset-ghost-error dark:text-white',
 			permission: {
 				contextId: 'config:accessManagement',
 				name: 'Access Management',

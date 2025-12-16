@@ -25,7 +25,7 @@ Modern controls for the Crop tool. Injected into the master toolbar.
 
 <div class="flex items-center gap-3">
 	<!-- Aspect Ratio Presets -->
-	<div class="btn-group variant-ghost-surface">
+	<div class="btn-group preset-ghost-surface">
 		<button class="btn btn-sm" onclick={() => onAspectRatio(null)}>Free</button>
 		<button class="btn btn-sm" onclick={() => onAspectRatio(1)}>1:1</button>
 		<button class="btn btn-sm" onclick={() => onAspectRatio(16 / 9)}>16:9</button>
@@ -35,7 +35,7 @@ Modern controls for the Crop tool. Injected into the master toolbar.
 	<div class="h-6 w-px bg-surface-300 dark:bg-surface-600"></div>
 
 	<!-- Shape -->
-	<div class="btn-group variant-ghost-surface">
+	<div class="btn-group preset-ghost-surface">
 		<button class="btn btn-sm" class:active={cropShape === 'rectangle'} onclick={() => onCropShapeChange('rectangle')} title="Rectangle">
 			<iconify-icon icon="mdi:rectangle-outline"></iconify-icon>
 		</button>
@@ -47,20 +47,20 @@ Modern controls for the Crop tool. Injected into the master toolbar.
 	<div class="h-6 w-px bg-surface-300 dark:bg-surface-600"></div>
 
 	<!-- Rotate & Flip -->
-	<button class="btn btn-icon btn-sm variant-ghost-surface" onclick={onRotateLeft} title="Rotate Left">
+	<button class="btn btn-icon btn-sm preset-ghost-surface" onclick={onRotateLeft} title="Rotate Left">
 		<iconify-icon icon="mdi:rotate-left"></iconify-icon>
 	</button>
-	<button class="btn btn-icon btn-sm variant-ghost-surface" onclick={onRotateRight} title="Rotate Right">
+	<button class="btn btn-icon btn-sm preset-ghost-surface" onclick={onRotateRight} title="Rotate Right">
 		<iconify-icon icon="mdi:rotate-right"></iconify-icon>
 	</button>
-	<button class="btn btn-icon btn-sm variant-ghost-surface" onclick={onFlipHorizontal} title="Flip Horizontal">
+	<button class="btn btn-icon btn-sm preset-ghost-surface" onclick={onFlipHorizontal} title="Flip Horizontal">
 		<iconify-icon icon="mdi:flip-horizontal"></iconify-icon>
 	</button>
 
-	<div class="flex-grow"></div>
+	<div class="grow"></div>
 
 	<!-- Apply -->
-	<button class="btn variant-filled-success" onclick={onApply}>
+	<button class="btn preset-filled-success" onclick={onApply}>
 		<iconify-icon icon="mdi:check"></iconify-icon>
 		<span>Apply Crop</span>
 	</button>

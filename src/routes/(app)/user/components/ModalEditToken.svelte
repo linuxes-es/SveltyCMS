@@ -21,9 +21,9 @@ It handles token creation, updates, and deletion with proper validation and erro
 	import { page } from '$app/state';
 
 	// Skeleton & Stores
-	import { getModalStore } from '@skeletonlabs/skeleton';
-	import type { ModalComponent } from '@skeletonlabs/skeleton';
-	const modalStore = getModalStore();
+	// // getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
+	// const modalStore = getModalStore();
+	import { dialogState } from '@utils/dialogState.svelte';
 	import { showToast } from '@utils/toast';
 
 	// Component
@@ -39,15 +39,26 @@ It handles token creation, updates, and deletion with proper validation and erro
 
 	// Props
 	interface Props {
-		parent: ModalComponent['props'] & { regionFooter?: string; onClose?: (event: MouseEvent) => void; buttonPositive?: string };
+		parent?: ModalComponent['props'];
 		token: string;
 		user_id: string;
 		email: string;
 		role: string;
 		expires: string;
+		title?: string;
+		body?: string;
 	}
 
-	const { parent = { regionFooter: 'modal-footer p-4' }, token = '', user_id = '', email = '', role = 'user', expires = '' }: Props = $props();
+	const {
+		parent = { regionFooter: 'modal-footer p-4' },
+		token = '',
+		user_id = '',
+		email = '',
+		role = 'user',
+		expires = '',
+		title,
+		body
+	}: Props = $props();
 
 	// Form Data with format conversion
 	function convertLegacyFormat(expires: string): string {
@@ -156,14 +167,12 @@ It handles token creation, updates, and deletion with proper validation and erro
 			await invalidateAll();
 
 			// Close modal and trigger response handler
-			if (parent.onClose) {
+			if (parent?.onClose) {
 				(parent.onClose as any)({ success: true, action: isEditMode ? 'edit' : 'create' });
 			}
 			// Close modal with response data
-			if ($modalStore[0]?.response) {
-				$modalStore[0].response({ success: true, action: isEditMode ? 'edit' : 'create' });
-			}
-			modalStore.close();
+			// Removed modalStore usage
+			dialogState.close();
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'An unknown error occurred';
 			showToast(`<iconify-icon icon="mdi:alert-circle" color="white" width="24" class="mr-1"></iconify-icon> ${message}`, 'error');
@@ -191,14 +200,12 @@ It handles token creation, updates, and deletion with proper validation and erro
 			await invalidateAll();
 
 			// Close modal and trigger response handler
-			if (parent.onClose) {
+			if (parent?.onClose) {
 				(parent.onClose as any)({ success: true, action: 'delete' });
 			}
 			// Close modal with response data
-			if ($modalStore[0]?.response) {
-				$modalStore[0].response({ success: true, action: 'delete' });
-			}
-			modalStore.close();
+			// Removed modalStore usage
+			dialogState.close();
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Failed to delete token';
 			// This catch block will now receive a proper error message if the API fails.
@@ -232,104 +239,101 @@ It handles token creation, updates, and deletion with proper validation and erro
 	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token';
 </script>
 
-<!-- The HTML markup for the form does not need to change -->
-{#if $modalStore[0]}
-	<div class="modal-example-form {cBase}">
-		<header class={`text-center dark:text-primary-500 ${cHeader}`}>
-			{$modalStore[0]?.title ?? '(title missing)'}
-		</header>
-		<article class="text-center text-sm text-black dark:text-white">
-			{$modalStore[0]?.body ?? '(body missing)'}
-		</article>
-		<form class="modal-form {cForm}" onsubmit={onFormSubmit} id="token-form">
-			<!-- Email field -->
-			<div class="group relative z-0 mb-6 w-full">
-				<FloatingInput
-					type="email"
-					name="email"
-					label={m.email()}
-					bind:value={tokenForm.data.email}
-					onkeydown={() => (tokenForm.errors.email = [])}
-					required
-					autocomplete="email"
-					icon="mdi:email"
-					textColor="text-tertiary-500 dark:text-white"
-				/>
-				{#if tokenForm.errors.email}
-					<div class="absolute left-0 top-11 text-xs text-error-500">
-						{tokenForm.errors.email[0]}
-					</div>
-				{/if}
-			</div>
-			<!-- Token field (hidden but still submitted with form) -->
-			<input bind:value={tokenForm.data.token} type="hidden" name="token" />
-
-			<!-- User Role -->
-			{#if user.role === 'admin'}
-				<div class="flex flex-col gap-2 sm:flex-row">
-					<div class="border-b text-center sm:w-1/4 sm:border-0 sm:text-left">
-						{m.role()}: <span class="text-error-500">*</span>
-					</div>
-					<div class="flex-auto">
-						<div class="flex flex-wrap justify-center gap-2 space-x-2 sm:justify-start">
-							{#if roles && roles.length > 0}
-								{#each roles as r}
-									<button
-										type="button"
-										class="chip {tokenForm.data.role === r._id ? 'variant-filled-tertiary' : 'variant-ghost-secondary'}"
-										onclick={() => (tokenForm.data.role = r._id)}
-									>
-										{#if tokenForm.data.role === r._id}
-											<span><iconify-icon icon="fa:check"></iconify-icon></span>
-										{/if}
-										<span class="capitalize">{r.name}</span>
-									</button>
-								{/each}
-							{:else}
-								<div class="text-sm text-gray-500">No roles available. Check console for debug info.</div>
-							{/if}
-						</div>
-					</div>
+<div class="modal-example-form {cBase}">
+	<header class={`text-center dark:text-primary-500 ${cHeader}`}>
+		{title ?? '(title missing)'}
+	</header>
+	<article class="text-center text-sm text-black dark:text-white">
+		{body ?? '(body missing)'}
+	</article>
+	<form class="modal-form {cForm}" onsubmit={onFormSubmit} id="token-form">
+		<!-- Email field -->
+		<div class="group relative z-0 mb-6 w-full">
+			<FloatingInput
+				type="text"
+				name="email"
+				label={m.email()}
+				bind:value={tokenForm.data.email}
+				onkeydown={() => (tokenForm.errors.email = [])}
+				required
+				autocomplete="email"
+				icon="mdi:email"
+				textColor="text-tertiary-500 dark:text-white"
+			/>
+			{#if tokenForm.errors.email}
+				<div class="absolute left-0 top-11 text-xs text-error-500">
+					{tokenForm.errors.email[0]}
 				</div>
 			{/if}
+		</div>
+		<!-- Token field (hidden but still submitted with form) -->
+		<input bind:value={tokenForm.data.token} type="hidden" name="token" />
 
-			<!-- Expires field -->
-			<div class="group relative z-0 mb-6 w-full">
-				<label for="expires-select" class="mb-2 block text-sm font-medium text-black dark:text-white">{m.modaltokenuser_tokenvalidity()}</label>
-				<select
-					id="expires-select"
-					bind:value={tokenForm.data.expiresIn}
-					class="input bg-white text-black dark:bg-surface-700 dark:text-white"
-					aria-label="Token Validity"
-				>
-					<option value="2 hrs">2 Hours</option>
-					<option value="12 hrs">12 Hours</option>
-					<option value="2 days">2 Days (default)</option>
-					<option value="1 week">1 Week</option>
-					<option value="2 weeks">2 Weeks</option>
-					<option value="1 month">1 Month</option>
-				</select>
+		<!-- User Role -->
+		{#if user.role === 'admin'}
+			<div class="flex flex-col gap-2 sm:flex-row">
+				<div class="border-b text-center sm:w-1/4 sm:border-0 sm:text-left">
+					{m.role()}: <span class="text-error-500">*</span>
+				</div>
+				<div class="flex-auto">
+					<div class="flex flex-wrap justify-center gap-2 space-x-2 sm:justify-start">
+						{#if roles && roles.length > 0}
+							{#each roles as r}
+								<button
+									type="button"
+									class="chip {tokenForm.data.role === r._id ? 'preset-filled-tertiary' : 'preset-ghost-secondary'}"
+									onclick={() => (tokenForm.data.role = r._id)}
+								>
+									{#if tokenForm.data.role === r._id}
+										<span><iconify-icon icon="fa:check"></iconify-icon></span>
+									{/if}
+									<span class="capitalize">{r.name}</span>
+								</button>
+							{/each}
+						{:else}
+							<div class="text-sm text-gray-500">No roles available. Check console for debug info.</div>
+						{/if}
+					</div>
+				</div>
 			</div>
-		</form>
+		{/if}
 
-		<footer class="modal-footer flex items-center {tokenForm.data.token ? 'justify-between' : 'justify-end'} p-4 {parent?.regionFooter ?? ''}">
-			<!-- Delete - Only show for existing tokens -->
-			{#if tokenForm.data.token}
-				<button type="button" onclick={deleteToken} class="variant-filled-error btn">
-					<iconify-icon icon="icomoon-free:bin" width="24"></iconify-icon><span class="hidden sm:block">{m.button_delete()}</span>
-				</button>
-			{/if}
-			<div class="flex gap-2">
-				<!-- Cancel -->
-				<button type="button" class="variant-outline-secondary btn" onclick={parent?.onClose}>{m.button_cancel()}</button>
-				<!-- Save -->
-				<button type="submit" form="token-form" class="variant-filled-tertiary btn dark:variant-filled-primary {parent?.buttonPositive ?? ''}">
-					{m.button_save()}
-				</button>
-			</div>
-		</footer>
-	</div>
-{/if}
+		<!-- Expires field -->
+		<div class="group relative z-0 mb-6 w-full">
+			<label for="expires-select" class="mb-2 block text-sm font-medium text-black dark:text-white">{m.modaltokenuser_tokenvalidity()}</label>
+			<select
+				id="expires-select"
+				bind:value={tokenForm.data.expiresIn}
+				class="input bg-white text-black dark:bg-surface-700 dark:text-white"
+				aria-label="Token Validity"
+			>
+				<option value="2 hrs">2 Hours</option>
+				<option value="12 hrs">12 Hours</option>
+				<option value="2 days">2 Days (default)</option>
+				<option value="1 week">1 Week</option>
+				<option value="2 weeks">2 Weeks</option>
+				<option value="1 month">1 Month</option>
+			</select>
+		</div>
+	</form>
+
+	<footer class="modal-footer flex items-center {tokenForm.data.token ? 'justify-between' : 'justify-end'} p-4 {parent?.regionFooter ?? ''}">
+		<!-- Delete - Only show for existing tokens -->
+		{#if tokenForm.data.token}
+			<button type="button" onclick={deleteToken} class="preset-filled-error btn">
+				<iconify-icon icon="icomoon-free:bin" width="24"></iconify-icon><span class="hidden sm:block">{m.button_delete()}</span>
+			</button>
+		{/if}
+		<div class="flex gap-2">
+			<!-- Cancel -->
+			<button type="button" class="preset-outline-secondary btn" onclick={() => dialogState.close()}>{m.button_cancel()}</button>
+			<!-- Save -->
+			<button type="submit" form="token-form" class="preset-filled-tertiary btn dark:preset-filled-primary {parent?.buttonPositive ?? ''}">
+				{m.button_save()}
+			</button>
+		</div>
+	</footer>
+</div>
 
 <style>
 	/* Removed: dark-mode-input styles - now handled via textColor prop */

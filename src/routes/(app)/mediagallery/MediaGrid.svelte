@@ -26,7 +26,7 @@ Key features:
 	import type { MediaImage, MediaBase } from '@utils/media/mediaModels';
 
 	// Skeleton
-	import { popup } from '@skeletonlabs/skeleton';
+	import { popup } from '@skeletonlabs/skeleton-svelte';
 	import { showToast } from '@utils/toast';
 
 	// Svelte transitions
@@ -388,7 +388,7 @@ Key features:
 						isSelectionMode = !isSelectionMode;
 						selectedFiles = new Set();
 					}}
-					class="variant-ghost-surface btn btn-sm"
+					class="preset-ghost-surface btn btn-sm"
 					aria-label="Toggle selection mode"
 				>
 					<iconify-icon icon={isSelectionMode ? 'mdi:close' : 'mdi:checkbox-multiple-marked'} width="20"></iconify-icon>
@@ -396,11 +396,11 @@ Key features:
 				</button>
 
 				{#if isSelectionMode}
-					<button onclick={selectAll} class="variant-ghost-surface btn btn-sm">
+					<button onclick={selectAll} class="preset-ghost-surface btn btn-sm">
 						<iconify-icon icon="mdi:select-all" width="20"></iconify-icon>
 						Select All
 					</button>
-					<button onclick={deselectAll} class="variant-ghost-surface btn btn-sm">
+					<button onclick={deselectAll} class="preset-ghost-surface btn btn-sm">
 						<iconify-icon icon="mdi:select-off" width="20"></iconify-icon>
 						Deselect All
 					</button>
@@ -410,7 +410,7 @@ Key features:
 			{#if selectedFiles.size > 0}
 				<div class="flex items-center gap-2">
 					<span class="text-sm">{selectedFiles.size} selected</span>
-					<button onclick={handleBulkDelete} class="variant-filled-error btn btn-sm">
+					<button onclick={handleBulkDelete} class="preset-filled-error btn btn-sm">
 						<iconify-icon icon="mdi:delete" width="20"></iconify-icon>
 						Delete Selected
 					</button>
@@ -456,10 +456,10 @@ Key features:
 						<iconify-icon icon="raphael:info" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
 					</button>
 
-					<div class="card variant-filled z-50 min-w-[250px] p-2" data-popup="FileInfo-{index}">
+					<div class="card preset-filled z-50 min-w-[250px] p-2" data-popup="FileInfo-{index}">
 						<table class="table-hover w-full table-auto">
 							<thead class="text-tertiary-500">
-								<tr class="divide-x divide-surface-400 border-b-2 border-surface-400 text-center">
+								<tr class="divide-x divide-preset-400 border-b-2 border-surface-400 text-center">
 									<th class="text-left">Format</th>
 									<th class="">Pixel</th>
 									<th class="">Size</th>
@@ -473,7 +473,7 @@ Key features:
 									{@const thumbnail = getThumbnail(file, size)}
 									{#if thumbnail}
 										<tr
-											class="divide-x divide-surface-400 border-b border-surface-400 last:border-b-0 {size === gridSize
+											class="divide-x divide-preset-400 border-b border-surface-400 last:border-b-0 {size === gridSize
 												? 'bg-primary-50 dark:bg-primary-900/20'
 												: ''}"
 											onclick={(e) => {
@@ -644,7 +644,7 @@ Key features:
 													/>
 												{:else}
 													<span
-														class="badge variant-filled-primary flex items-center gap-1 text-xs cursor-pointer hover:ring-2 hover:ring-primary-300"
+														class="badge preset-filled-primary flex items-center gap-1 text-xs cursor-pointer hover:ring-2 hover:ring-primary-300"
 														onclick={(e) => {
 															e.stopPropagation();
 															editingTag = { fileId, tagIndex, value: tag };
@@ -699,7 +699,7 @@ Key features:
 													e.stopPropagation();
 													addManualTag(file as MediaImage);
 												}}
-												class="btn btn-sm variant-ghost-primary"
+												class="btn btn-sm preset-ghost-primary"
 												title="Add tag"
 											>
 												<iconify-icon icon="mdi:plus" width="16"></iconify-icon>
@@ -711,7 +711,7 @@ Key features:
 												e.stopPropagation();
 												saveAITags(file as MediaImage);
 											}}
-											class="btn btn-sm variant-filled-success mt-2 w-full"
+											class="btn btn-sm preset-filled-success mt-2 w-full"
 										>
 											<iconify-icon icon="mdi:check" width="16"></iconify-icon>
 											Save Tags
@@ -758,7 +758,7 @@ Key features:
 													/>
 												{:else}
 													<span
-														class="badge variant-filled-success flex items-center gap-1 text-xs cursor-pointer hover:ring-2 hover:ring-success-300"
+														class="badge preset-filled-success flex items-center gap-1 text-xs cursor-pointer hover:ring-2 hover:ring-success-300"
 														onclick={(e) => {
 															e.stopPropagation();
 															editingTag = { fileId: `saved-${fileId}`, tagIndex, value: tag };
@@ -801,7 +801,7 @@ Key features:
 					<!-- Type & Size badges -->
 					<div class="flex items-center justify-between gap-1">
 						<!-- File Type Badge -->
-						<div class="variant-ghost-tertiary badge flex items-center gap-1">
+						<div class="preset-ghost-tertiary badge flex items-center gap-1">
 							<iconify-icon
 								icon={file.type === 'image'
 									? 'fa-solid:image'
@@ -819,7 +819,7 @@ Key features:
 						</div>
 
 						<!-- File Size Badge -->
-						<div class="variant-ghost-tertiary badge flex items-center gap-1">
+						<div class="preset-ghost-tertiary badge flex items-center gap-1">
 							{#if file.size}
 								<span class="text-tertiary-500 dark:text-primary-500">{formatBytes(file.size)}</span>
 							{:else}

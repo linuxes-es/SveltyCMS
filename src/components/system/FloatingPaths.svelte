@@ -73,7 +73,7 @@ Spring class for smooth, physics-based motion.
 	</svg>
 </div>
 
-<style lang="postcss">
+<style>
 	.mirror {
 		transform: scaleX(-1);
 	}

@@ -45,7 +45,7 @@ and proper active state indication.
 	<div class="sidebar-tools flex flex-1 flex-col gap-1 p-1.5 lg:p-2 max-lg:gap-0.5 max-lg:p-1">
 		{#each tools as tool}
 			<button
-				class="btn variant-filled-primary flex flex-col items-center justify-center gap-1 py-2"
+				class="btn preset-filled-primary flex flex-col items-center justify-center gap-1 py-2"
 				class:active={isToolActive(tool)}
 				class:disabled={!hasImage}
 				class:bg-primary-500={isToolActive(tool)}
@@ -80,23 +80,23 @@ and proper active state indication.
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
 	.editor-sidebar {
-		background-color: rgb(var(--color-surface-100) / 1);
-		border-color: rgb(var(--color-surface-200) / 1);
+		background-color: rgb(var(--color-preset-100) / 1);
+		border-color: rgb(var(--color-preset-200) / 1);
 		min-height: 100%;
 	}
 
 	:global(.dark) .editor-sidebar {
-		background-color: rgb(var(--color-surface-800) / 1);
-		border-color: rgb(var(--color-surface-700) / 1);
+		background-color: rgb(var(--color-preset-800) / 1);
+		border-color: rgb(var(--color-preset-700) / 1);
 	}
 
 	.sidebar-footer {
-		border-color: rgb(var(--color-surface-200) / 1);
+		border-color: rgb(var(--color-preset-200) / 1);
 	}
 
 	:global(.dark) .sidebar-footer {
-		border-color: rgb(var(--color-surface-700) / 1);
+		border-color: rgb(var(--color-preset-700) / 1);
 	}
 </style>

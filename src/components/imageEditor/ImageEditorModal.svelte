@@ -8,6 +8,7 @@ A reusable modal that wraps the main Image Editor.
 	import Editor from './Editor.svelte';
 	import EditorToolbar from './EditorToolbar.svelte';
 	import { imageEditorStore } from '@stores/imageEditorStore.svelte';
+	import { m } from '$paraglide/messages';
 
 	let {
 		show = $bindable(),
@@ -72,7 +73,7 @@ A reusable modal that wraps the main Image Editor.
 					<button
 						onclick={() => editorComponent?.handleUndo()}
 						disabled={!imageEditorStore.canUndoState}
-						class="btn-icon variant-ghost-surface"
+						class="btn-icon preset-ghost-surface"
 						title="Undo (Ctrl+Z)"
 						aria-label="Undo"
 					>
@@ -81,22 +82,22 @@ A reusable modal that wraps the main Image Editor.
 					<button
 						onclick={() => editorComponent?.handleRedo()}
 						disabled={!imageEditorStore.canRedoState}
-						class="btn-icon variant-ghost-surface"
+						class="btn-icon preset-ghost-surface"
 						title="Redo (Ctrl+Shift+Z)"
 						aria-label="Redo"
 					>
 						<iconify-icon icon="mdi:redo" width="20"></iconify-icon>
 					</button>
 					<div class="h-6 w-px bg-surface-300 dark:bg-surface-600"></div>
-					<button onclick={handleCancelClick} class="btn variant-ghost-surface">
-						{activeState ? 'Exit Tool' : 'Cancel'}
+					<button onclick={handleCancelClick} class="btn preset-ghost-surface">
+						{activeState ? 'Exit Tool' : m.button_cancel()}
 					</button>
-					<button onclick={() => editorComponent?.handleSave()} class="btn variant-filled-success">
+					<button onclick={() => editorComponent?.handleSave()} class="btn preset-filled-success">
 						<iconify-icon icon="mdi:content-save" width="18"></iconify-icon>
-						<span>Save</span>
+						<span>{m.button_save()}</span>
 					</button>
 					<div class="h-6 w-px bg-surface-300 dark:bg-surface-600"></div>
-					<button onclick={handleClose} class="btn-icon variant-ghost-surface" aria-label="Close">
+					<button onclick={handleClose} class="btn-icon preset-ghost-surface" aria-label="Close">
 						<iconify-icon icon="mdi:close" width="24"></iconify-icon>
 					</button>
 				</div>

@@ -16,8 +16,7 @@ Handles all field types and validation automatically
 	import type { Writable } from 'svelte/store';
 	import type { SettingGroup, SettingField } from './settingsGroups';
 	import { showToast } from '@utils/toast';
-	import { getModalStore } from '@skeletonlabs/skeleton';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
+	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
 	import iso6391 from '@utils/iso639-1.json';
 	import { getLanguageName } from '@utils/languageUtils';
 	import { logger } from '@utils/logger';
@@ -456,7 +455,7 @@ Handles all field types and validation automatically
 
 	<!-- Restart Warning -->
 	{#if group.requiresRestart}
-		<div class="alert variant-filled-warning mb-4">
+		<div class="alert preset-filled-warning mb-4">
 			<div class="alert-message">
 				<strong>⚠️ Restart Required</strong>
 				<p>Changes to these settings require a server restart to take effect.</p>
@@ -466,7 +465,7 @@ Handles all field types and validation automatically
 
 	<!-- Default Values Notice -->
 	{#if hasEmptyRequiredFields}
-		<div class="bordered alert variant-filled-error mb-4">
+		<div class="bordered alert preset-filled-error mb-4">
 			<div class="alert-message">
 				<strong>ℹ️ Default Values Detected</strong>
 				<p>
@@ -479,13 +478,13 @@ Handles all field types and validation automatically
 
 	<!-- Loading State -->
 	{#if loading}
-		<div class="card variant-soft-surface p-6 text-center">
+		<div class="card preset-soft-surface p-6 text-center">
 			<p>Loading settings...</p>
 		</div>
 	{:else}
 		<!-- Error Message -->
 		{#if error}
-			<div class="alert variant-filled-error mb-4">
+			<div class="alert preset-filled-error mb-4">
 				<div class="alert-message">
 					<strong>Error</strong>
 					<p>{error}</p>
@@ -567,13 +566,13 @@ Handles all field types and validation automatically
 									</div>
 									<div class="relative">
 										<div
-											class="flex min-h-[2.5rem] flex-wrap gap-2 rounded border p-2 pr-16 {errors[availableLangsField.key]
+											class="flex min-h-10 flex-wrap gap-2 rounded border p-2 pr-16 {errors[availableLangsField.key]
 												? 'border-error-500 bg-error-50 dark:bg-error-900/20'
 												: 'border-slate-300/50 bg-surface-50 dark:border-slate-600 dark:bg-surface-700/40'}"
 										>
 											{#if (values[availableLangsField.key] as string[])?.length > 0}
 												{#each values[availableLangsField.key] as string[] as langCode}
-													<span class="group variant-ghost-tertiary badge inline-flex items-center gap-1 rounded-full dark:variant-ghost-primary">
+													<span class="group preset-ghost-tertiary badge inline-flex items-center gap-1 rounded-full dark:preset-ghost-primary">
 														{displayLanguage(langCode)} ({langCode})
 														{#if !availableLangsField.readonly}
 															<button
@@ -594,7 +593,7 @@ Handles all field types and validation automatically
 											{#if !availableLangsField.readonly}
 												<button
 													type="button"
-													class="variant-filled-surface badge absolute right-2 top-2 rounded-full"
+													class="preset-filled-surface badge absolute right-2 top-2 rounded-full"
 													onclick={() => {
 														showLanguagePicker[availableLangsField.key] = true;
 														languageSearch[availableLangsField.key] = '';
@@ -727,13 +726,13 @@ Handles all field types and validation automatically
 									</div>
 									<div class="relative">
 										<div
-											class="flex min-h-[2.5rem] flex-wrap gap-2 rounded border p-2 pr-16 {errors[localesField.key]
+											class="flex min-h-10 flex-wrap gap-2 rounded border p-2 pr-16 {errors[localesField.key]
 												? 'border-error-500 bg-error-50 dark:bg-error-900/20'
 												: 'border-slate-300/50 bg-surface-50 dark:border-slate-600 dark:bg-surface-700/40'}"
 										>
 											{#if (values[localesField.key] as string[])?.length > 0}
 												{#each values[localesField.key] as string[] as langCode}
-													<span class="group variant-ghost-tertiary badge inline-flex items-center gap-1 rounded-full dark:variant-ghost-primary">
+													<span class="group preset-ghost-tertiary badge inline-flex items-center gap-1 rounded-full dark:preset-ghost-primary">
 														{displayLanguage(langCode)} ({langCode})
 														{#if !localesField.readonly}
 															<button
@@ -762,7 +761,7 @@ Handles all field types and validation automatically
 											{#if !localesField.readonly}
 												<button
 													type="button"
-													class="variant-filled-surface badge absolute right-2 top-2 rounded-full"
+													class="preset-filled-surface badge absolute right-2 top-2 rounded-full"
 													onclick={() => {
 														showLanguagePicker[localesField.key] = true;
 														languageSearch[localesField.key] = '';
@@ -982,13 +981,13 @@ Handles all field types and validation automatically
 								<!-- Language Multi-Select (Styled like SystemConfig.svelte) -->
 								<div class="relative">
 									<div
-										class="flex min-h-[2.5rem] flex-wrap gap-2 rounded border p-2 pr-16 {errors[field.key]
+										class="flex min-h-10 flex-wrap gap-2 rounded border p-2 pr-16 {errors[field.key]
 											? 'border-error-500 bg-error-50 dark:bg-error-900/20'
 											: 'border-slate-300/50 bg-surface-50 dark:border-slate-600 dark:bg-surface-700/40'}"
 									>
 										{#if (values[field.key] as string[])?.length > 0}
 											{#each values[field.key] as string[] as langCode}
-												<span class="group variant-ghost-tertiary badge inline-flex items-center gap-1 rounded-full dark:variant-ghost-primary">
+												<span class="group preset-ghost-tertiary badge inline-flex items-center gap-1 rounded-full dark:preset-ghost-primary">
 													{displayLanguage(langCode)} ({langCode})
 													{#if !field.readonly}
 														<button
@@ -1009,7 +1008,7 @@ Handles all field types and validation automatically
 										{#if !field.readonly}
 											<button
 												type="button"
-												class="variant-filled-surface badge absolute right-2 top-2 rounded-full"
+												class="preset-filled-surface badge absolute right-2 top-2 rounded-full"
 												onclick={() => {
 													showLanguagePicker[field.key] = true;
 													languageSearch[field.key] = '';
@@ -1072,13 +1071,13 @@ Handles all field types and validation automatically
 							{:else if field.type === 'loglevel-multi'}
 								<div class="relative">
 									<div
-										class="flex min-h-[2.5rem] flex-wrap gap-2 rounded border p-2 pr-16 {errors[field.key]
+										class="flex min-h-10 flex-wrap gap-2 rounded border p-2 pr-16 {errors[field.key]
 											? 'border-error-500 bg-error-50 dark:bg-error-900/20'
 											: 'border-slate-300/50 bg-surface-50 dark:border-slate-600 dark:bg-surface-700/40'}"
 									>
 										{#if (values[field.key] as LogLevel[])?.length > 0}
 											{#each values[field.key] as LogLevel[] as level}
-												<span class="group variant-ghost-tertiary badge inline-flex items-center gap-1 rounded-full dark:variant-ghost-primary">
+												<span class="group preset-ghost-tertiary badge inline-flex items-center gap-1 rounded-full dark:preset-ghost-primary">
 													{level}
 													{#if !field.readonly}
 														<button
@@ -1099,7 +1098,7 @@ Handles all field types and validation automatically
 										{#if !field.readonly}
 											<button
 												type="button"
-												class="variant-filled-surface badge absolute right-2 top-2 rounded-full"
+												class="preset-filled-surface badge absolute right-2 top-2 rounded-full"
 												onclick={() => (showLogLevelPicker[field.key] = true)}
 												aria-haspopup="dialog"
 												aria-expanded={showLogLevelPicker[field.key]}
@@ -1157,12 +1156,12 @@ Handles all field types and validation automatically
 
 			<!-- Actions -->
 			<div class="actions-container flex flex-col justify-between gap-2 pt-4 sm:flex-row">
-				<button type="button" class="variant-filled-surface btn w-full sm:w-auto" onclick={resetToDefaults} disabled={saving}>
+				<button type="button" class="preset-filled-surface btn w-full sm:w-auto" onclick={resetToDefaults} disabled={saving}>
 					<span>🔄</span>
 					<span>Reset to Defaults</span>
 				</button>
 
-				<button type="submit" class="variant-filled-primary btn w-full sm:w-auto" disabled={saving}>
+				<button type="submit" class="preset-filled-primary btn w-full sm:w-auto" disabled={saving}>
 					{#if saving}
 						<span>Saving...</span>
 					{:else}
@@ -1175,7 +1174,7 @@ Handles all field types and validation automatically
 	{/if}
 </div>
 
-<style lang="postcss">
+<style>
 	.generic-settings-group {
 		@apply space-y-4;
 		/* Prevent horizontal overflow */
@@ -1188,7 +1187,7 @@ Handles all field types and validation automatically
 	}
 
 	.alert {
-		@apply p-3 rounded-container-token md:p-4;
+		@apply rounded-container-token p-3 md:p-4;
 	}
 
 	.alert-message strong {

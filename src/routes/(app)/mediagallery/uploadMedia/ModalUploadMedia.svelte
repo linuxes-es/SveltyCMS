@@ -21,7 +21,7 @@
 
 <script lang="ts">
 	// Skeleton
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
 	import { logger } from '@utils/logger';
 	import { untrack } from 'svelte';
 	const modalStore = getModalStore();
@@ -251,14 +251,14 @@
 		<header class={cHeader}>
 			{sectionName}
 		</header>
-		<article class="hidden flex-shrink-0 text-center sm:block">
+		<article class="hidden shrink-0 text-center sm:block">
 			{$modalStore[0]?.body ?? '(body missing)'}
 		</article>
 		<!-- Enable for debugging: -->
 
-		<form id="upload-form" class="{cForm} flex-grow overflow-hidden" onsubmit={onFormSubmit}>
+		<form id="upload-form" class="{cForm} grow overflow-hidden" onsubmit={onFormSubmit}>
 			<!-- Scrollable content area -->
-			<div class="flex-grow overflow-y-auto">
+			<div class="grow overflow-y-auto">
 				<!-- Show all media as cards with delete buttons on hover -->
 				<div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
 					{#each files as file (file.name + file.size)}
@@ -268,7 +268,7 @@
 						<div class="card card-hover relative">
 							<!-- Delete buttons -->
 							<div class="absolute right-0 top-2 flex w-full justify-end px-2 opacity-0 hover:opacity-100">
-								<button type="button" onclick={() => handleDelete(file)} aria-label="Delete" class="variant-ghost-surface btn-icon">
+								<button type="button" onclick={() => handleDelete(file)} aria-label="Delete" class="preset-ghost-surface btn-icon">
 									<iconify-icon icon="material-symbols:delete" width="24" class="text-error-500"></iconify-icon>
 								</button>
 							</div>
@@ -297,14 +297,14 @@
 							</div>
 
 							<!-- Media Type & Size -->
-							<div class="flex flex-grow items-center justify-between p-1 dark:bg-surface-700">
-								<div class="variant-ghost-tertiary badge flex items-center gap-1">
+							<div class="flex grow items-center justify-between p-1 dark:bg-surface-700">
+								<div class="preset-ghost-tertiary badge flex items-center gap-1">
 									<!-- Media Icon & type  -->
 									<iconify-icon icon={iconName} width="16" height="16"></iconify-icon>
 									<span class="text-tertiary-500 dark:text-primary-500">{formatMimeType(file.type)}</span>
 								</div>
 								<!-- File Size in KB -->
-								<p class="variant-ghost-tertiary badge flex items-center gap-1">
+								<p class="preset-ghost-tertiary badge flex items-center gap-1">
 									<span class="text-tertiary-500 dark:text-primary-500">{(file.size / 1024).toFixed(2)}</span>
 									KB
 								</p>
@@ -320,15 +320,15 @@
 						<input id="file-input" type="file" class="input" onchange={handleFileInputChange} />
 					</div>
 					{#if duplicateWarning}
-						<p class="variant-filled-error rounded px-2 py-4">{duplicateWarning}</p>
+						<p class="preset-filled-error rounded px-2 py-4">{duplicateWarning}</p>
 					{/if}
 				</div>
 			</div>
 		</form>
 
-		<footer class="modal-footer m-4 flex w-full justify-between {parent.regionFooter} flex-shrink-0">
-			<button type="button" class="variant-outline-secondary btn" onclick={handleCancel}>{m.button_cancel()}</button>
-			<button type="submit" form="upload-form" class="variant-filled-tertiary btn dark:variant-filled-primary {parent.buttonPositive}"
+		<footer class="modal-footer m-4 flex w-full justify-between {parent.regionFooter} shrink-0">
+			<button type="button" class="preset-outline-secondary btn" onclick={handleCancel}>{m.button_cancel()}</button>
+			<button type="submit" form="upload-form" class="preset-filled-tertiary btn dark:preset-filled-primary {parent.buttonPositive}"
 				>{m.button_save()}</button
 			>
 		</footer>

@@ -125,7 +125,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
 	/* Base loader styles */
 	.loader {
 		position: absolute;
@@ -137,22 +137,22 @@
 
 	/* Individual loader animations */
 	.loader-1 {
-		@apply h-[150px] w-[150px] border-[7px] border-error-500;
+		@apply border-error-500 h-[150px] w-[150px] border-[7px];
 		animation: rotate 3s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
 	}
 
 	.loader-2 {
-		@apply h-[170px] w-[170px] border-[6px] border-success-400;
+		@apply border-success-400 h-[170px] w-[170px] border-[6px];
 		animation: rotate-reverse 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
 	}
 
 	.loader-3 {
-		@apply h-[190px] w-[190px] border-[5px] border-tertiary-400;
+		@apply border-tertiary-400 h-[190px] w-[190px] border-[5px];
 		animation: rotate 3s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
 	}
 
 	.loader-4 {
-		@apply h-[210px] w-[210px] border-[4px] border-surface-400;
+		@apply border-surface-400 h-[210px] w-[210px] border-[4px];
 		animation: rotate-reverse 3s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
 	}
 

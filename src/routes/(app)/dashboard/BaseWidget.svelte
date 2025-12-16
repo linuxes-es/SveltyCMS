@@ -378,19 +378,13 @@ New Features:
 
 		<div class="flex items-center gap-1">
 			{#if endpoint && showRefreshButton}
-				<button
-					onclick={() => refresh()}
-					class="variant-outline-surface btn-icon"
-					aria-label="Refresh widget"
-					disabled={loading}
-					title="Refresh data"
-				>
+				<button onclick={() => refresh()} class="preset-outline-surface btn-icon" aria-label="Refresh widget" disabled={loading} title="Refresh data">
 					<iconify-icon icon="mdi:refresh" width="16" class={loading ? 'animate-spin' : ''}></iconify-icon>
 				</button>
 			{/if}
 
 			<div class="relative" style="overflow: visible;">
-				<button onclick={() => (showSizeMenu = !showSizeMenu)} class="variant-outline-surface btn-icon" aria-label="Change widget size">
+				<button onclick={() => (showSizeMenu = !showSizeMenu)} class="preset-outline-surface btn-icon" aria-label="Change widget size">
 					<iconify-icon icon="mdi:dots-vertical" width="18"></iconify-icon>
 				</button>
 				{#if showSizeMenu}
@@ -415,7 +409,7 @@ New Features:
 					</div>
 				{/if}
 			</div>
-			<button onclick={onCloseRequest} class="variant-outline-surface btn-icon" aria-label="Remove {label} widget">
+			<button onclick={onCloseRequest} class="preset-outline-surface btn-icon" aria-label="Remove {label} widget">
 				<iconify-icon icon="mdi:close" width="18"></iconify-icon>
 			</button>
 		</div>

@@ -27,7 +27,7 @@ Interactive selector with "Select" button and clear functionality
 -->
 
 <script lang="ts">
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
 	import type { FieldType } from './';
 	import { contentLanguage } from '@src/stores/store.svelte';
 

@@ -29,6 +29,9 @@ Structure optimized for LLM integration and AI-powered search.
 	import type { MediaBase } from '@utils/media/mediaModels';
 	import type { SearchCriteria } from '@utils/media/advancedSearch';
 
+	// ParaglideJS
+	import * as m from '@src/paraglide/messages';
+
 	interface Props {
 		files: MediaBase[];
 		onSearch: (criteria: SearchCriteria) => void;
@@ -344,19 +347,19 @@ Structure optimized for LLM integration and AI-powered search.
 
 			<!-- Actions -->
 			<div class="flex justify-end gap-3 border-t border-surface-300 pt-4 dark:border-surface-600">
-				<button type="button" onclick={resetForm} class="variant-ghost-surface btn">Reset</button>
-				<button type="button" onclick={onClose} class="variant-ghost-surface btn">Cancel</button>
-				<button type="submit" class="variant-filled-primary btn">
+				<button type="button" onclick={resetForm} class="preset-ghost-surface btn">Reset</button>
+				<button type="button" onclick={onClose} class="preset-ghost-surface btn">{m.button_cancel()}</button>
+				<button type="submit" class="preset-filled-primary btn">
 					<iconify-icon icon="mdi:magnify" width="20"></iconify-icon>
-					Search
+					{m.MediaGallery_Search()}
 				</button>
 			</div>
 		</form>
 
 		<div class="text-md mt-4">
 			<strong class="text-tertiary-500 dark:text-primary-500">Tip:</strong> Press
-			<kbd class="variant-filled-tertiary badge dark:variant-filled-primary">Ctrl+Enter</kbd>
-			to search, <kbd class="variant-filled-tertiary badge dark:variant-filled-primary">Esc</kbd> to close
+			<kbd class="preset-filled-tertiary badge dark:preset-filled-primary">Ctrl+Enter</kbd>
+			to search, <kbd class="preset-filled-tertiary badge dark:preset-filled-primary">Esc</kbd> to close
 		</div>
 	</div>
 </div>

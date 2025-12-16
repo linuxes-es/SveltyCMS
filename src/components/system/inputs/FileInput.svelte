@@ -118,7 +118,7 @@
 					<button
 						onclick={openFileInput}
 						aria-label={m.widget_ImageUpload_BrowseNew()}
-						class="variant-filled-tertiary btn mt-3 dark:variant-filled-primary"
+						class="preset-filled-tertiary btn mt-3 dark:preset-filled-primary"
 					>
 						{m.widget_ImageUpload_BrowseNew()}
 					</button>
@@ -126,7 +126,7 @@
 					<button
 						onclick={() => toggleMedia(true)}
 						aria-label={m.widget_ImageUpload_SelectMedia()}
-						class="variant-filled-tertiary btn mt-3 dark:variant-filled-primary"
+						class="preset-filled-tertiary btn mt-3 dark:preset-filled-primary"
 					>
 						{m.widget_ImageUpload_SelectMedia()}
 					</button>
@@ -147,7 +147,7 @@
 				<p class="ml-auto font-bold text-black dark:text-primary-500">
 					{m.widget_ImageUpload_SelectImage()}
 				</p>
-				<button onclick={() => toggleMedia(false)} aria-label="Close" class="variant-ghost-secondary btn-icon ml-auto">
+				<button onclick={() => toggleMedia(false)} aria-label="Close" class="preset-ghost-secondary btn-icon ml-auto">
 					<iconify-icon icon="material-symbols:close" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
 				</button>
 			</div>

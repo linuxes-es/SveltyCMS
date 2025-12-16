@@ -39,7 +39,7 @@ Renders: Thumbnail + title + duration in compact horizontal layout
 		<img
 			src={value.thumbnailUrl}
 			alt={value.title || 'Video thumbnail'}
-			class="h-auto w-[60px] flex-shrink-0 rounded-md object-cover"
+			class="h-auto w-[60px] shrink-0 rounded-md object-cover"
 			loading="lazy"
 			decoding="async"
 		/>

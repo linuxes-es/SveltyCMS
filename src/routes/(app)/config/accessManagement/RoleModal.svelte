@@ -21,27 +21,25 @@
 -->
 
 <script lang="ts">
-	import type { SvelteComponent } from 'svelte';
-
 	// Stores
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	// Stores
+	import { dialogState } from '@utils/dialogState.svelte';
 
 	//ParaglideJS
 	import * as m from '@src/paraglide/messages';
 
 	// Props
 	interface Props {
-		/** Exposes parent props to this component. */
-		parent: SvelteComponent;
 		isEditMode: boolean;
 		currentRoleId: string;
 		roleName: string;
 		roleDescription: string;
 		currentGroupName: string;
 		selectedPermissions?: string[];
+		response?: (data: any) => void;
 	}
 
-	const { parent, isEditMode, currentRoleId, roleName, roleDescription, currentGroupName, selectedPermissions = [] }: Props = $props();
+	const { isEditMode, currentRoleId, roleName, roleDescription, currentGroupName, selectedPermissions = [], response }: Props = $props();
 
 	// Local form state
 	let formName = $state('');
@@ -52,13 +50,10 @@
 		formDescription = roleDescription;
 	});
 
-	const modalStore = getModalStore();
-
 	function onFormSubmit(event: SubmitEvent): void {
 		event.preventDefault();
-		const modal = $modalStore[0];
-		if (modal?.response) {
-			modal.response({
+		if (response) {
+			response({
 				roleName: formName,
 				roleDescription: formDescription,
 				currentGroupName,
@@ -66,7 +61,7 @@
 				currentRoleId
 			});
 		}
-		modalStore.close();
+		dialogState.close();
 	}
 </script>
 
@@ -89,7 +84,7 @@
 
 	<!-- Footer -->
 	<footer class="modal-footer flex justify-end gap-4">
-		<button class="variant-ghost-surface btn" onclick={parent.onClose}>{m.button_cancel()}</button>
-		<button type="submit" form="roleForm" class="variant-filled-primary btn">{isEditMode ? 'Update' : 'Create'}</button>
+		<button class="preset-ghost-surface btn" onclick={dialogState.close}>{m.button_cancel()}</button>
+		<button type="submit" form="roleForm" class="preset-filled-primary btn">{isEditMode ? 'Update' : 'Create'}</button>
 	</footer>
 </div>

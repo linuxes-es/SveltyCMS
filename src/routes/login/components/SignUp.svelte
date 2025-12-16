@@ -259,7 +259,7 @@ Features:
 				<div class="-mt-2 flex items-center justify-end gap-2 text-right text-xs text-error-500">
 					{m.form_required()}
 
-					<button onclick={handleBack} aria-label="Back" class="variant-outline-secondary btn-icon">
+					<button onclick={handleBack} aria-label="Back" class="preset-outline-secondary btn-icon">
 						<iconify-icon icon="ri:arrow-left-line" width="20" class="text-white"></iconify-icon>
 					</button>
 				</div>
@@ -410,7 +410,7 @@ Features:
 
 					{#if !showOAuth}
 						<!-- Email SignIn only -->
-						<button type="submit" class="variant-filled btn mt-4 uppercase" aria-label={isInviteFlow ? 'Accept Invitation' : m.form_signup()}>
+						<button type="submit" class="preset-filled btn mt-4 uppercase" aria-label={isInviteFlow ? 'Accept Invitation' : m.form_signup()}>
 							{isInviteFlow ? 'Accept Invitation & Create Account' : m.form_signup()}
 							{#if isSubmitting || isRedirecting}<img src="/Spinner.svg" alt="" aria-hidden="true" decoding="async" class="ml-4 h-6" />{/if}
 						</button>
@@ -452,7 +452,7 @@ Features:
 	<SignupIcon show={active === 0 || active === undefined} onClick={handleFormClick} />
 </section>
 
-<style lang="postcss">
+<style>
 	.hide {
 		transition: 0s;
 		opacity: 0;
@@ -460,7 +460,7 @@ Features:
 	section {
 		--width: 0%;
 		background: #242728;
-		flex-grow: 1;
+		grow: 1;
 		width: var(--width);
 		transition: 0.4s;
 	}

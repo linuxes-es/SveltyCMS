@@ -3,40 +3,43 @@
  * Centralized toast utility for consistent notifications across modals/components.
  */
 
-import { getToastStore, type ToastStore } from '@skeletonlabs/skeleton';
-import { logger } from '@utils/logger';
+import { createToaster } from '@skeletonlabs/skeleton-svelte';
+import { get } from 'svelte/store';
 
-let toastStoreRef: ToastStore | null = null;
+// Create global toaster instance
+export const toaster = createToaster();
 
-export function setGlobalToastStore(store?: ToastStore): void {
-	toastStoreRef = store ?? getToastStore();
-}
+export type ToastSettings = {
+	message: string;
+	background?: string;
+	classes?: string;
+	timeout?: number;
+};
 
-export type ToastType = 'success' | 'info' | 'warning' | 'error';
+// Shim to replace old ToastStore
+export function showToast(messageOrSettings: string | ToastSettings, style?: string, _customDuration?: number) {
+	let message = '';
+	let type: 'success' | 'error' | 'warning' | 'info' = 'info';
+	// Note: customDuration parameter kept for backward compatibility but not used
+	// Skeleton v4 toaster doesn't support per-toast duration configuration
 
-/**
- * Displays a toast notification.
- * @param message The message to display. Can include HTML (e.g., iconify-icon).
- * @param type The type of toast (success, info, warning, error). Defaults to 'info'.
- * @param timeout Custom timeout in milliseconds. Defaults to 3000ms.
- */
-export function showToast(message: string, type: ToastType = 'info', timeout?: number): void {
-	const backgrounds: Record<ToastType, string> = {
-		success: 'gradient-primary',
-		info: 'gradient-tertiary',
-		warning: 'gradient-warning',
-		error: 'gradient-error'
-	};
-
-	if (!toastStoreRef) {
-		logger.warn('[toast] Toast store not initialized. Call setGlobalToastStore(getToastStore()) in a root component.');
-		return;
+	if (typeof messageOrSettings === 'string') {
+		message = messageOrSettings;
+		if (style === 'error' || style?.includes('error')) type = 'error';
+		if (style === 'success' || style?.includes('success')) type = 'success';
+		if (style === 'warning' || style?.includes('warning')) type = 'warning';
+	} else {
+		message = messageOrSettings.message;
+		if (messageOrSettings.background?.includes('error') || messageOrSettings.classes?.includes('error')) type = 'error';
+		// messageOrSettings.timeout is also ignored in v4
 	}
 
-	toastStoreRef.trigger({
-		message,
-		background: backgrounds[type],
-		timeout: timeout || 3000,
-		classes: '!shadow-2xl !rounded-xl !p-4 !min-w-[320px] !max-w-[400px] !border !border-white/10 !backdrop-blur-sm'
-	});
+	// Skeleton v4 toaster - cast to writable to access set method
+	const currentToasts = get(toaster);
+	(toaster as any).set([...currentToasts, { id: Date.now().toString(), type, message }]);
 }
+
+// Minimal compat export - no longer used by layout but kept for other legacy usages if any
+export const toastStore = {
+	trigger: (t: ToastSettings) => showToast(t)
+};

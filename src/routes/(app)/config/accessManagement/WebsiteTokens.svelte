@@ -18,7 +18,7 @@
 	import { showToast } from '@utils/toast';
 	import TablePagination from '@components/system/table/TablePagination.svelte';
 	import TableFilter from '@components/system/table/TableFilter.svelte';
-	import { clipboard } from '@skeletonlabs/skeleton';
+	// import { clipboard } from '@skeletonlabs/skeleton-svelte';
 	import { dndzone } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import type { WebsiteToken } from '@src/databases/schemas';
@@ -191,28 +191,28 @@
 			showToast('An error occurred while generating the token', 'error');
 		}
 	}
-	import { showConfirm } from '@utils/modalUtils';
+	import { dialogState } from '@utils/dialogState.svelte';
 
 	async function deleteToken(id: string, name: string) {
-		showConfirm({
+		dialogState.showConfirm({
 			title: 'Delete Token',
 			body: `Are you sure you want to delete the token "${name}"? This action cannot be undone.`,
-			confirmText: 'Delete',
-			confirmClasses: 'variant-filled-error',
-			onConfirm: async () => {
-				try {
-					const response = await fetch(`/api/website-tokens/${id}`, {
-						method: 'DELETE'
-					});
+			onConfirm: async (confirmed: boolean) => {
+				if (confirmed) {
+					try {
+						const response = await fetch(`/api/website-tokens/${id}`, {
+							method: 'DELETE'
+						});
 
-					if (response.ok) {
-						await fetchTokens(); // Refetch to update the list
-						showToast('Token deleted.', 'success');
-					} else {
-						showToast('Failed to delete token', 'error');
+						if (response.ok) {
+							await fetchTokens(); // Refetch to update the list
+							showToast('Token deleted.', 'success');
+						} else {
+							showToast('Failed to delete token', 'error');
+						}
+					} catch (error) {
+						showToast('An error occurred while deleting the token', 'error');
 					}
-				} catch (error) {
-					showToast('An error occurred while deleting the token', 'error');
 				}
 			}
 		});
@@ -238,7 +238,7 @@
 			<h4 class="h4 mb-2 font-bold text-tertiary-500 dark:text-primary-500">Generate New Website Token</h4>
 			<div class="flex gap-2">
 				<input type="text" class="input" placeholder="Token Name" bind:value={newTokenName} />
-				<button class="variant-filled-primary btn" onclick={generateToken}>Generate</button>
+				<button class="preset-filled-primary btn" onclick={generateToken}>Generate</button>
 			</div>
 		</div>
 	</div>
@@ -269,7 +269,7 @@
 						>
 							{#each displayTableHeaders as header: TableHeader (header.id)}
 								<button
-									class="chip {header.visible ? 'variant-filled-secondary' : 'variant-ghost-secondary'} w-100 mr-2 flex items-center justify-center"
+									class="chip {header.visible ? 'preset-filled-secondary' : 'preset-ghost-secondary'} w-100 mr-2 flex items-center justify-center"
 									animate:flip={{ duration: 300 }}
 									onclick={() => {
 										displayTableHeaders = displayTableHeaders.map((h: TableHeader) => (h.id === header.id ? { ...h, visible: !h.visible } : h));
@@ -290,7 +290,7 @@
 				<table class="table table-hover">
 					<thead>
 						{#if filterShow}
-							<tr class="divide-x divide-surface-400">
+							<tr class="divide-x divide-preset-400">
 								<th></th>
 								{#each displayTableHeaders.filter((header: TableHeader) => header.visible) as header (header.id)}
 									<th>
@@ -305,7 +305,7 @@
 								<th></th>
 							</tr>
 						{/if}
-						<tr class="divide-x divide-surface-400 border-b border-black dark:border-white">
+						<tr class="divide-x divide-preset-400 border-b border-black dark:border-white">
 							{#each displayTableHeaders.filter((h: TableHeader) => h.visible) as header: TableHeader}
 								<th
 									onclick={() => {
@@ -339,9 +339,11 @@
 											<div class="flex items-center gap-2">
 												<code>{token.token}</code>
 												<button
-													use:clipboard={token.token}
-													onclick={() => showToast('Token copied to clipboard', 'success')}
-													class="variant-ghost-surface btn-icon btn-icon-sm"
+													onclick={async () => {
+														await navigator.clipboard.writeText(token.token);
+														showToast('Token copied to clipboard', 'success');
+													}}
+													class="preset-ghost-surface btn-icon btn-icon-sm"
 													aria-label="Copy token to clipboard"
 												>
 													<iconify-icon icon="mdi:clipboard-outline" width="16"></iconify-icon>
@@ -357,7 +359,7 @@
 									</td>
 								{/each}
 								<td>
-									<button class="variant-filled-error btn btn-sm" onclick={() => deleteToken(token._id, token.name)}>Delete</button>
+									<button class="preset-filled-error btn btn-sm" onclick={() => deleteToken(token._id, token.name)}>Delete</button>
 								</td>
 							</tr>
 						{/each}

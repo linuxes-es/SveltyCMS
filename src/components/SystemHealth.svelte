@@ -18,7 +18,7 @@ Allows administrators to monitor system status and restart services.
 
 <script lang="ts">
 	import { systemState, type SystemState, type ServiceHealth } from '@src/stores/system';
-	import { getToastStore } from '@skeletonlabs/skeleton';
+	// getToastStore deprecated - use custom toaster from @stores/toasterStore;
 	import { formatDisplayDate } from '@utils/dateUtils';
 	import { logger } from '@utils/logger';
 
@@ -42,10 +42,10 @@ Allows administrators to monitor system status and restart services.
 	} as const;
 
 	const SERVICE_CONFIG = {
-		healthy: { color: 'variant-filled-success', icon: '✓' },
-		unhealthy: { color: 'variant-filled-error', icon: '✗' },
-		initializing: { color: 'variant-filled-primary', icon: '⟳' },
-		unknown: { color: 'variant-filled-surface', icon: '?' }
+		healthy: { color: 'preset-filled-success', icon: '✓' },
+		unhealthy: { color: 'preset-filled-error', icon: '✗' },
+		initializing: { color: 'preset-filled-primary', icon: '⟳' },
+		unknown: { color: 'preset-filled-surface', icon: '?' }
 	} as const;
 
 	const REFRESH_INTERVAL_MS = 5000;
@@ -95,13 +95,13 @@ Allows administrators to monitor system status and restart services.
 			await fetch('/api/system?action=health');
 		} catch (err) {
 			logger.error('Failed to fetch health:', err);
-			toastStore.trigger({ message: 'Failed to fetch system health', background: 'variant-filled-error', timeout: 3000 });
+			toastStore.trigger({ message: 'Failed to fetch system health', background: 'preset-filled-error', timeout: 3000 });
 		}
 	}
 
 	async function reinitializeSystem(): Promise<void> {
 		try {
-			toastStore.trigger({ message: 'Reinitializing system...', background: 'variant-filled-warning' });
+			toastStore.trigger({ message: 'Reinitializing system...', background: 'preset-filled-warning' });
 
 			const response = await fetch('/api/system', {
 				method: 'POST',
@@ -111,7 +111,7 @@ Allows administrators to monitor system status and restart services.
 
 			if (response.ok) {
 				const result = await response.json();
-				toastStore.trigger({ message: result.message || `System reinitialized: ${result.status}`, background: 'variant-filled-success' });
+				toastStore.trigger({ message: result.message || `System reinitialized: ${result.status}`, background: 'preset-filled-success' });
 				await fetchHealth();
 			} else {
 				const error = await response.json();
@@ -120,7 +120,7 @@ Allows administrators to monitor system status and restart services.
 		} catch (err) {
 			toastStore.trigger({
 				message: `Failed to reinitialize: ${err instanceof Error ? err.message : 'Unknown error'}`,
-				background: 'variant-filled-error'
+				background: 'preset-filled-error'
 			});
 		}
 	}
@@ -177,11 +177,11 @@ Allows administrators to monitor system status and restart services.
 		<div class="flex items-center gap-2">
 			<label class="flex items-center gap-2 text-sm"><input type="checkbox" class="checkbox" bind:checked={autoRefresh} /> Auto-refresh</label>
 
-			<button class="variant-ghost-primary btn btn-sm" onclick={fetchHealth} title="Refresh now" aria-label="Refresh system health"
+			<button class="preset-ghost-primary btn btn-sm" onclick={fetchHealth} title="Refresh now" aria-label="Refresh system health"
 				><span class="text-lg" role="img" aria-hidden="true">🔄</span></button
 			>
 
-			<button class="variant-ghost-warning btn btn-sm" onclick={reinitializeSystem} title="Reinitialize system" aria-label="Reinitialize system">
+			<button class="preset-ghost-warning btn btn-sm" onclick={reinitializeSystem} title="Reinitialize system" aria-label="Reinitialize system">
 				<span class="text-lg" role="img" aria-hidden="true">⚡</span> Reinitialize
 			</button>
 		</div>
@@ -189,15 +189,15 @@ Allows administrators to monitor system status and restart services.
 
 	<!-- Stats -->
 	<div class="grid grid-cols-2 gap-4 md:grid-cols-3">
-		<div class="card variant-ghost-surface p-3">
+		<div class="card preset-ghost-surface p-3">
 			<p class="text-xs opacity-70">Uptime</p>
 			<p class="text-lg font-bold">{formatUptime(uptime)}</p>
 		</div>
-		<div class="card variant-ghost-surface p-3">
+		<div class="card preset-ghost-surface p-3">
 			<p class="text-xs opacity-70">Last Checked</p>
 			<p class="text-sm font-bold">{formattedLastChecked}</p>
 		</div>
-		<div class="card variant-ghost-surface p-3">
+		<div class="card preset-ghost-surface p-3">
 			<p class="text-xs opacity-70">Services</p>
 			<p class="text-lg font-bold">{serviceCount}</p>
 		</div>
@@ -232,7 +232,7 @@ Allows administrators to monitor system status and restart services.
 	</div>
 
 	<!-- Health Endpoint Info -->
-	<div class="card variant-ghost-surface p-3">
+	<div class="card preset-ghost-surface p-3">
 		<details class="space-y-2">
 			<summary class="cursor-pointer text-sm font-semibold opacity-70">API Health Endpoint</summary>
 			<div class="space-y-1 text-xs opacity-70">

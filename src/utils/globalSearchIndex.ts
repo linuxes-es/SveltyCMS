@@ -21,7 +21,7 @@
  */
 
 import { writable } from 'svelte/store';
-import { getModalStore } from '@skeletonlabs/skeleton';
+// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
 
 // System Logs
 import { logger } from '@utils/logger';

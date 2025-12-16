@@ -31,10 +31,9 @@
 	import PermissionGuard from '@components/PermissionGuard.svelte';
 	import AdminArea from './components/AdminArea.svelte';
 	// Skeleton
-	import type { ModalComponent, ModalSettings } from '@skeletonlabs/skeleton';
-	import { Avatar } from '@skeletonlabs/skeleton';
+	import { Avatar } from '@skeletonlabs/skeleton-svelte';
 	import { setCollection } from '@src/stores/collectionStore.svelte';
-	import { showConfirm, showModal } from '@utils/modalUtils';
+	import { dialogState } from '@utils/dialogState.svelte';
 	import { showToast } from '@utils/toast';
 	import ModalEditAvatar from './components/ModalEditAvatar.svelte';
 	import ModalEditForm from './components/ModalEditForm.svelte';
@@ -60,23 +59,18 @@
 
 	// Function to open 2FA modal
 	function open2FAModal(): void {
-		const modalComponent: ModalComponent = {
-			ref: ModalTwoFactorAuth,
-			props: { user }
-		};
-		const d: ModalSettings = {
-			type: 'component',
+		dialogState.showComponent({
 			title: 'Two-Factor Authentication',
 			body: 'Add an extra layer of security to your account by requiring a verification code from your mobile device.',
-			component: modalComponent,
+			component: ModalTwoFactorAuth,
+			props: { user },
 			response: async (r: any) => {
 				if (r) {
 					// Refresh user data after 2FA changes
 					await invalidateAll();
 				}
 			}
-		};
-		showModal(d);
+		});
 	}
 
 	// Function to execute actions
@@ -105,32 +99,35 @@
 
 	// Modal Trigger - User Form
 	function modalUserForm(): void {
-		const modalComponent: ModalComponent = {
-			ref: ModalEditForm,
-			slot: '<p>Edit Form</p>'
-		};
-
-		const d: ModalSettings = {
-			type: 'component',
+		dialogState.showComponent({
 			title: m.usermodaluser_edittitle(),
 			body: m.usermodaluser_editbody(),
-			component: modalComponent
-		};
-		showModal(d);
+			component: ModalEditForm,
+			props: {
+				slot: '<p>Edit Form</p>'
+			}
+		});
 	}
 
 	// Modal Trigger - Edit Avatar
 	function modalEditAvatar(): void {
-		const modalComponent: ModalComponent = {
-			ref: ModalEditAvatar,
-			props: { avatarSrc },
-			slot: '<p>Edit Form</p>'
-		};
-		const d: ModalSettings = {
-			type: 'component',
+		dialogState.showComponent({
 			title: m.usermodaluser_settingtitle(),
 			body: m.usermodaluser_settingbody(),
-			component: modalComponent,
+			component: ModalEditAvatar,
+			props: {
+				// avatarSrc store is imported directly in ModalEditAvatar now, typically.
+				// But keeping props if needed. The new ModalEditAvatar imports avatarSrc.
+				// However, I should pass title/body here potentially or rely on dialogState wrapper.
+				// Wait, dialogState passes 'props' to the component.
+				// ModalEditAvatar expects 'title' and 'body' props?
+				// Step 1587 ModalEditAvatar Props: { title, body, parent }
+				// So I should pass them here if I want them to appear inside the component template manually?
+				// The ModalEditAvatar template uses {title} and {body}.
+				title: m.usermodaluser_settingtitle(),
+				body: m.usermodaluser_settingbody(),
+				slot: '<p>Edit Form</p>'
+			},
 			response: async (r: any) => {
 				// Avatar is already updated by the ModalEditAvatar component
 				// No need to set avatarSrc here since the modal handles it
@@ -139,24 +136,25 @@
 					// invalidateAll is already called by the ModalEditAvatar component
 				}
 			}
-		};
-		showModal(d);
+		});
 	}
 
 	// Modal Confirm
 	function modalConfirm(): void {
-		showConfirm({
+		dialogState.showConfirm({
 			title: m.usermodalconfirmtitle(),
 			body: m.usermodalconfirmbody(),
-			confirmText: m.usermodalconfirmdeleteuser(),
-			onConfirm: async () => {
-				const res = await fetch(`/api/user/deleteUsers`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify([user])
-				});
-				if (res.status === 200) {
-					await invalidateAll();
+			// confirmText: m.usermodalconfirmdeleteuser(),
+			onConfirm: async (confirmed: boolean) => {
+				if (confirmed) {
+					const res = await fetch(`/api/user/deleteUsers`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify([user])
+					});
+					if (res.status === 200) {
+						await invalidateAll();
+					}
 				}
 			}
 		});
@@ -171,12 +169,13 @@
 		<div class="grid grid-cols-1 grid-rows-2 gap-1 overflow-hidden md:grid-cols-2 md:grid-rows-1">
 			<!-- Avatar with user info -->
 			<div class="relative flex flex-col items-center justify-center gap-1">
-				<Avatar
-					src={avatarSrc.value && avatarSrc.value.startsWith('data:') ? avatarSrc.value : `${avatarSrc.value}?t=${Date.now()}`}
-					initials="AV"
-					rounded-none
-					class="w-32"
-				/>
+				<Avatar class="w-32 rounded-none">
+					<Avatar.Image
+						src={avatarSrc.value && avatarSrc.value.startsWith('data:') ? avatarSrc.value : `${avatarSrc.value}?t=${Date.now()}`}
+						class="object-cover"
+					/>
+					<Avatar.Fallback>AV</Avatar.Fallback>
+				</Avatar>
 
 				<!-- Edit button -->
 				<button onclick={modalEditAvatar} class="gradient-primary w-30 badge absolute -top-44 text-white sm:top-4">{m.userpage_editavatar()}</button>
@@ -190,7 +189,7 @@
 				</div>
 				<!-- Two-Factor Authentication Status -->
 				{#if is2FAEnabledGlobal}
-					<button onclick={open2FAModal} class="variant-ghost-surface btn-sm w-full max-w-xs">
+					<button onclick={open2FAModal} class="preset-ghost-surface btn-sm w-full max-w-xs">
 						<div class="flex w-full items-center justify-between">
 							<span>Two-Factor Auth</span>
 							<div class="flex items-center gap-1">

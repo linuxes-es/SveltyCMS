@@ -47,7 +47,7 @@ This component provides a streamlined interface for managing collection entries 
 	import { handleUILayoutToggle, uiStateManager } from '@stores/UIStore.svelte';
 
 	// Skeleton
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
 
 	// Components
 	import Toggles from './system/inputs/Toggles.svelte';
@@ -261,7 +261,7 @@ This component provides a streamlined interface for managing collection entries 
 {#if showSidebar}
 	<div class="flex h-full w-full flex-col justify-between px-3 py-4">
 		{#if $shouldShowNextButton && currentMode === 'create' && (currentCollection?.name === 'Menu' || currentCollection?.slug === 'menu')}
-			<button type="button" onclick={nextAction} aria-label="Next" class="variant-filled-primary btn w-full gap-2 shadow-lg">
+			<button type="button" onclick={nextAction} aria-label="Next" class="preset-filled-primary btn w-full gap-2 shadow-lg">
 				<iconify-icon icon="carbon:next-filled" width="20" class="font-extrabold text-white"></iconify-icon>
 				{m.button_next()}
 			</button>
@@ -272,7 +272,7 @@ This component provides a streamlined interface for managing collection entries 
 					type="button"
 					onclick={saveData}
 					disabled={!isFormValid || !canWrite}
-					class="variant-filled-primary btn w-full gap-2 shadow-lg transition-all duration-200"
+					class="preset-filled-primary btn w-full gap-2 shadow-lg transition-all duration-200"
 					class:opacity-50={!isFormValid || !canWrite}
 					class:cursor-not-allowed={!isFormValid || !canWrite}
 					aria-label="Save entry"
@@ -316,7 +316,7 @@ This component provides a streamlined interface for managing collection entries 
 							type="button"
 							onclick={handleDeleteEntry}
 							disabled={!canDelete}
-							class="variant-filled-error btn w-full gap-2 shadow-md transition-all duration-200 hover:shadow-lg"
+							class="preset-filled-error btn w-full gap-2 shadow-md transition-all duration-200 hover:shadow-lg"
 							aria-label="Delete entry"
 						>
 							<iconify-icon icon="icomoon-free:bin" width="18"></iconify-icon>
@@ -340,7 +340,7 @@ This component provides a streamlined interface for managing collection entries 
 					<button
 						onclick={openScheduleModal}
 						aria-label="Schedule publication"
-						class="hover:variant-filled-primary-hover variant-filled-surface btn w-full justify-start gap-2 text-left transition-colors duration-200"
+						class="hover:preset-filled-primary-hover preset-filled-surface btn w-full justify-start gap-2 text-left transition-colors duration-200"
 					>
 						<iconify-icon icon="bi:clock" width="16"></iconify-icon>
 						<span class="text-sm text-tertiary-500 dark:text-primary-500">
@@ -353,7 +353,7 @@ This component provides a streamlined interface for managing collection entries 
 					<!-- Created By -->
 					<div class="space-y-1">
 						<p class="text-sm font-medium">{m.sidebar_createdby()}</p>
-						<div class="variant-filled-surface rounded-lg p-3 text-center">
+						<div class="preset-filled-surface rounded-lg p-3 text-center">
 							<span class="text-sm font-semibold text-tertiary-500 dark:text-primary-500">
 								{getDisplayName(currentEntry?.createdBy as string, user)}
 							</span>
@@ -363,7 +363,7 @@ This component provides a streamlined interface for managing collection entries 
 					{#if currentEntry?.updatedBy}
 						<div class="space-y-1">
 							<p class="text-sm font-medium text-surface-600 dark:text-surface-300">Last updated by</p>
-							<div class="variant-filled-surface rounded-lg p-3 text-center">
+							<div class="preset-filled-surface rounded-lg p-3 text-center">
 								<span class="text-sm font-semibold text-tertiary-500 dark:text-primary-500">
 									{getDisplayName(currentEntry?.updatedBy as string, user)}
 								</span>

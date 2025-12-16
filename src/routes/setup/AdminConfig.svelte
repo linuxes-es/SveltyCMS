@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import * as m from '@src/paraglide/messages';
-	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import { popup, type PopupSettings } from '@skeletonlabs/skeleton-svelte';
 	import type { ValidationErrors } from '@stores/setupStore.svelte';
 	import { safeParse } from 'valibot';
 	import { setupAdminSchema } from '@utils/formSchemas';
@@ -281,7 +281,7 @@
 						: 'text-surface-500 dark:text-surface-400'}"
 				>
 					<span
-						class="mr-2 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border {passwordRequirements.length
+						class="mr-2 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border {passwordRequirements.length
 							? 'border-primary-300 bg-primary-100 text-primary-500'
 							: 'border-slate-300 bg-slate-100 text-slate-400 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-500'}"
 					>
@@ -298,7 +298,7 @@
 						: 'text-surface-500 dark:text-surface-400'}"
 				>
 					<span
-						class="mr-2 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border {passwordRequirements.letter
+						class="mr-2 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border {passwordRequirements.letter
 							? 'border-primary-300 bg-primary-100 text-primary-500'
 							: 'border-slate-300 bg-slate-100 text-slate-400 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-500'}"
 					>
@@ -315,7 +315,7 @@
 						: 'text-surface-500 dark:text-surface-400'}"
 				>
 					<span
-						class="mr-2 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border {passwordRequirements.number
+						class="mr-2 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border {passwordRequirements.number
 							? 'border-primary-300 bg-primary-100 text-primary-500'
 							: 'border-slate-300 bg-slate-100 text-slate-400 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-500'}"
 					>
@@ -332,7 +332,7 @@
 						: 'text-surface-500 dark:text-surface-400'}"
 				>
 					<span
-						class="mr-2 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border {passwordRequirements.special
+						class="mr-2 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border {passwordRequirements.special
 							? 'border-primary-300 bg-primary-100 text-primary-500'
 							: 'border-slate-300 bg-slate-100 text-slate-400 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-500'}"
 					>
@@ -349,7 +349,7 @@
 						: 'text-surface-500 dark:text-surface-400'}"
 				>
 					<span
-						class="mr-2 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border {passwordRequirements.match
+						class="mr-2 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border {passwordRequirements.match
 							? 'border-primary-300 bg-primary-100 text-primary-500'
 							: 'border-slate-300 bg-slate-100 text-slate-400 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-500'}"
 					>

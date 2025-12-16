@@ -10,6 +10,7 @@
  * - Seamless integration with Paraglide for i18n and better-svelte-email for email templating.
  */
 
+import tailwindcss from '@tailwindcss/vite';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { existsSync, promises as fs } from 'fs';
@@ -332,6 +333,7 @@ export default defineConfig((): UserConfig => {
 
 	return {
 		plugins: [
+			tailwindcss(),
 			// Private config fallback - provides virtual module when file doesn't exist
 			privateConfigFallbackPlugin(),
 			// Security check plugin runs first to detect private setting imports

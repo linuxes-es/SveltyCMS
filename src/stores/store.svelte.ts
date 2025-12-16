@@ -436,7 +436,7 @@ export const contentLanguage = {
 // Simple reactive state for other stores
 let _headerActionButton = $state<ConstructorOfATypedSvelteComponent | string | undefined>(undefined);
 let _headerActionButton2 = $state<ConstructorOfATypedSvelteComponent | string | undefined>(undefined);
-let _pkgBgColor = $state('variant-filled-primary');
+let _pkgBgColor = $state('preset-filled-primary');
 let _file = $state<File | null>(null);
 let _saveEditedImage = $state(false);
 let _saveFunction = $state<SaveFunction>({

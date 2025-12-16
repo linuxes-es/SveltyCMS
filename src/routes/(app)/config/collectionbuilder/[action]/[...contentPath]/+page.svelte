@@ -40,23 +40,23 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 	import PageTitle from '@components/PageTitle.svelte';
 
 	// Skeleton
-	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
-	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { Tabs } from '@skeletonlabs/skeleton-svelte';
+	// import { Tab, TabGroup } from '@skeletonlabs/skeleton-svelte';
 	import { showToast } from '@utils/toast';
 
 	import { widgetStoreActions } from '@stores/widgetStore.svelte';
 
 	// Create local tabSet variable for binding
-	let localTabSet = $state(tabSet.value);
+	let localTabSet = $state(String(tabSet.value));
 
 	// Sync with store when local value changes
 	$effect(() => {
-		tabSet.set(localTabSet);
+		tabSet.set(Number(localTabSet));
 	});
 
 	// Sync local value when store changes
 	$effect(() => {
-		localTabSet = tabSet.value;
+		localTabSet = String(tabSet.value);
 	});
 
 	import type { User } from '@src/databases/auth/types';
@@ -236,7 +236,7 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 	<PageTitle name={pageTitle} highlight={highlightedPart} icon="ic:baseline-build" />
 
 	<!-- Back -->
-	<button onclick={() => history.back()} type="button" aria-label="Back" class="variant-outline-primary btn-icon">
+	<button onclick={() => history.back()} type="button" aria-label="Back" class="preset-outline-primary btn-icon">
 		<iconify-icon icon="ri:arrow-left-line" width="20"></iconify-icon>
 	</button>
 </div>
@@ -247,13 +247,13 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 			<button
 				type="button"
 				onclick={handleCollectionDelete}
-				class=" variant-filled-error btn mb-3 mr-1 mt-1 justify-end dark:variant-filled-error dark:text-black"
+				class=" preset-filled-error btn mb-3 mr-1 mt-1 justify-end dark:preset-filled-error dark:text-black"
 				>{m.button_delete()}
 			</button>
 			<button
 				type="button"
 				onclick={handleCollectionSave}
-				class="variant-filled-tertiary btn mb-3 mr-1 mt-1 justify-end dark:variant-filled-tertiary dark:text-black">{m.button_save()}</button
+				class="preset-filled-tertiary btn mb-3 mr-1 mt-1 justify-end dark:preset-filled-tertiary dark:text-black">{m.button_save()}</button
 			>
 		</div>
 	{/if}
@@ -263,35 +263,38 @@ It provides a user-friendly interface for creating, editing, and deleting collec
 	</p>
 	<!-- Required Text  -->
 	<div class="mb-2 text-center text-xs text-error-500" data-testid="required-indicator">* {m.collection_required()}</div>
-	<TabGroup bind:group={localTabSet}>
-		<!-- User Permissions -->
-		{#if page.data.isAdmin}
-			<!-- Edit -->
-			<Tab bind:group={localTabSet} name="default" value={0}>
-				<div class="flex items-center gap-1">
-					<iconify-icon icon="ic:baseline-edit" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
-					<span class:active={tabSet.value === 0} class:text-tertiary-500={tabSet.value === 0} class:text-primary-500={tabSet.value === 0}
-						>{m.button_edit()}</span
-					>
-				</div>
-			</Tab>
+	<Tabs value={localTabSet} onValueChange={(e) => (localTabSet = e.value)}>
+		<Tabs.List class="flex border-b border-surface-200-800 mb-4">
+			<!-- User Permissions -->
+			{#if page.data.isAdmin}
+				<!-- Edit -->
+				<Tabs.Trigger value="0">
+					<div class="flex items-center gap-1 py-2 px-4">
+						<iconify-icon icon="ic:baseline-edit" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
+						<span class:active={tabSet.value === 0} class:text-tertiary-500={tabSet.value === 0} class:text-primary-500={tabSet.value === 0}
+							>{m.button_edit()}</span
+						>
+					</div>
+				</Tabs.Trigger>
 
-			<!-- Widget Fields -->
-			<Tab bind:group={localTabSet} name="widget" value={1} data-testid="widget-fields-tab">
-				<div class="flex items-center gap-1">
-					<iconify-icon icon="mdi:widgets-outline" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
-					<span class:active={tabSet.value === 1} class:text-tertiary-500={tabSet.value === 2} class:text-primary-500={tabSet.value === 2}
-						>{m.collection_widgetfields()}</span
-					>
-				</div>
-			</Tab>
-		{/if}
+				<!-- Widget Fields -->
+				<Tabs.Trigger value="1" data-testid="widget-fields-tab">
+					<div class="flex items-center gap-1 py-2 px-4">
+						<iconify-icon icon="mdi:widgets-outline" width="24" class="text-tertiary-500 dark:text-primary-500"></iconify-icon>
+						<span class:active={tabSet.value === 1} class:text-tertiary-500={tabSet.value === 2} class:text-primary-500={tabSet.value === 2}
+							>{m.collection_widgetfields()}</span
+						>
+					</div>
+				</Tabs.Trigger>
+			{/if}
+		</Tabs.List>
 
 		<!-- Tab Panels -->
-		{#if tabSet.value === 0}
+		<Tabs.Content value="0">
 			<CollectionForm data={collectionValue} {handlePageTitleUpdate} />
-		{:else if tabSet.value === 1}
+		</Tabs.Content>
+		<Tabs.Content value="1">
 			<CollectionWidget fields={collectionValue?.fields as FieldInstance[] | undefined} {handleCollectionSave} />
-		{/if}
-	</TabGroup>
+		</Tabs.Content>
+	</Tabs>
 </div>

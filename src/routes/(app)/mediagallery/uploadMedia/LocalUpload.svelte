@@ -24,7 +24,6 @@
 	import { logger } from '@utils/logger';
 	import { showModal } from '@utils/modalUtils';
 	import { showToast } from '@utils/toast';
-	import type { ModalSettings, ModalComponent } from '@skeletonlabs/skeleton';
 	import ModalUploadMedia from './ModalUploadMedia.svelte';
 	import { goto } from '$app/navigation';
 
@@ -321,12 +320,7 @@
 
 			<p class="text-sm opacity-75">Multiple files allowed</p>
 
-			<button
-				type="button"
-				onclick={() => input?.click()}
-				class="variant-filled-tertiary btn mt-3 dark:variant-filled-primary"
-				disabled={isUploading}
-			>
+			<button type="button" onclick={() => input?.click()} class="preset-filled-tertiary btn mt-3 dark:preset-filled-primary" disabled={isUploading}>
 				Browse Files
 			</button>
 

@@ -131,7 +131,7 @@ Key features:
 		<div class="table-container max-h-[calc(100vh-120px)] overflow-auto">
 			<table class="table table-interactive table-hover">
 				<thead class="bg-surface-100-800-token sticky top-0 text-tertiary-500 dark:text-primary-500">
-					<tr class="divide-x divide-surface-400 border-b border-black dark:border-white">
+					<tr class="divide-x divide-preset-400 border-b border-black dark:border-white">
 						<th class="w-10">Select</th>
 						<th>Thumbnail</th>
 						<th onclick={() => sort('filename')}>
@@ -149,7 +149,7 @@ Key features:
 				</thead>
 				<tbody>
 					{#each paginatedFiles as file (file._id)}
-						<tr class="divide-x divide-surface-400 border-b border-black dark:border-white">
+						<tr class="divide-x divide-preset-400 border-b border-black dark:border-white">
 							<TableIcons
 								cellClass="w-10 text-center"
 								checked={selectedFiles.has(file.filename)}
@@ -195,11 +195,11 @@ Key features:
 							<td>
 								<a
 									href="/imageEditor?mediaId={file._id?.toString()}"
-									class="variant-ghost-primary btn btn-sm"
+									class="preset-ghost-primary btn btn-sm"
 									aria-label="Edit"
 									data-sveltekit-preload-data="hover">Edit</a
 								>
-								<button onclick={() => handleDelete(file)} class="variant-filled-error btn btn-sm" aria-label="Delete"> Delete </button>
+								<button onclick={() => handleDelete(file)} class="preset-filled-error btn btn-sm" aria-label="Delete"> Delete </button>
 							</td>
 						</tr>
 					{/each}

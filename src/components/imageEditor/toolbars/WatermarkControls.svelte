@@ -30,7 +30,7 @@ Controls for the Watermark tool. Allows adding, deleting, and positioning waterm
 </script>
 
 <div class="flex w-full items-center gap-4">
-	<button onclick={onAddWatermark} class="btn variant-ghost-surface">
+	<button onclick={onAddWatermark} class="btn preset-ghost-surface">
 		<iconify-icon icon="mdi:plus-box-outline"></iconify-icon>
 		<span>Add Watermark</span>
 	</button>
@@ -38,7 +38,7 @@ Controls for the Watermark tool. Allows adding, deleting, and positioning waterm
 	{#if hasSelection}
 		<div class="h-6 w-px bg-surface-300 dark:bg-surface-600"></div>
 		<span class="text-sm">Position:</span>
-		<div class="btn-group variant-ghost-surface">
+		<div class="btn-group preset-ghost-surface">
 			{#each positions as pos}
 				<button class="btn btn-sm" onclick={() => onPositionChange(pos.value)} title={pos.value}>
 					<iconify-icon icon={pos.icon}></iconify-icon>
@@ -46,9 +46,9 @@ Controls for the Watermark tool. Allows adding, deleting, and positioning waterm
 			{/each}
 		</div>
 
-		<div class="flex-grow"></div>
+		<div class="grow"></div>
 
-		<button onclick={onDeleteWatermark} class="btn variant-ghost-error">
+		<button onclick={onDeleteWatermark} class="btn preset-ghost-error">
 			<iconify-icon icon="mdi:delete-outline"></iconify-icon>
 			<span>Delete</span>
 		</button>

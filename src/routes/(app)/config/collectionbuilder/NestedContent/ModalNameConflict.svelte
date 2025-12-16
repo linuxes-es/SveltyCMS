@@ -8,7 +8,7 @@ Features:
 - Provides suggestions for resolving conflicts
 -->
 <script lang="ts">
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
 	const modalStore = getModalStore();
 
 	interface Props {
@@ -51,7 +51,7 @@ Features:
 </script>
 
 <div class="modal-body p-4">
-	<div class="alert variant-filled-warning mb-4">
+	<div class="alert preset-filled-warning mb-4">
 		<div class="alert-message">
 			<h3 class="h3">Collection Name Conflict</h3>
 			<p>The collection name "<code class="font-bold">{conflictingName}</code>" already exists at:</p>
@@ -92,10 +92,10 @@ Features:
 	</div>
 
 	<footer class="modal-footer flex justify-end gap-4">
-		<button type="button" class="variant-ghost btn" onclick={handleCancel}> Cancel </button>
+		<button type="button" class="preset-ghost btn" onclick={handleCancel}> Cancel </button>
 		<button
 			type="button"
-			class="variant-filled-primary btn"
+			class="preset-filled-primary btn"
 			onclick={handleConfirm}
 			disabled={useCustomName ? !validateCustomName(customName) : !selectedName}
 		>

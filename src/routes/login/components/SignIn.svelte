@@ -472,7 +472,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 				<div class="-mt-2 flex items-center justify-end gap-2 text-right text-xs text-error-500">
 					{m.form_required()}
 
-					<button onclick={handleBack} aria-label="Back" class="variant-outline-secondary btn-icon">
+					<button onclick={handleBack} aria-label="Back" class="preset-outline-secondary btn-icon">
 						<iconify-icon icon="ri:arrow-right-line" width="20" class=""></iconify-icon>
 					</button>
 				</div>
@@ -528,7 +528,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 					<div class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
 						<!-- Row 1 -->
 						<div class="flex w-full justify-between gap-2 sm:w-auto">
-							<button type="submit" form="signin-form" class="variant-filled-surface btn w-full sm:w-auto" aria-label={m.form_signin()}>
+							<button type="submit" form="signin-form" class="preset-filled-surface btn w-full sm:w-auto" aria-label={m.form_signin()}>
 								{m.form_signin()}
 								<!-- Optimized loading indicators -->
 								{#if isSubmitting || isAuthenticating}
@@ -543,7 +543,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 						<div class="mt-4 flex w-full justify-between sm:mt-0 sm:w-auto">
 							<button
 								type="button"
-								class="variant-ringed-surface btn w-full text-black sm:w-auto"
+								class="preset-ringed-surface btn w-full text-black sm:w-auto"
 								aria-label={m.signin_forgottenpassword()}
 								tabindex={forgotPasswordTabIndex}
 								onclick={handleForgotPassword}
@@ -606,7 +606,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 
 							<!-- Action Buttons -->
 							<div class="flex gap-3">
-								<button type="button" onclick={back2FAToLogin} class="variant-soft-surface btn flex-1" aria-label={m.button_back()}>
+								<button type="button" onclick={back2FAToLogin} class="preset-soft-surface btn flex-1" aria-label={m.button_back()}>
 									<iconify-icon icon="mdi:arrow-left" width="20" class="mr-2"></iconify-icon>
 									{m.button_back()}
 								</button>
@@ -618,7 +618,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 										isVerifying2FA ||
 										(!useBackupCode && twoFACode.length !== 6) ||
 										(useBackupCode && twoFACode.length < 8)}
-									class="variant-filled-primary btn flex-1"
+									class="preset-filled-primary btn flex-1"
 									aria-label={m.twofa_verify_button()}
 								>
 									{#if isVerifying2FA}
@@ -685,7 +685,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 						{/if}
 
 						<div class="mt-4 flex items-center justify-between">
-							<button type="submit" class="variant-filled-surface btn" aria-label={m.form_resetpassword()}>
+							<button type="submit" class="preset-filled-surface btn" aria-label={m.form_resetpassword()}>
 								{m.form_resetpassword()}
 								<!-- Optimized loading indicators -->
 								{#if isSubmitting}
@@ -696,7 +696,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 							<!-- Back button  -->
 							<button
 								type="button"
-								class="variant-filled-surface btn-icon"
+								class="preset-filled-surface btn-icon"
 								aria-label="Back"
 								onclick={() => {
 									PWforgot = false;
@@ -791,7 +791,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 						<input type="email" name="email" bind:value={resetForm.data.email} hidden />
 
 						<div class="mt-4 flex items-center justify-between">
-							<button type="submit" aria-label={m.signin_savenewpassword()} class="variant-filled-surface btn ml-2 mt-6">
+							<button type="submit" aria-label={m.signin_savenewpassword()} class="preset-filled-surface btn ml-2 mt-6">
 								{m.signin_savenewpassword()}
 								<!-- Optimized loading indicators -->
 								{#if isSubmitting}
@@ -803,7 +803,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 							<button
 								type="button"
 								aria-label={m.button_back()}
-								class="variant-filled-surface btn-icon"
+								class="preset-filled-surface btn-icon"
 								onclick={() => {
 									PWforgot = false;
 									PWreset = false;
@@ -821,7 +821,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 	<SigninIcon show={active === 1 || active === undefined} onClick={handleFormClick} />
 </section>
 
-<style lang="postcss">
+<style>
 	.hide {
 		transition: 0s;
 		opacity: 0;
@@ -829,7 +829,7 @@ Note: First-user registration is now handled by /setup route (enforced by handle
 	section {
 		--width: 0%;
 		background: white;
-		flex-grow: 1;
+		grow: 1;
 		width: var(--width);
 		transition: 0.4s;
 	}

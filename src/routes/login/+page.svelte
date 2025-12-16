@@ -306,11 +306,11 @@ Features:
 									}
 								}
 							}}
-							class="variant-filled-warning btn"
+							class="preset-filled-warning btn"
 						>
 							Reset Setup
 						</button>
-						<button type="button" onclick={() => window.location.reload()} class="variant-filled-secondary btn"> Refresh Page </button>
+						<button type="button" onclick={() => window.location.reload()} class="preset-filled-secondary btn"> Refresh Page </button>
 					</div>
 				{/if}
 			</div>
@@ -448,7 +448,7 @@ Features:
 	{/if}
 </div>
 
-<style lang="postcss">
+<style>
 	/* Scrollbar styling */
 	.overflow-y-auto {
 		scrollbar-width: thin;

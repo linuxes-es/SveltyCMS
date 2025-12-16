@@ -4,7 +4,8 @@
 Provides DB type, host, port, name, user, password inputs, validation display, test button, and change warning.
 -->
 <script lang="ts">
-	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	// popup and PopupSettings not available in skeleton-svelte v4
+	// import { popup, type PopupSettings } from '@skeletonlabs/skeleton-svelte';
 	import * as m from '@src/paraglide/messages';
 	import { logger } from '@utils/logger';
 	import type { ValidationErrors } from '@stores/setupStore.svelte';
@@ -242,7 +243,7 @@ Provides DB type, host, port, name, user, password inputs, validation display, t
 				class="flex w-full items-center justify-between p-4 text-left text-blue-900 dark:text-blue-200"
 			>
 				<div class="flex items-center gap-3">
-					<iconify-icon icon="mdi:information" width="20" class="flex-shrink-0" aria-hidden="true"></iconify-icon>
+					<iconify-icon icon="mdi:information" width="20" class="shrink-0" aria-hidden="true"></iconify-icon>
 					<span class="font-semibold">MongoDB Atlas Quick Setup</span>
 				</div>
 				<iconify-icon icon={showAtlasHelper ? 'mdi:chevron-up' : 'mdi:chevron-down'} width="24" aria-hidden="true"></iconify-icon>
@@ -560,7 +561,7 @@ Provides DB type, host, port, name, user, password inputs, validation display, t
 					<button
 						type="button"
 						onclick={toggleDbPassword}
-						class="absolute inset-y-0 right-0 flex min-w-[2.5rem] items-center pr-3 text-slate-400 hover:text-slate-600 focus:outline-none dark:text-slate-500 dark:hover:text-slate-400"
+						class="absolute inset-y-0 right-0 flex min-w-10 items-center pr-3 text-slate-400 hover:text-slate-600 focus:outline-none dark:text-slate-500 dark:hover:text-slate-400"
 						aria-label={showDbPassword ? 'Hide database password' : 'Show database password'}
 					>
 						<iconify-icon icon={showDbPassword ? 'mdi:eye-off' : 'mdi:eye'} width="18" height="18" aria-hidden="true"></iconify-icon>
@@ -576,7 +577,7 @@ Provides DB type, host, port, name, user, password inputs, validation display, t
 				type="submit"
 				disabled={isLoading}
 				aria-label={isLoading ? 'Testing database connection, please wait' : 'Test database connection'}
-				class="variant-filled-tertiary btn w-full dark:variant-filled-primary"
+				class="preset-filled-tertiary btn w-full dark:preset-filled-primary"
 			>
 				{#if isLoading}
 					<div

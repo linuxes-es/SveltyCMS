@@ -20,14 +20,12 @@ component
 
 	// Skeleton
 
-	import type { ModalComponent, ModalSettings } from '@skeletonlabs/skeleton';
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	// // getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
+	import { dialogState } from '@utils/dialogState.svelte';
 	import ModalSelectWidget from './CollectionWidget/ModalSelectWidget.svelte';
 	import ModalWidgetForm from './CollectionWidget/ModalWidgetForm.svelte';
 
 	const props = $props();
-
-	const modalStore = getModalStore();
 
 	// Extract the collection path from the URL
 	const contentPath = page.params.contentPath;
@@ -80,15 +78,22 @@ component
 		fields = e.detail.items;
 	};
 
-	// Modal 1 to choose a widget
 	function modalSelectWidget(selected: any): void {
-		const c: ModalComponent = { ref: ModalSelectWidget };
-		const modal: ModalSettings = {
-			type: 'component',
-			component: c,
+		dialogState.showComponent({
 			title: 'Select a Widget',
 			body: 'Select your widget and then press submit.',
-			value: selected, // Pass the selected widget as the initial value
+			component: ModalSelectWidget,
+			props: {
+				// value: selected, // ModalSelectWidget doesn't seem to use value prop in its interface, but checks `selected` passed to onFormSubmit
+				// Let's check props of ModalSelectWidget again.
+				// Props: { parent, existingCategory }
+				// It has activeWidgetList derived from store.
+				// It also has `selected` local state.
+				// It doesn't seem to take `value` prop.
+				// BUT the previous code passed `value: selected` in ModalSettings.
+				// ModalSelectWidget didn't use it in Props definition.
+				// It seems it was unused.
+			},
 			response: (r: { selectedWidget: string } | undefined) => {
 				if (!r) return;
 				const { selectedWidget } = r;
@@ -104,24 +109,23 @@ component
 					modalWidgetForm(newWidget);
 				}
 			}
-		};
-		modalStore.trigger(modal);
+		});
 	}
 
 	// Modal 2 to Edit a selected widget
 	function modalWidgetForm(selectedWidget: any): void {
-		const c: ModalComponent = { ref: ModalWidgetForm };
 		// Ensure permissions object exists
 		if (!selectedWidget.permissions) {
 			selectedWidget.permissions = {};
 		}
 		setTargetWidget(selectedWidget);
-		const modal: ModalSettings = {
-			type: 'component',
-			component: c,
+		dialogState.showComponent({
 			title: 'Define your Widget',
 			body: 'Setup your widget and then press Save.',
-			value: selectedWidget, // Pass the selected widget as the initial value
+			component: ModalWidgetForm,
+			props: {
+				value: selectedWidget
+			},
 			response: (r: any) => {
 				if (!r) return;
 				// Find the index of the existing widget based on its ID
@@ -148,8 +152,7 @@ component
 					collection.value.fields = fields;
 				}
 			}
-		};
-		modalStore.trigger(modal);
+		});
 	}
 
 	// Function to save data by sending a POST request
@@ -182,7 +185,7 @@ component
 </script>
 
 <div class="flex w-full flex-col">
-	<div class="variant-outline-tertiary rounded-t-md p-2 text-center dark:variant-outline-primary">
+	<div class="preset-outline-tertiary rounded-t-md p-2 text-center dark:preset-outline-primary">
 		<p>
 			{m.collection_widgetfield_addrequired()}
 			<span class="text-tertiary-500 dark:text-primary-500">{contentPath}</span> Collection inputs.
@@ -193,9 +196,9 @@ component
 		<VerticalList items={fields} {headers} {flipDurationMs} {handleDndConsider} {handleDndFinalize}>
 			{#each fields as field (field.id)}
 				<div
-					class="border-blue variant-outline-surface my-2 grid w-full grid-cols-6 items-center rounded-md border p-1 text-left hover:variant-filled-surface dark:text-white"
+					class="border-blue preset-outline-surface my-2 grid w-full grid-cols-6 items-center rounded-md border p-1 text-left hover:preset-filled-surface dark:text-white"
 				>
-					<div class="variant-ghost-tertiary badge h-10 w-10 rounded-full dark:variant-ghost-primary">
+					<div class="preset-ghost-tertiary badge h-10 w-10 rounded-full dark:preset-ghost-primary">
 						{field.id}
 					</div>
 
@@ -204,7 +207,7 @@ component
 					<div class=" ">{field?.db_fieldName ? field.db_fieldName : '-'}</div>
 					<div class=" ">{field.widget?.key || field.__type || 'Unknown Widget'}</div>
 
-					<button onclick={() => modalWidgetForm(field)} type="button" aria-label={m.button_edit()} class="variant-ghost-primary btn-icon ml-auto">
+					<button onclick={() => modalWidgetForm(field)} type="button" aria-label={m.button_edit()} class="preset-ghost-primary btn-icon ml-auto">
 						<iconify-icon icon="ic:baseline-edit" width="24" class="dark:text-white"></iconify-icon>
 					</button>
 				</div>
@@ -215,7 +218,7 @@ component
 		<div class="mt-2 flex items-center justify-center gap-3">
 			<button
 				onclick={() => modalSelectWidget(null)}
-				class="variant-filled-tertiary btn"
+				class="preset-filled-tertiary btn"
 				aria-label={m.collection_widgetfield_addFields()}
 				data-testid="add-field-button"
 			>
@@ -223,14 +226,14 @@ component
 			</button>
 		</div>
 		<div class=" flex items-center justify-between">
-			<button onclick={() => tabSet.set(0)} type="button" aria-label={m.button_previous()} class="variant-filled-secondary btn mt-2 justify-end">
+			<button onclick={() => tabSet.set(0)} type="button" aria-label={m.button_previous()} class="preset-filled-secondary btn mt-2 justify-end">
 				{m.button_previous()}
 			</button>
 			<button
 				onclick={handleSave}
 				type="button"
 				aria-label={m.button_save()}
-				class="variant-filled-tertiary btn mt-2 justify-end dark:variant-filled-primary dark:text-black">{m.button_save()}</button
+				class="preset-filled-tertiary btn mt-2 justify-end dark:preset-filled-primary dark:text-black">{m.button_save()}</button
 			>
 		</div>
 	</div>

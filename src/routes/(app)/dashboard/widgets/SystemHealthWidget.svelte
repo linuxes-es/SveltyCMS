@@ -27,7 +27,7 @@
 
 <script lang="ts">
 	import BaseWidget from '../BaseWidget.svelte';
-	import { getToastStore } from '@skeletonlabs/skeleton';
+	// getToastStore deprecated - use custom toaster from @stores/toasterStore;
 	import type { WidgetSize } from '@src/content/types';
 
 	const toastStore = getToastStore();
@@ -71,7 +71,7 @@
 		try {
 			toastStore.trigger({
 				message: 'Reinitializing system...',
-				background: 'variant-filled-warning'
+				background: 'preset-filled-warning'
 			});
 
 			const response = await fetch('/api/system', {
@@ -84,7 +84,7 @@
 				const result = await response.json();
 				toastStore.trigger({
 					message: result.message || `System reinitialized: ${result.status}`,
-					background: 'variant-filled-success'
+					background: 'preset-filled-success'
 				});
 			} else {
 				const error = await response.json();
@@ -93,7 +93,7 @@
 		} catch (error) {
 			toastStore.trigger({
 				message: `Failed to reinitialize: ${error instanceof Error ? error.message : 'Unknown error'}`,
-				background: 'variant-filled-error'
+				background: 'preset-filled-error'
 			});
 		}
 	}
@@ -134,13 +134,13 @@
 	function getServiceBadgeClass(status: ServiceHealth): string {
 		switch (status) {
 			case 'healthy':
-				return 'variant-filled-primary';
+				return 'preset-filled-primary';
 			case 'unhealthy':
-				return 'variant-filled-error';
+				return 'preset-filled-error';
 			case 'initializing':
-				return 'variant-filled-warning';
+				return 'preset-filled-warning';
 			default:
-				return 'variant-filled-surface';
+				return 'preset-filled-surface';
 		}
 	}
 
@@ -177,7 +177,7 @@
 						</div>
 					</div>
 
-					<button class="variant-ghost-warning btn btn-sm" onclick={reinitializeSystem} title="Reinitialize system">
+					<button class="preset-ghost-warning btn btn-sm" onclick={reinitializeSystem} title="Reinitialize system">
 						<iconify-icon icon="mdi:refresh" width="16"></iconify-icon>
 					</button>
 				</div>
@@ -185,7 +185,7 @@
 				<!-- Services Grid -->
 				<div class="grid flex-1 grid-cols-2 gap-2 overflow-y-auto" style="max-height: calc({size.h} * 120px - 80px);">
 					{#each Object.entries(data.components) as [name, service]}
-						<div class="card variant-ghost-surface flex flex-col gap-1 p-2">
+						<div class="card preset-ghost-surface flex flex-col gap-1 p-2">
 							<div class="flex items-center justify-between">
 								<span class="text-xs font-semibold">{formatServiceName(name)}</span>
 								<span class={`badge ${getServiceBadgeClass(service.status)}`}>

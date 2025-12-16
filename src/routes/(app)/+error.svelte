@@ -46,7 +46,7 @@
 {#if page}
 	<main
 		lang={$contentLanguage}
-		class="bg-linear-to-t flex h-screen w-full flex-col items-center justify-center from-surface-900 via-surface-700 to-surface-900 text-white"
+		class="bg-linear-to-t flex h-screen w-full flex-col items-center justify-center from-preset-900 via-preset-700 to-preset-900 text-white"
 	>
 		<div class="relative">
 			<!-- Rotating SiteName -->

@@ -690,7 +690,7 @@ Features:
 					onkeydown={() => {}}
 					onclick={() => toggleUIElement('leftSidebar', isDesktop.value ? 'full' : 'collapsed')}
 					aria-label="Open Sidebar"
-					class="variant-ghost-surface btn-icon mt-1"
+					class="preset-ghost-surface btn-icon mt-1"
 				>
 					<iconify-icon icon="mingcute:menu-fill" width="24"></iconify-icon>
 				</button>
@@ -726,7 +726,7 @@ Features:
 				type="button"
 				onkeydown={() => {}}
 				onclick={() => (expand = !expand)}
-				class="variant-ghost-surface btn-icon p-1 sm:hidden"
+				class="preset-ghost-surface btn-icon p-1 sm:hidden"
 				aria-label="Expand/Collapse Filters"
 			>
 				<iconify-icon icon="material-symbols:filter-list-rounded" width="30"> </iconify-icon>
@@ -783,7 +783,7 @@ Features:
 						{m.entrylist_all()}
 					</label>
 
-					<button class="variant-ghost-surface btn btn-sm" onclick={resetViewSettings}>
+					<button class="preset-ghost-surface btn btn-sm" onclick={resetViewSettings}>
 						<iconify-icon icon="material-symbols-light:device-reset" width="20" class="mr-1 text-tertiary-500"></iconify-icon>
 						Reset View
 					</button>
@@ -796,7 +796,7 @@ Features:
 				>
 					{#each displayTableHeaders as header (header.id)}
 						<button
-							class="chip {header.visible ? 'variant-filled-secondary' : 'variant-ghost-secondary'} mr-1 flex items-center justify-center text-xs"
+							class="chip {header.visible ? 'preset-filled-secondary' : 'preset-ghost-secondary'} mr-1 flex items-center justify-center text-xs"
 							animate:flip={{ duration: flipDurationMs }}
 							onclick={() => handleColumnVisibilityToggle(header)}
 						>
@@ -821,7 +821,7 @@ Features:
 				<!-- Table Header -->
 				<thead class="sticky top-0 z-10 bg-surface-100 text-tertiary-500 dark:bg-surface-900 dark:text-primary-500">
 					{#if filterShow && visibleTableHeaders.length > 0}
-						<tr class="divide-x divide-surface-400 dark:divide-surface-600">
+						<tr class="divide-x divide-preset-400 dark:divide-preset-600">
 							<th>
 								<!-- Clear All Filters Button -->
 								{#if Object.values(entryListPaginationSettings.filters).some((f) => f !== '')}
@@ -832,7 +832,7 @@ Features:
 											entryListPaginationSettings.filters = clearedFilters;
 										}}
 										aria-label="Clear All Filters"
-										class="variant-ghost-surface btn-icon btn-sm"
+										class="preset-ghost-surface btn-icon btn-sm"
 									>
 										<iconify-icon icon="material-symbols:close" width="18"></iconify-icon>
 									</button>
@@ -857,7 +857,7 @@ Features:
 						</tr>
 					{/if}
 
-					<tr class="divide-x divide-surface-400 border-b border-black dark:border-white">
+					<tr class="divide-x divide-preset-400 border-b border-black dark:border-white">
 						<TableIcons
 							cellClass={`w-10 ${hasSelections ? 'bg-primary-500/10 dark:bg-secondary-500/20' : ''}`}
 							checked={SelectAll}
@@ -894,7 +894,7 @@ Features:
 					{#if tableData.length > 0}
 						{#each tableData as entry, index (entry._id)}
 							<tr
-								class="divide-x divide-surface-400 dark:divide-surface-700 {selectedMap[index] ? 'bg-primary-500/5 dark:bg-secondary-500/10' : ''}"
+								class="divide-x divide-preset-400 dark:divide-preset-700 {selectedMap[index] ? 'bg-primary-500/5 dark:bg-secondary-500/10' : ''}"
 								onmouseenter={() => handleRowHoverStart(entry._id)}
 								onmouseleave={handleRowHoverEnd}
 							>
@@ -1028,7 +1028,7 @@ Features:
 	{/if}
 {/if}
 
-<style lang="postcss">
+<style>
 	div::-webkit-scrollbar-thumb {
 		border-radius: 50px;
 		background-color: #0ec423;

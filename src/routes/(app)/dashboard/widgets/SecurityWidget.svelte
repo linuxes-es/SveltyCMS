@@ -40,7 +40,7 @@ and automated response visualization for enterprise security operations.
 	import { onMount, onDestroy } from 'svelte';
 	import { logger } from '@utils/logger';
 	import BaseWidget from '../BaseWidget.svelte';
-	import { getToastStore } from '@skeletonlabs/skeleton';
+	// getToastStore deprecated - use custom toaster from @stores/toasterStore;
 	import type { WidgetSize } from '@src/content/types';
 
 	const toastStore = getToastStore();
@@ -212,7 +212,7 @@ and automated response visualization for enterprise security operations.
 			if (response.ok) {
 				toastStore.trigger({
 					message: 'Incident resolved successfully',
-					background: 'variant-filled-success'
+					background: 'preset-filled-success'
 				});
 				await fetchSecurityData(); // Refresh data
 			} else {
@@ -221,7 +221,7 @@ and automated response visualization for enterprise security operations.
 		} catch (err) {
 			toastStore.trigger({
 				message: `Failed to resolve incident: ${err instanceof Error ? err.message : 'Unknown error'}`,
-				background: 'variant-filled-error'
+				background: 'preset-filled-error'
 			});
 		}
 	}
@@ -237,7 +237,7 @@ and automated response visualization for enterprise security operations.
 			if (response.ok) {
 				toastStore.trigger({
 					message: `IP ${ip} unblocked successfully`,
-					background: 'variant-filled-success'
+					background: 'preset-filled-success'
 				});
 				await fetchSecurityData(); // Refresh data
 			} else {
@@ -246,7 +246,7 @@ and automated response visualization for enterprise security operations.
 		} catch (err) {
 			toastStore.trigger({
 				message: `Failed to unblock IP: ${err instanceof Error ? err.message : 'Unknown error'}`,
-				background: 'variant-filled-error'
+				background: 'preset-filled-error'
 			});
 		}
 	}
@@ -300,7 +300,7 @@ and automated response visualization for enterprise security operations.
 					</p>
 				</div>
 			</div>
-			<button class="variant-ghost-surface btn btn-sm" onclick={() => fetchSecurityData()} disabled={isLoading} aria-label="Refresh security data">
+			<button class="preset-ghost-surface btn btn-sm" onclick={() => fetchSecurityData()} disabled={isLoading} aria-label="Refresh security data">
 				<iconify-icon icon="mdi:refresh" class="text-sm"></iconify-icon>
 			</button>
 		</div>
@@ -357,11 +357,11 @@ and automated response visualization for enterprise security operations.
 									{/if}
 								</div>
 								<div class="flex space-x-1">
-									<button class="btn-xs variant-ghost-surface btn" onclick={() => resolveIncident(incident.id)} title="Resolve incident">
+									<button class="btn-xs preset-ghost-surface btn" onclick={() => resolveIncident(incident.id)} title="Resolve incident">
 										<iconify-icon icon="mdi:check" class="text-xs"></iconify-icon>
 									</button>
 									{#if incident.responseActions.includes('block') || incident.responseActions.includes('blacklist')}
-										<button class="btn-xs variant-ghost-surface btn" onclick={() => unblockIP(incident.clientIp)} title="Unblock IP">
+										<button class="btn-xs preset-ghost-surface btn" onclick={() => unblockIP(incident.clientIp)} title="Unblock IP">
 											<iconify-icon icon="mdi:lock-open" class="text-xs"></iconify-icon>
 										</button>
 									{/if}

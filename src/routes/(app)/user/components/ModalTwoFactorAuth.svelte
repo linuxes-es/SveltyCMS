@@ -27,8 +27,7 @@ This component provides a user interface for managing 2FA settings:
 	import { invalidateAll } from '$app/navigation';
 	import type { User } from '@src/databases/auth/types';
 	// Skeleton & Stores
-	import type { ModalComponent, ModalSettings } from '@skeletonlabs/skeleton';
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
 	import TwoFactorVerifyModal from './TwoFactorVerifyModal.svelte';
 
 	// ParaglideJS
@@ -231,11 +230,11 @@ This component provides a user interface for managing 2FA settings:
 <!-- Main Modal Component -->
 {#if $modalStore[0]}
 	<div class="modal-2fa {cBase}">
-		<header class={`text-center text-primary-500 ${cHeader} flex-shrink-0`}>
+		<header class={`text-center text-primary-500 ${cHeader} shrink-0`}>
 			{$modalStore[0]?.title ?? m.twofa_title()}
 		</header>
 
-		<article class="flex-shrink-0 text-center text-sm">
+		<article class="shrink-0 text-center text-sm">
 			{$modalStore[0]?.body ?? m.twofa_description()}
 		</article>
 
@@ -252,7 +251,7 @@ This component provides a user interface for managing 2FA settings:
 					</div>
 				</div>
 				<!-- Status badge - aligned right -->
-				<span class="badge {is2FAEnabled ? 'variant-filled-success' : 'variant-filled-surface'}">
+				<span class="badge {is2FAEnabled ? 'preset-filled-success' : 'preset-filled-surface'}">
 					<iconify-icon icon="mdi:{is2FAEnabled ? 'check-circle' : 'circle-outline'}" width="14" class="mr-1"></iconify-icon>
 					{is2FAEnabled ? m.twofa_status_enabled() : m.twofa_status_disabled()}
 				</span>
@@ -271,7 +270,7 @@ This component provides a user interface for managing 2FA settings:
 						<!-- Step 1: Scan QR Code -->
 						<div class="space-y-3">
 							<h4 class="h4 flex items-center gap-2">
-								<span class="variant-soft-primary badge">1</span>
+								<span class="preset-soft-primary badge">1</span>
 								{m.twofa_setup_scan_title()}
 							</h4>
 							<p class="text-sm text-surface-600 dark:text-surface-300">{m.twofa_setup_step_1()}</p>
@@ -291,7 +290,7 @@ This component provides a user interface for managing 2FA settings:
 						<!-- Step 2: Manual Entry (Optional) -->
 						<div class="space-y-3">
 							<h4 class="h4 flex items-center gap-2">
-								<span class="variant-soft-secondary badge">2</span>
+								<span class="preset-soft-secondary badge">2</span>
 								{m.twofa_show_secret()}
 							</h4>
 							<p class="text-sm text-surface-600 dark:text-surface-300">{m.twofa_manual_entry_description()}</p>
@@ -303,7 +302,7 @@ This component provides a user interface for managing 2FA settings:
 						<!-- Step 3: Verify -->
 						<div class="space-y-3">
 							<h4 class="h4 flex items-center gap-2">
-								<span class="variant-soft-tertiary badge">3</span>
+								<span class="preset-soft-tertiary badge">3</span>
 								{m.twofa_verify_setup_title()}
 							</h4>
 							<p class="text-sm text-surface-600 dark:text-surface-300">{m.twofa_verify_setup_description()}</p>
@@ -325,7 +324,7 @@ This component provides a user interface for managing 2FA settings:
 						</div>
 
 						<!-- Backup Codes Warning -->
-						<div class="alert variant-ghost-warning">
+						<div class="alert preset-ghost-warning">
 							<iconify-icon icon="mdi:information" width="20"></iconify-icon>
 							<div class="alert-message">
 								<h5 class="h5 mb-1">{m.twofa_backup_codes_title()}</h5>
@@ -336,7 +335,7 @@ This component provides a user interface for managing 2FA settings:
 				{/if}
 			{:else}
 				<!-- 2FA Already Enabled - Management Options -->
-				<div class="alert variant-ghost-success">
+				<div class="alert preset-ghost-success">
 					<iconify-icon icon="mdi:shield-check" width="20"></iconify-icon>
 					<div class="alert-message">
 						<p class="text-sm">{m.twofa_enabled_description()}</p>
@@ -345,7 +344,7 @@ This component provides a user interface for managing 2FA settings:
 
 				<!-- Show backup codes if generated -->
 				{#if backupCodes.length > 0}
-					<div class="alert variant-ghost-warning">
+					<div class="alert preset-ghost-warning">
 						<iconify-icon icon="mdi:key-variant" width="20"></iconify-icon>
 						<div class="alert-message">
 							<h5 class="h5 mb-2">{m.twofa_backup_codes_title()}</h5>
@@ -367,9 +366,9 @@ This component provides a user interface for managing 2FA settings:
 			{/if}
 		</form>
 
-		<footer class="modal-footer {parent?.regionFooter} mt-4 flex flex-shrink-0 justify-end gap-2">
+		<footer class="modal-footer {parent?.regionFooter} mt-4 flex shrink-0 justify-end gap-2">
 			<!-- Close button -->
-			<button class="variant-outline-secondary btn" onclick={parent?.onClose} disabled={isLoading}>
+			<button class="preset-outline-secondary btn" onclick={parent?.onClose} disabled={isLoading}>
 				{m.button_cancel()}
 			</button>
 
@@ -379,7 +378,7 @@ This component provides a user interface for managing 2FA settings:
 				<button
 					onclick={verify2FA}
 					disabled={isLoading || !verificationCode || verificationCode.length !== 6}
-					class="variant-filled-primary btn {parent?.buttonPositive}"
+					class="preset-filled-primary btn {parent?.buttonPositive}"
 				>
 					{#if isLoading}
 						<iconify-icon icon="svg-spinners:3-dots-fade" width="20" class="mr-2"></iconify-icon>
@@ -391,7 +390,7 @@ This component provides a user interface for managing 2FA settings:
 				</button>
 			{:else if is2FAEnabled}
 				<!-- Management buttons when 2FA is enabled -->
-				<button onclick={generateBackupCodes} disabled={isLoading} class="variant-soft-secondary btn">
+				<button onclick={generateBackupCodes} disabled={isLoading} class="preset-soft-secondary btn">
 					{#if isLoading}
 						<iconify-icon icon="svg-spinners:3-dots-fade" width="20" class="mr-2"></iconify-icon>
 						{m.twofa_generating_codes()}
@@ -401,7 +400,7 @@ This component provides a user interface for managing 2FA settings:
 					{/if}
 				</button>
 
-				<button onclick={disable2FA} disabled={isLoading} class="variant-filled-error btn">
+				<button onclick={disable2FA} disabled={isLoading} class="preset-filled-error btn">
 					{#if isLoading}
 						<iconify-icon icon="svg-spinners:3-dots-fade" width="20" class="mr-2"></iconify-icon>
 						{m.twofa_disabling()}

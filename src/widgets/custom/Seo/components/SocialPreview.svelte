@@ -46,7 +46,7 @@ Displays a preview of the shared link for different platforms.
 	] as const;
 </script>
 
-<div class="card variant-soft-surface p-4 rounded-container-token mb-6">
+<div class="card preset-soft-surface p-4 rounded-container-token mb-6">
 	<div class="flex items-center gap-2 mb-4">
 		<iconify-icon icon="mdi:share-variant" class="text-secondary-500 text-xl"></iconify-icon>
 		<h3 class="h3">Social Share Preview</h3>
@@ -58,8 +58,8 @@ Displays a preview of the shared link for different platforms.
 			<button
 				type="button"
 				class="btn btn-icon btn-icon-sm transition-all {activePlatform === platform.id
-					? 'variant-filled-secondary ring-2 ring-surface-900 dark:ring-white scale-110'
-					: 'variant-soft-surface hover:variant-filled-surface'}"
+					? 'preset-filled-secondary ring-2 ring-preset-900 dark:ring-white scale-110'
+					: 'preset-soft-surface hover:preset-filled-surface'}"
 				onclick={() => (activePlatform = platform.id)}
 				title={platform.label}
 			>

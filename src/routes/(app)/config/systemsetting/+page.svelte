@@ -15,8 +15,7 @@ All dynamic CMS settings organized into logical groups
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import PageTitle from '@components/PageTitle.svelte';
-	import { getModalStore } from '@skeletonlabs/skeleton';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
+	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
 	import { logger } from '@utils/logger';
 
 	// Import settings structure
@@ -157,7 +156,7 @@ All dynamic CMS settings organized into logical groups
 </p>
 
 {#if unconfiguredCount > 0}
-	<div class="alert variant-filled-error mb-6">
+	<div class="alert preset-filled-error mb-6">
 		<div class="alert-message">
 			<strong
 				>⚠️ Action Required: {unconfiguredCount}
@@ -184,7 +183,7 @@ All dynamic CMS settings organized into logical groups
 		<div class="mb-3">
 			<input type="search" bind:value={searchTerm} placeholder="🔎 Search settings..." class="input w-full" />
 		</div>
-		<nav class="divide-y divide-surface-300 dark:divide-surface-400">
+		<nav class="divide-y divide-preset-300 dark:divide-preset-400">
 			{#each filteredGroups as group (group.id)}
 				<button
 					class="group-nav-item w-full p-3 text-left transition-all"
@@ -201,7 +200,7 @@ All dynamic CMS settings organized into logical groups
 								<span class="text-lg text-warning-500" title="Needs configuration">⚠️</span>
 							{/if}
 							{#if group.requiresRestart}
-								<span class="variant-soft-warning badge text-xs">Restart</span>
+								<span class="preset-soft-warning badge text-xs">Restart</span>
 							{/if}
 						</div>
 					</div>
@@ -274,7 +273,7 @@ All dynamic CMS settings organized into logical groups
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
 	.alert {
 		@apply rounded-container-token;
 	}

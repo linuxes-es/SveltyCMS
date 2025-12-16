@@ -428,7 +428,7 @@
 					<!-- Vertical line with RTL support -->
 					<div
 						class="absolute -left-0.5 top-0 h-full w-0.5 bg-gradient-to-b
-                           from-surface-100 from-20% to-transparent dark:from-surface-400"
+                           from-preset-100 from-20% to-transparent dark:from-preset-400"
 					></div>
 
 					<!-- Children nodes -->

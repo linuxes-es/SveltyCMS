@@ -32,7 +32,7 @@
 	import { untrack } from 'svelte';
 	import { deleteCurrentEntry, saveEntry } from '@utils/entryActions';
 	// Types
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
 	import type { User } from '@src/databases/auth/types';
 	import { StatusTypes, type StatusType } from '@src/content/types';
 	import { createEntry, invalidateCollectionCache } from '@src/utils/apiClient';
@@ -335,7 +335,7 @@
 				type="button"
 				onclick={() => toggleUIElement('leftSidebar', isDesktop.value ? 'full' : 'collapsed')}
 				aria-label="Toggle Sidebar"
-				class="variant-ghost-surface btn-icon mt-1"
+				class="preset-ghost-surface btn-icon mt-1"
 			>
 				<iconify-icon icon="mingcute:menu-fill" width="24"></iconify-icon>
 			</button>
@@ -345,7 +345,7 @@
 			onclick={saveData}
 			aria-label="Save"
 			class={`btn-icon mt-1 ${
-				!isFormValid || !canWrite ? 'variant-filled-surface cursor-not-allowed opacity-50' : 'variant-ghost-surface hover:variant-filled-surface'
+				!isFormValid || !canWrite ? 'preset-filled-surface cursor-not-allowed opacity-50' : 'preset-ghost-surface hover:preset-filled-surface'
 			}`}
 			disabled={!isFormValid || !canWrite}
 		>
@@ -373,7 +373,7 @@
 						type="button"
 						onclick={saveData}
 						aria-label="Save"
-						class={`variant-filled-tertiary btn-icon dark:variant-filled-primary ` + (!isFormValid || !canWrite ? 'btn:disabled' : 'btn')}
+						class={`preset-filled-tertiary btn-icon dark:preset-filled-primary ` + (!isFormValid || !canWrite ? 'btn:disabled' : 'btn')}
 						disabled={!isFormValid || !canWrite}
 					>
 						<iconify-icon icon="material-symbols:save" width="24" class="text-white"></iconify-icon>
@@ -385,7 +385,7 @@
 					type="button"
 					onclick={() => (showMore = !showMore)}
 					aria-label="Hide extra actions"
-					class="variant-filled-tertiary btn-icon text-white"
+					class="preset-filled-tertiary btn-icon text-white"
 				>
 					<iconify-icon icon="material-symbols:filter-list-rounded" width="30"></iconify-icon>
 				</button>
@@ -396,7 +396,7 @@
 
 				{#if ['edit', 'create'].includes(mode.value)}
 					{#if shouldHideNextButton}
-						<button type="button" onclick={next} class="variant-filled-primary btn-icon dark:variant-filled-primary lg:hidden" aria-label="Next">
+						<button type="button" onclick={next} class="preset-filled-primary btn-icon dark:preset-filled-primary lg:hidden" aria-label="Next">
 							<iconify-icon icon="carbon:next-filled" width="24" class="text-white"></iconify-icon>
 						</button>
 					{/if}
@@ -404,7 +404,7 @@
 						<button
 							type="button"
 							onclick={saveData}
-							class={`variant-filled-tertiary btn-icon dark:variant-filled-primary lg:hidden ` + (!isFormValid || !canWrite ? 'btn:disabled' : 'btn')}
+							class={`preset-filled-tertiary btn-icon dark:preset-filled-primary lg:hidden ` + (!isFormValid || !canWrite ? 'btn:disabled' : 'btn')}
 							aria-label="Save entry"
 							disabled={!isFormValid || !canWrite}
 						>
@@ -412,7 +412,7 @@
 						</button>
 					{/if}
 				{/if}
-				<button type="button" onclick={() => (showMore = !showMore)} aria-label="Show more actions" class="variant-ghost-surface btn-icon">
+				<button type="button" onclick={() => (showMore = !showMore)} aria-label="Show more actions" class="preset-ghost-surface btn-icon">
 					<iconify-icon icon="material-symbols:filter-list-rounded" width="30"></iconify-icon>
 				</button>
 			{/if}
@@ -423,7 +423,7 @@
 		{/if}
 
 		{#if !headerActionButton.value}
-			<button type="button" onclick={handleCancel} aria-label="Cancel" class="variant-ghost-surface btn-icon">
+			<button type="button" onclick={handleCancel} aria-label="Cancel" class="preset-ghost-surface btn-icon">
 				<iconify-icon icon="material-symbols:close" width="24"></iconify-icon>
 			</button>
 		{/if}
@@ -496,7 +496,7 @@
 				<input
 					type="datetime-local"
 					bind:value={createdAtDate}
-					class="variant-filled-surface w-full p-2 text-left text-sm"
+					class="preset-filled-surface w-full p-2 text-left text-sm"
 					aria-label="Set creation date"
 				/>
 			</div>

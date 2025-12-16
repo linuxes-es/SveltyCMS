@@ -38,7 +38,7 @@ Controls for the Blur tool, including strength slider and pattern/shape selector
 	<div class="h-6 w-px bg-surface-300 dark:bg-surface-600"></div>
 
 	<span class="text-sm">Shape:</span>
-	<div class="btn-group variant-ghost-surface">
+	<div class="btn-group preset-ghost-surface">
 		<button class="btn btn-sm" class:active={shape === 'rectangle'} onclick={() => onShapeChange('rectangle')} title="Rectangle">
 			<iconify-icon icon="mdi:crop-square"></iconify-icon>
 		</button>
@@ -50,7 +50,7 @@ Controls for the Blur tool, including strength slider and pattern/shape selector
 	<div class="h-6 w-px bg-surface-300 dark:bg-surface-600"></div>
 
 	<span class="text-sm">Pattern:</span>
-	<div class="btn-group variant-ghost-surface">
+	<div class="btn-group preset-ghost-surface">
 		<button class="btn btn-sm" class:active={pattern === 'blur'} onclick={() => onPatternChange('blur')} title="Blur">
 			<iconify-icon icon="mdi:blur"></iconify-icon>
 		</button>
@@ -75,14 +75,14 @@ Controls for the Blur tool, including strength slider and pattern/shape selector
 		<span class="w-8 text-right">{blurStrength}</span>
 	</label>
 
-	<div class="flex-grow"></div>
+	<div class="grow"></div>
 
-	<button onclick={onReset} class="btn variant-ghost-surface">
+	<button onclick={onReset} class="btn preset-ghost-surface">
 		<iconify-icon icon="mdi:restore"></iconify-icon>
 		<span>Reset All</span>
 	</button>
 
-	<button class="btn variant-filled-success" onclick={onApply}>
+	<button class="btn preset-filled-success" onclick={onApply}>
 		<iconify-icon icon="mdi:check"></iconify-icon>
 		<span>Apply Blur</span>
 	</button>

@@ -28,7 +28,7 @@
 	}
 </script>
 
-<div class="variant-filled-warning p-4 text-center">
+<div class="preset-filled-warning p-4 text-center">
 	<p class="font-bold">A server restart is required for some changes to take effect.</p>
-	<button class="variant-filled-error btn mt-2" on:click={restartServer}>Restart Now</button>
+	<button class="preset-filled-error btn mt-2" on:click={restartServer}>Restart Now</button>
 </div>

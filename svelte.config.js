@@ -1,17 +1,9 @@
 import adapter from '@sveltejs/adapter-node'; // To generate a standalone Node server
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import { betterSvelteEmailPreprocessor } from 'better-svelte-email';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
-	// for more information about preprocessors
-	preprocess: [
-		vitePreprocess(),
-		betterSvelteEmailPreprocessor({
-			pathToEmailFolder: './src/components/emails'
-		})
-	],
+	preprocess: [vitePreprocess()],
 
 	// ✅ **ACTION REQUIRED**: Uncomment this to enable Svelte 5 runes mode!
 	// This is essential for using the latest Svelte 5 features.

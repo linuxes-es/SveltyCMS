@@ -101,8 +101,8 @@
 		if (field?.maxLength && length > (field?.maxLength as number)) return 'bg-error-500';
 		if (field?.count && length === (field?.count as number)) return 'bg-success-500'; // Semantic success color
 		if (field?.count && length > (field?.count as number)) return 'bg-warning-500'; // Semantic warning color
-		if (field?.minLength) return '!variant-filled-surface';
-		return '!variant-ghost-surface';
+		if (field?.minLength) return '!preset-filled-surface';
+		return '!preset-ghost-surface';
 	});
 
 	// ✅ SSOT: Use validation schema from index.ts
@@ -225,9 +225,9 @@
 </script>
 
 <div class="relative mb-4 min-h-10 w-full pb-6">
-	<div class="variant-filled-surface btn-group flex w-full rounded" role="group">
+	<div class="preset-filled-surface btn-group flex w-full rounded" role="group">
 		{#if field?.prefix}
-			<button class="!px-2" type="button" aria-label={`${field.prefix} prefix`}>
+			<button class="px-2!" type="button" aria-label={`${field.prefix} prefix`}>
 				{field?.prefix}
 			</button>
 		{/if}
@@ -253,7 +253,7 @@
 			class:!border-error-500={!!validationError}
 			class:!ring-1={!!validationError || isValidating}
 			class:!ring-error-500={!!validationError}
-			class:!border-primary-500={isValidating && !validationError}
+			class:border-primary-500!={isValidating && !validationError}
 			class:!ring-primary-500={isValidating && !validationError}
 			aria-invalid={!!validationError}
 			aria-describedby={validationError ? `${fieldName}-error` : field.helper ? `${fieldName}-helper` : undefined}
@@ -284,7 +284,7 @@
 					</span>
 				{/if}
 				{#if field?.suffix}
-					<span class="!px-1" aria-label={`${field.suffix} suffix`}>{field?.suffix}</span>
+					<span class="px-1!" aria-label={`${field.suffix} suffix`}>{field?.suffix}</span>
 				{/if}
 			</div>
 		{/if}
@@ -306,7 +306,7 @@
 
 	<!-- Error Message -->
 	{#if validationError}
-		<p id={`${fieldName}-error`} class="absolute bottom-[-1rem] left-0 w-full text-center text-xs text-error-500" role="alert" aria-live="polite">
+		<p id={`${fieldName}-error`} class="absolute bottom-4 left-0 w-full text-center text-xs text-error-500" role="alert" aria-live="polite">
 			{validationError}
 		</p>
 	{/if}

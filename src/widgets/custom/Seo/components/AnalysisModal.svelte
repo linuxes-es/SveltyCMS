@@ -54,7 +54,7 @@ Displays detailed SEO analysis results in a modal overlay.
 					<iconify-icon icon="mdi:google-analytics" class="text-primary-500"></iconify-icon>
 					SEO Analysis Report
 				</h3>
-				<button type="button" class="btn-icon btn-icon-sm variant-ghost-surface" onclick={close} aria-label="Close">
+				<button type="button" class="btn-icon btn-icon-sm preset-ghost-surface" onclick={close} aria-label="Close">
 					<iconify-icon icon="mdi:close" width="24"></iconify-icon>
 				</button>
 			</header>
@@ -136,10 +136,10 @@ Displays detailed SEO analysis results in a modal overlay.
 										</div>
 										<span
 											class="badge {suggestion.type === 'error'
-												? 'variant-filled-error'
+												? 'preset-filled-error'
 												: suggestion.type === 'warning'
-													? 'variant-filled-warning'
-													: 'variant-filled-primary'} uppercase text-[10px]"
+													? 'preset-filled-warning'
+													: 'preset-filled-primary'} uppercase text-[10px]"
 										>
 											{suggestion.type}
 										</span>
@@ -148,7 +148,7 @@ Displays detailed SEO analysis results in a modal overlay.
 							{/each}
 						</div>
 					{:else}
-						<div class="alert variant-soft-success">
+						<div class="alert preset-soft-success">
 							<iconify-icon icon="mdi:check-circle" class="text-2xl mr-2"></iconify-icon>
 							<span>Great job! No specific issues found.</span>
 						</div>
@@ -162,7 +162,7 @@ Displays detailed SEO analysis results in a modal overlay.
 			</div>
 			<!-- Footer -->
 			<footer class="card-footer p-4 border-t border-surface-500/20 flex justify-end">
-				<button class="btn variant-filled-surface" onclick={close}>Close</button>
+				<button class="btn preset-filled-surface" onclick={close}>Close</button>
 			</footer>
 		</div>
 	</div>

@@ -45,7 +45,7 @@
 	import ThemeToggle from '@components/ThemeToggle.svelte';
 
 	// Skeleton components
-	import { Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import { Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton-svelte';
 
 	// Language and messaging
 	import * as m from '@src/paraglide/messages';
@@ -236,7 +236,7 @@
 				type="button"
 				onclick={() => toggleUIElement('leftSidebar', 'hidden')}
 				aria-label="Close Sidebar"
-				class="variant-ghost-surface btn-icon mt-1"
+				class="preset-ghost-surface btn-icon mt-1"
 			>
 				<iconify-icon icon="mingcute:menu-fill" width="24"></iconify-icon>
 			</button>
@@ -310,7 +310,7 @@
 
 	<!-- Footer -->
 	<div class="mb-2 mt-auto">
-		<div class="mx-1 mb-1 border-0 border-t border-surface-400"></div>
+		<div class="mx-1 mb-1 border-0 border-t border-surface-500"></div>
 
 		<div class="grid items-center justify-center {isSidebarFull ? 'grid-cols-3 grid-rows-3' : 'grid-cols-2 grid-rows-2'}">
 			<!-- Avatar -->
@@ -335,9 +335,9 @@
 					{/if}
 				</button>
 
-				<div class="card variant-filled z-50 max-w-sm p-2" data-popup="User">
+				<div class="card preset-filled z-50 max-w-sm p-2" data-popup="User">
 					{m.applayout_userprofile()}
-					<div class="variant-filled arrow"></div>
+					<div class="preset-filled arrow"></div>
 				</div>
 			</div>
 
@@ -346,7 +346,7 @@
 				<div class="language-selector relative" bind:this={dropdownRef}>
 					{#if showLanguageDropdown}
 						<button
-							class="variant-filled-surface btn-icon flex items-center justify-between uppercase text-white {isSidebarFull
+							class="preset-filled-surface btn-icon flex items-center justify-between uppercase text-white {isSidebarFull
 								? 'px-2.5 py-2'
 								: 'px-1.5 py-0'}"
 							onclick={toggleLanguageDropdown}
@@ -378,7 +378,7 @@
 									/>
 								</div>
 
-								<div class="max-h-48 divide-y divide-surface-600 overflow-y-auto py-1">
+								<div class="max-h-48 divide-y divide-preset-600 overflow-y-auto py-1">
 									{#each filteredLanguages as lang (lang)}
 										<button
 											class="flex w-full items-center justify-between px-4 py-2 text-left text-white hover:bg-surface-600 {languageTag === lang
@@ -397,7 +397,7 @@
 							bind:value={languageTag}
 							onchange={handleLanguageSelectChange}
 							aria-label="Select language"
-							class="variant-filled-surface !appearance-none rounded-full uppercase text-white {isSidebarFull
+							class="preset-filled-surface !appearance-none rounded-full uppercase text-white {isSidebarFull
 								? 'btn-icon px-2.5 py-2'
 								: 'btn-icon-sm px-1.5 py-0'}"
 						>
@@ -408,9 +408,9 @@
 					{/if}
 				</div>
 
-				<div class="card variant-filled z-50 max-w-sm p-2" data-popup="SystemLanguage">
+				<div class="card preset-filled z-50 max-w-sm p-2" data-popup="SystemLanguage">
 					{m.applayout_systemlanguage()}
-					<div class="variant-filled arrow"></div>
+					<div class="preset-filled arrow"></div>
 				</div>
 			</div>
 
@@ -431,9 +431,9 @@
 					<iconify-icon icon="uil:signout" width="26"></iconify-icon>
 				</button>
 
-				<div class="card variant-filled z-50 max-w-sm p-2" data-popup="SignOutButton">
+				<div class="card preset-filled z-50 max-w-sm p-2" data-popup="SignOutButton">
 					{m.applayout_signout()}
-					<div class="variant-filled arrow"></div>
+					<div class="preset-filled arrow"></div>
 				</div>
 			</div>
 
@@ -449,9 +449,9 @@
 					<iconify-icon icon="material-symbols:build-circle" width="34"></iconify-icon>
 				</button>
 
-				<div class="card variant-filled z-50 max-w-sm p-2" data-popup="Config">
+				<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Config">
 					{m.applayout_systemconfiguration()}
-					<div class="variant-filled arrow"></div>
+					<div class="preset-filled arrow"></div>
 				</div>
 			</div>
 
@@ -468,9 +468,9 @@
 							<iconify-icon icon="grommet-icons:github" width="30"></iconify-icon>
 						</button>
 
-						<div class="card variant-filled z-50 max-w-sm p-2" data-popup="Github">
+						<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Github">
 							{m.applayout_githubdiscussion()}
-							<div class="variant-filled arrow"></div>
+							<div class="preset-filled arrow"></div>
 						</div>
 					</a>
 				</div>
@@ -479,11 +479,11 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
 	/* Scrollbar styling */
 	.overflow-y-auto {
 		scrollbar-width: thin;
-		scrollbar-color: rgb(var(--color-surface-500)) transparent;
+		scrollbar-color: rgb(var(--color-preset-500)) transparent;
 	}
 
 	.overflow-y-auto::-webkit-scrollbar {
@@ -495,7 +495,7 @@
 	}
 
 	.overflow-y-auto::-webkit-scrollbar-thumb {
-		background-color: rgb(var(--color-surface-500));
+		background-color: rgb(var(--color-preset-500));
 		border-radius: 3px;
 	}
 </style>

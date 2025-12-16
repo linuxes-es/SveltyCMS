@@ -10,16 +10,32 @@
  * - Action-specific modal templates
  */
 
-import type { ModalSettings } from '@skeletonlabs/skeleton';
 import { showToast } from '@utils/toast';
 import { writable } from 'svelte/store';
 
 // ParaglideJS
 import * as m from '@src/paraglide/messages';
 
+// Custom dialog configuration type (replaces deprecated ModalSettings)
+export interface DialogConfig {
+	type?: 'confirm' | 'component' | 'alert';
+	title?: string;
+	body?: string;
+	buttonTextConfirm?: string;
+	buttonTextCancel?: string;
+	modalClasses?: string;
+	backdropClasses?: string;
+	meta?: Record<string, any>;
+	component?: {
+		ref: string;
+		props?: Record<string, any>;
+	};
+	response?: (result: any) => void;
+}
+
 // Modal themes and configurations
 export interface ModalTheme {
-	variant: 'filled' | 'ghost' | 'soft' | 'glass';
+	preset: 'filled' | 'ghost' | 'soft' | 'glass';
 	color: 'primary' | 'secondary' | 'tertiary' | 'success' | 'warning' | 'error' | 'surface';
 }
 
@@ -35,20 +51,20 @@ export interface ActionModalConfig {
 
 // Default themes for different actions
 export const DEFAULT_THEMES: Record<string, ModalTheme> = {
-	delete: { variant: 'filled', color: 'error' },
-	archive: { variant: 'filled', color: 'warning' },
-	publish: { variant: 'filled', color: 'success' },
-	unpublish: { variant: 'filled', color: 'warning' },
-	clone: { variant: 'filled', color: 'primary' },
-	schedule: { variant: 'filled', color: 'tertiary' },
-	default: { variant: 'filled', color: 'primary' }
+	delete: { preset: 'filled', color: 'error' },
+	archive: { preset: 'filled', color: 'warning' },
+	publish: { preset: 'filled', color: 'success' },
+	unpublish: { preset: 'filled', color: 'warning' },
+	clone: { preset: 'filled', color: 'primary' },
+	schedule: { preset: 'filled', color: 'tertiary' },
+	default: { preset: 'filled', color: 'primary' }
 };
 
 // Store for managing modal state
-export const modalConfigStore = writable<ModalSettings | null>(null);
+export const modalConfigStore = writable<DialogConfig | null>(null);
 
 // Creates a standardized confirmation modal
-export function createConfirmModal(config: ActionModalConfig, onConfirm: () => void, onCancel?: () => void): ModalSettings {
+export function createConfirmModal(config: ActionModalConfig, onConfirm: () => void, onCancel?: () => void): DialogConfig {
 	const theme = config.theme || DEFAULT_THEMES.default;
 
 	return {
@@ -64,8 +80,8 @@ export function createConfirmModal(config: ActionModalConfig, onConfirm: () => v
 
 		// Enhanced styling for buttons (use `meta` as expected by ModalSettings)
 		meta: {
-			buttonConfirmClasses: `variant-${theme.variant}-${theme.color}`,
-			buttonCancelClasses: 'variant-ghost-surface'
+			buttonConfirmClasses: `preset-${theme.preset}-${theme.color}`,
+			buttonCancelClasses: 'preset-ghost-surface'
 		},
 
 		response: (confirmed: boolean) => {
@@ -79,7 +95,7 @@ export function createConfirmModal(config: ActionModalConfig, onConfirm: () => v
 }
 
 // Creates a deletion confirmation modal with enhanced warnings
-export function createDeleteModal(itemType: string, itemName: string | string[], onConfirm: () => void, isAdmin = false): ModalSettings {
+export function createDeleteModal(itemType: string, itemName: string | string[], onConfirm: () => void, isAdmin = false): DialogConfig {
 	const isBatch = Array.isArray(itemName);
 	const count = isBatch ? itemName.length : 1;
 
@@ -92,7 +108,7 @@ export function createDeleteModal(itemType: string, itemName: string | string[],
 
 	// Enhanced warning for admins
 	const warning = isAdmin
-		? `<div class="alert variant-filled-warning mt-4">
+		? `<div class="alert preset-filled-warning mt-4">
 			<i class="fa-solid fa-triangle-exclamation"></i>
 			<div>
 				<h3>Important</h3>
@@ -116,7 +132,7 @@ export function createDeleteModal(itemType: string, itemName: string | string[],
 }
 
 // Creates an archive confirmation modal
-export function createArchiveModal(itemType: string, itemName: string | string[], onConfirm: () => void): ModalSettings {
+export function createArchiveModal(itemType: string, itemName: string | string[], onConfirm: () => void): DialogConfig {
 	const isBatch = Array.isArray(itemName);
 	const count = isBatch ? itemName.length : 1;
 
@@ -142,7 +158,7 @@ export function createArchiveModal(itemType: string, itemName: string | string[]
 }
 
 // Creates a status change confirmation modal
-export function createStatusModal(fromStatus: string, toStatus: string, itemType: string, itemName: string, onConfirm: () => void): ModalSettings {
+export function createStatusModal(fromStatus: string, toStatus: string, itemType: string, itemName: string, onConfirm: () => void): DialogConfig {
 	const title = `Change status from ${fromStatus} to ${toStatus}`;
 	const body = `Change ${itemName ?? 'this item'} (${itemType}) status to ${toStatus}?`;
 
@@ -161,7 +177,7 @@ export function createStatusModal(fromStatus: string, toStatus: string, itemType
 }
 
 // Creates a scheduling confirmation modal with date picker
-export function createScheduleModal(itemType: string, itemName: string, onConfirm: (scheduledDate: Date) => void): ModalSettings {
+export function createScheduleModal(itemType: string, itemName: string, onConfirm: (scheduledDate: Date) => void): DialogConfig {
 	return {
 		type: 'component',
 		title: m.scheduler_title?.({ type: itemType }) || 'Schedule Publication',
@@ -185,7 +201,7 @@ export function createBatchModal(
 	itemType: string,
 	availableActions: string[],
 	onAction: (action: string) => void
-): ModalSettings {
+): DialogConfig {
 	const messages = m as unknown as Record<string, ((args?: Record<string, unknown>) => string) | undefined>;
 	return {
 		type: 'component',
@@ -201,7 +217,7 @@ export function createBatchModal(
 			}
 		},
 		buttonTextCancel: m.button_cancel(),
-		modalClasses: '!bg-primary-500/10 !border-primary-500/20'
+		modalClasses: '!bg-primary-500/10 border-primary-500!/20'
 	};
 }
 

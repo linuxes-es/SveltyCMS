@@ -158,9 +158,9 @@
 </script>
 
 <div class="input-container relative mb-4">
-	<div class="variant-filled-surface btn-group flex w-full rounded" role="group">
+	<div class="preset-filled-surface btn-group flex w-full rounded" role="group">
 		{#if field?.prefix}
-			<button class="!px-2" type="button" aria-label={`${field.prefix} prefix`}>
+			<button class="px-2!" type="button" aria-label={`${field.prefix} prefix`}>
 				{field?.prefix}
 			</button>
 		{/if}
@@ -186,7 +186,7 @@
 				class:!border-error-500={!!validationError}
 				class:!ring-1={!!validationError || isValidating}
 				class:!ring-error-500={!!validationError}
-				class:!border-primary-500={isValidating && !validationError}
+				class:border-primary-500!={isValidating && !validationError}
 				class:!ring-primary-500={isValidating && !validationError}
 				aria-invalid={!!validationError}
 				aria-describedby={validationError ? `${fieldName}-error` : undefined}
@@ -196,7 +196,7 @@
 		</div>
 
 		{#if field?.suffix}
-			<button class="!px-2" type="button" aria-label={`${field.suffix} suffix`}>
+			<button class="px-2!" type="button" aria-label={`${field.suffix} suffix`}>
 				{field?.suffix}
 			</button>
 		{/if}
@@ -222,7 +222,7 @@
 	{/if}
 </div>
 
-<style lang="postcss">
+<style>
 	.input-container {
 		min-height: 2.5rem;
 	}

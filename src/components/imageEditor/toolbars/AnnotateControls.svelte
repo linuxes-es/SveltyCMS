@@ -29,7 +29,7 @@ Controls for the Annotate tool: tool selection (text, arrow, shapes) and styling
 
 <div class="flex w-full items-center gap-4">
 	<!-- Tool Selection -->
-	<div class="btn-group variant-ghost-surface">
+	<div class="btn-group preset-ghost-surface">
 		<button
 			class="btn btn-sm"
 			class:active={currentTool === 'text'}
@@ -76,20 +76,20 @@ Controls for the Annotate tool: tool selection (text, arrow, shapes) and styling
 		<input type="color" class="input-color" oninput={(e) => onFillColorChange(e.currentTarget.value)} value={fillColor} />
 	</label>
 
-	<div class="flex-grow"></div>
+	<div class="grow"></div>
 
 	<!-- Actions -->
-	<button onclick={onDelete} class="btn variant-ghost-error">
+	<button onclick={onDelete} class="btn preset-ghost-error">
 		<iconify-icon icon="mdi:delete-outline"></iconify-icon>
 		<span>Delete</span>
 	</button>
-	<button class="btn variant-filled-success" onclick={onApply}>
+	<button class="btn preset-filled-success" onclick={onApply}>
 		<iconify-icon icon="mdi:check"></iconify-icon>
 		<span>Done</span>
 	</button>
 </div>
 
-<style lang="postcss">
+<style>
 	.input-color {
 		@apply h-8 w-8 cursor-pointer appearance-none rounded-md border-none bg-transparent p-0;
 	}
@@ -97,6 +97,6 @@ Controls for the Annotate tool: tool selection (text, arrow, shapes) and styling
 		@apply p-0;
 	}
 	.input-color::-webkit-color-swatch {
-		@apply rounded-md border border-surface-400;
+		@apply border-surface-400 rounded-md border;
 	}
 </style>

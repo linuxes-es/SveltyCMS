@@ -7,7 +7,7 @@
 	import iso6391 from '@utils/iso639-1.json';
 	import { getLanguageName } from '@utils/languageUtils';
 	import { locales as systemLocales } from '@src/paraglide/runtime';
-	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import { popup, type PopupSettings } from '@skeletonlabs/skeleton-svelte';
 	// ✅ FIX: Import types from the store
 	import type { ValidationErrors } from '@stores/setupStore.svelte';
 	import { safeParse } from 'valibot';
@@ -382,7 +382,7 @@
 							class="relative flex min-h-[42px] flex-wrap items-center gap-2 rounded border border-slate-300/50 bg-surface-50 p-2 pr-16 dark:border-slate-600 dark:bg-surface-700/40"
 						>
 							{#each systemSettings.systemLanguages as lang (lang)}
-								<span class="group variant-ghost-tertiary badge inline-flex items-center gap-1 rounded-full dark:variant-ghost-primary">
+								<span class="group preset-ghost-tertiary badge inline-flex items-center gap-1 rounded-full dark:preset-ghost-primary">
 									{displayLang(lang)}
 									{#if systemSettings.systemLanguages.length > 1}
 										<button
@@ -399,7 +399,7 @@
 							{#if systemAvailable.length}
 								<button
 									type="button"
-									class="variant-filled-surface badge absolute right-2 top-1/2 -translate-y-1/2 rounded-full"
+									class="preset-filled-surface badge absolute right-2 top-1/2 -translate-y-1/2 rounded-full"
 									onclick={openSystemPicker}
 									aria-haspopup="dialog"
 									aria-expanded={showSystemPicker}
@@ -510,7 +510,7 @@
 								: 'border-slate-300/50 bg-surface-50 dark:border-slate-600 dark:bg-surface-700/40'}"
 						>
 							{#each systemSettings.contentLanguages as lang (lang)}
-								<span class="group variant-ghost-tertiary badge inline-flex items-center gap-1 rounded-full dark:variant-ghost-primary">
+								<span class="group preset-ghost-tertiary badge inline-flex items-center gap-1 rounded-full dark:preset-ghost-primary">
 									{displayLang(lang)}
 									{#if lang !== systemSettings.defaultContentLanguage || systemSettings.contentLanguages.length > 1}
 										<button
@@ -526,7 +526,7 @@
 							{/each}
 							<button
 								type="button"
-								class="variant-filled-surface badge absolute right-2 top-1/2 -translate-y-1/2 rounded-full"
+								class="preset-filled-surface badge absolute right-2 top-1/2 -translate-y-1/2 rounded-full"
 								onclick={openContentPicker}
 								aria-haspopup="dialog"
 								aria-expanded={showContentPicker}

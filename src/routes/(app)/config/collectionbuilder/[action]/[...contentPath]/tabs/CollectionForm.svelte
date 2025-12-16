@@ -27,8 +27,9 @@
 	import * as m from '@src/paraglide/messages';
 
 	// Skeleton
-	import { popup } from '@skeletonlabs/skeleton';
-	import type { PopupSettings } from '@skeletonlabs/skeleton';
+	// import { popup } from '@skeletonlabs/skeleton-svelte';
+	// import type { PopupSettings } from '@skeletonlabs/skeleton-svelte';
+	import { popup, type PopupSettings } from '@utils/popup';
 	// Collection Manager
 
 	const props = $props();
@@ -229,10 +230,10 @@
 				</p>
 			{/if}
 			<!-- Name Tooltip -->
-			<div class="card variant-filled z-50 max-w-sm p-2" data-popup="Name">
+			<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Name">
 				<p>{m.collection_name_tooltip1()}</p>
 				<p>{m.collection_name_tooltip2()}</p>
-				<div class="variant-filled arrow"></div>
+				<div class="preset-filled arrow"></div>
 			</div>
 		</div>
 
@@ -254,9 +255,9 @@
 			</label>
 			<IconifyPicker bind:iconselected={selectedIcon} bind:searchQuery />
 			<!-- Icon Tooltip -->
-			<div class="card variant-filled z-50 max-w-sm p-2" data-popup="Icon">
+			<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Icon">
 				<p>{m.collection_icon_tooltip()}</p>
-				<div class="variant-filled arrow"></div>
+				<div class="preset-filled arrow"></div>
 			</div>
 		</div>
 
@@ -273,9 +274,9 @@
 			</label>
 			<input type="text" id="slug" bind:value={slug} placeholder={m.collection_slug_input()} class="input w-full text-black dark:text-primary-500" />
 			<!-- Slug Tooltip -->
-			<div class="card variant-filled z-50 max-w-sm p-2" data-popup="Slug">
+			<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Slug">
 				<p>{m.collection_slug_tooltip()}</p>
-				<div class="variant-filled arrow"></div>
+				<div class="preset-filled arrow"></div>
 			</div>
 		</div>
 
@@ -298,9 +299,9 @@
 				class="input w-full text-black dark:text-primary-500"
 			></textarea>
 			<!-- Description Tooltip -->
-			<div class="card variant-filled z-50 max-w-sm p-2" data-popup="Description">
+			<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Description">
 				<p>{m.collection_description()}</p>
-				<div class="variant-filled arrow"></div>
+				<div class="preset-filled arrow"></div>
 			</div>
 		</div>
 
@@ -321,18 +322,16 @@
 				{/each}
 			</select>
 			<!-- Status Tooltip -->
-			<div class="card variant-filled z-50 max-w-sm p-2" data-popup="Status">
+			<div class="card preset-filled z-50 max-w-sm p-2" data-popup="Status">
 				<p>{m.collection_status_tooltip()}</p>
-				<div class="variant-filled arrow"></div>
+				<div class="preset-filled arrow"></div>
 			</div>
 		</div>
 	</div>
 
 	<!-- Buttons Section -->
 	<div class="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-between">
-		<a href="/config/collectionbuilder" class="variant-outline-secondary btn sm:w-auto">{m.button_cancel()}</a>
-		<button type="button" onclick={handleNextClick} class="variant-filled-tertiary btn dark:variant-filled-primary sm:w-auto"
-			>{m.button_next()}</button
-		>
+		<a href="/config/collectionbuilder" class="preset-outline-secondary btn sm:w-auto">{m.button_cancel()}</a>
+		<button type="button" onclick={handleNextClick} class="preset-filled-tertiary btn dark:preset-filled-primary sm:w-auto">{m.button_next()}</button>
 	</div>
 </div>

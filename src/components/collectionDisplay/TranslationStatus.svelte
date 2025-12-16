@@ -18,7 +18,7 @@ FIXES:
 	import { publicEnv } from '@src/stores/globalSettings.svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { ProgressBar } from '@skeletonlabs/skeleton';
+	import { Progress } from '@skeletonlabs/skeleton-svelte';
 	import { collection, collectionValue, mode } from '@src/stores/collectionStore.svelte';
 	import { contentLanguage, translationProgress } from '@stores/store.svelte';
 	import { getFieldName } from '@utils/utils';
@@ -455,7 +455,7 @@ FIXES:
 			<button
 				type="button"
 				onclick={toggleDropdown}
-				class="variant-outline-surface btn flex w-full items-center gap-1 p-1.5 transition-all duration-200 hover:scale-105"
+				class="preset-outline-surface btn flex w-full items-center gap-1 p-1.5 transition-all duration-200 hover:scale-105"
 				aria-haspopup="true"
 				aria-expanded={isOpen}
 				aria-controls="translation-menu"
@@ -471,8 +471,8 @@ FIXES:
 			</button>
 
 			<div class="mt-0.5 transition-all duration-300">
-				<ProgressBar
-					class="variant-outline-secondary transition-all duration-300 hover:shadow-sm"
+				<Progress
+					class="preset-outline-secondary transition-all duration-300 hover:shadow-sm"
 					value={overallPercentage}
 					meter={getProgressColor(overallPercentage)}
 					aria-label={m.translationsstatus_overall_progress({ percentage: overallPercentage })}
@@ -489,7 +489,7 @@ FIXES:
 	<div style="position: fixed; z-index: 99999; top: 0; left: 0; pointer-events: none; width: 100%; height: 100%;">
 		<div
 			id="translation-menu"
-			class="origin-top-right divide-y divide-surface-200 rounded-lg border-2 border-surface-400 bg-white py-1 shadow-2xl backdrop-blur-sm focus:outline-none dark:divide-surface-600 dark:border-surface-500 dark:bg-surface-800 {showProgress
+			class="origin-top-right divide-y divide-preset-200 rounded-lg border-2 border-surface-400 bg-white py-1 shadow-2xl backdrop-blur-sm focus:outline-none dark:divide-preset-600 dark:border-surface-500 dark:bg-surface-800 {showProgress
 				? 'w-64'
 				: 'w-48'}"
 			style="position: fixed; top: {dropdownPosition.top}px; right: {dropdownPosition.right}px; pointer-events: auto;"
@@ -498,7 +498,7 @@ FIXES:
 			aria-labelledby="language-menu-button"
 			transition:scale={{ duration: 200, easing: quintOut, start: 0.95 }}
 		>
-			<div role="none" class="divide-y divide-surface-200 dark:divide-surface-400">
+			<div role="none" class="divide-y divide-preset-200 dark:divide-preset-400">
 				{#each availableLanguages as lang, index (lang)}
 					{@const percentage = languageProgress[lang] || 0}
 					{@const isActive = currentLanguage === lang}
@@ -523,7 +523,7 @@ FIXES:
 							{#if showProgress && translationProgress.value?.[lang as Locale]}
 								<div class="ml-2 flex flex-1 items-center gap-2">
 									<div class="flex-1">
-										<ProgressBar class="transition-all duration-300" value={percentage} meter={getProgressColor(percentage)} aria-hidden="true" />
+										<Progress class="transition-all duration-300" value={percentage} meter={getProgressColor(percentage)} aria-hidden="true" />
 									</div>
 									<span class="min-w-[2.5rem] text-right text-sm font-semibold">
 										{percentage}%
@@ -543,7 +543,7 @@ FIXES:
 					<div class="flex items-center justify-between gap-3">
 						{#if overallPercentage}
 							<div class="flex-1">
-								<ProgressBar
+								<Progress
 									class="transition-all duration-300"
 									value={overallPercentage}
 									meter={getProgressColor(overallPercentage)}

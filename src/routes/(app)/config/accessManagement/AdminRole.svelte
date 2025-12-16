@@ -26,6 +26,9 @@ It provides functionality to:
 	// Components
 	import { showToast } from '@utils/toast';
 
+	// ParaglideJS
+	import * as m from '@src/paraglide/messages';
+
 	const { roleData, setRoleData } = $props();
 
 	// Reactive state
@@ -126,11 +129,11 @@ It provides functionality to:
 				Selected Admin Role ID: <span class="ml-2 text-tertiary-500 dark:text-primary-500">{selectedAdminRole}</span>
 			</p>
 			<div class="mt-4 flex justify-between">
-				<!-- cancel -->
-				<button onclick={cancelChanges} class="variant-filled-secondary btn"> Cancel </button>
+				<!-- Cancel -->
+				<button onclick={cancelChanges} class="preset-filled-secondary btn"> {m.button_cancel()} </button>
 
 				<!-- Save -->
-				<button onclick={saveAdminRole} class="variant-filled-tertiary btn" disabled={isSaving}>
+				<button onclick={saveAdminRole} class="preset-filled-tertiary btn" disabled={isSaving}>
 					{#if isSaving}
 						Saving...
 					{:else}

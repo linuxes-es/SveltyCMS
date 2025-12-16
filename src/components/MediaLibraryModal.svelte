@@ -4,7 +4,7 @@
 -->
 
 <script lang="ts">
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
 
 	// Props interface (required for modal components)
 	interface Props {

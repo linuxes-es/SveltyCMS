@@ -400,7 +400,7 @@
 				</div>
 			{:else if search}
 				<!-- Clear Button (when search is complete and has text) -->
-				<button type="button" onclick={clearSearch} class="variant-glass btn {isFullSidebar ? 'h-10 w-10' : 'h-7 w-7'}" aria-label="Clear search">
+				<button type="button" onclick={clearSearch} class="preset-glass btn {isFullSidebar ? 'h-10 w-10' : 'h-7 w-7'}" aria-label="Clear search">
 					<iconify-icon icon="ic:round-close" width="16"></iconify-icon>
 				</button>
 			{:else}
@@ -431,7 +431,7 @@
 			<div class="flex flex-col items-center justify-center space-y-3 p-6 text-center" role="alert" aria-live="assertive">
 				<iconify-icon icon="ic:outline-error" width="32" class="text-error-500"></iconify-icon>
 				<p class="text-sm text-error-500">{error}</p>
-				<button type="button" class="variant-filled-error btn btn-sm" onclick={() => window.location.reload()}>
+				<button type="button" class="preset-filled-error btn btn-sm" onclick={() => window.location.reload()}>
 					<iconify-icon icon="ic:outline-refresh" width="16" class="mr-1"></iconify-icon>
 					Retry
 				</button>
@@ -457,7 +457,7 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
 	/* Smooth animations for tree nodes */
 	:global(.tree-node) {
 		transition: all 0.2s ease-in-out;

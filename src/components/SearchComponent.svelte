@@ -212,7 +212,7 @@
 
 {#if $isSearchVisible}
 	<div
-		class="search-component fixed inset-0 z-[999999] flex flex-col items-center justify-start bg-gray-950/70 pt-[15vh] backdrop-blur-sm"
+		class="search-component fixed inset-0 z-999999 flex flex-col items-center justify-start bg-gray-950/70 pt-[15vh] backdrop-blur-sm"
 		role="dialog"
 		aria-modal="true"
 		aria-label="Global Search"
@@ -229,7 +229,7 @@
 			aria-controls="search-results"
 			aria-autocomplete="list"
 			aria-activedescendant={selectedIndex !== -1 ? `search-result-${selectedIndex}` : undefined}
-			class="input mx-2 w-full max-w-xl rounded-md border-4 !border-primary-500 px-4 py-3 text-lg"
+			class="input mx-2 w-full max-w-xl rounded-md border-4 border-primary-500! px-4 py-3 text-lg"
 			autocomplete="off"
 		/>
 
@@ -257,7 +257,7 @@
 								aria-label={`${result.title}: ${result.description}. Path: ${trigger?.path ?? 'N/A'}`}
 							>
 								<div class="flex items-center justify-between gap-4">
-									<div class="flex-grow overflow-hidden">
+									<div class="grow overflow-hidden">
 										<div class="truncate font-semibold text-primary-300">
 											<HighlightedText text={result.title} term={searchQuery} />
 										</div>
@@ -266,7 +266,7 @@
 										</div>
 									</div>
 									{#if trigger?.path}
-										<span class="ml-auto flex-shrink-0 rounded bg-surface-700 px-2 py-0.5 text-xs text-primary-400">
+										<span class="ml-auto shrink-0 rounded bg-surface-700 px-2 py-0.5 text-xs text-primary-400">
 											{trigger.path}
 										</span>
 									{/if}

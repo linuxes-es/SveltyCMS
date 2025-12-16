@@ -1,5 +1,5 @@
 <!--
-@file src/components/system/ProgressBar.svelte
+@file src/components/system/Progress.svelte
 @description Progress bar component for showing loading states
 @props
 - value: number (0-100) - Progress percentage

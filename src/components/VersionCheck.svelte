@@ -63,7 +63,7 @@ The `children` snippet is passed an object with the following properties:
 	// Use the pkg version passed from the server load function
 	const pkg = $derived(page.data?.settings?.PKG_VERSION || '0.0.0');
 	let githubVersion = $state('');
-	let pkgBgColor = $state('variant-soft-surface'); // Default neutral color
+	let pkgBgColor = $state('preset-soft-surface'); // Default neutral color
 	let versionStatusMessage = $state('Checking for updates...');
 	let statusIcon = $state('mdi:loading');
 	let isLoading = $state(true);
@@ -76,12 +76,12 @@ The `children` snippet is passed an object with the following properties:
 			.then((data) => {
 				if (data.status === 'disabled') {
 					githubVersion = pkg;
-					pkgBgColor = 'variant-filled-surface';
+					pkgBgColor = 'preset-filled-surface';
 					versionStatusMessage = 'Security Status: Unknown (Telemetry Disabled)';
 					statusIcon = 'mdi:shield-off';
 				} else if (data.status === 'error') {
 					githubVersion = pkg;
-					pkgBgColor = 'variant-filled-warning';
+					pkgBgColor = 'preset-filled-warning';
 					versionStatusMessage = 'Could not check for updates';
 					statusIcon = 'mdi:wifi-off';
 				} else {
@@ -90,19 +90,19 @@ The `children` snippet is passed an object with the following properties:
 					const [githubMajor, githubMinor, githubPatch] = githubVersion.split('.').map(Number);
 
 					if (data.security_issue) {
-						pkgBgColor = 'variant-filled-error';
+						pkgBgColor = 'preset-filled-error';
 						versionStatusMessage = data.message || `Critical security update to v${githubVersion} available!`;
 						statusIcon = 'mdi:shield-alert';
 					} else if (githubMajor > localMajor) {
-						pkgBgColor = 'variant-filled-error';
+						pkgBgColor = 'preset-filled-error';
 						versionStatusMessage = `Major update to v${githubVersion} available!`;
 						statusIcon = 'mdi:alert-circle';
 					} else if (githubMinor > localMinor || (githubMinor === localMinor && githubPatch > localPatch)) {
-						pkgBgColor = 'variant-filled-warning';
+						pkgBgColor = 'preset-filled-warning';
 						versionStatusMessage = `Update to v${githubVersion} recommended`;
 						statusIcon = 'mdi:information';
 					} else {
-						pkgBgColor = 'variant-filled-success';
+						pkgBgColor = 'preset-filled-success';
 						versionStatusMessage = 'You are up to date';
 						statusIcon = 'mdi:check-circle';
 					}
@@ -110,7 +110,7 @@ The `children` snippet is passed an object with the following properties:
 			})
 			.catch(() => {
 				githubVersion = pkg;
-				pkgBgColor = 'variant-soft-surface';
+				pkgBgColor = 'preset-soft-surface';
 				versionStatusMessage = 'Update check failed';
 				statusIcon = 'mdi:loading';
 			})
@@ -148,7 +148,7 @@ The `children` snippet is passed an object with the following properties:
 		class:badge={!transparent && !compact}
 		class:animate-pulse={isLoading}
 		class={transparent
-			? `absolute bottom-5 left-1/2 flex -translate-x-1/2 transform items-center justify-center gap-2 rounded-full bg-gradient-to-r ${transparentColorClass} px-3 py-1 text-sm font-medium transition-opacity duration-300`
+			? `absolute bottom-5 left-1/2 flex -translate-x-1/2 transform items-center justify-center gap-2 rounded-full bg-linear-to-r ${transparentColorClass} px-3 py-1 text-sm font-medium transition-opacity duration-300`
 			: compact
 				? `text-xs font-medium transition-colors hover:opacity-80 rounded-full ${pkgBgColor} px-2 py-0.5`
 				: `text-xs font-medium transition-colors hover:opacity-80 rounded-full ${pkgBgColor}`}

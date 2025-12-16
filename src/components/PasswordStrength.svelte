@@ -151,14 +151,14 @@
 			<!-- Subtle shine effect -->
 			{#if percentage > 0 && percentage < 100}
 				<div
-					class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-60 transition-transform duration-500"
+					class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent opacity-60 transition-transform duration-500"
 					style="transform: translateX({percentage - 20}%);"
 				></div>
 			{/if}
 		</div>
 
 		<!-- Password match indicator and strength bars -->
-		<div class="mt-1 flex min-h-[1.75rem] w-full items-center justify-between">
+		<div class="mt-1 flex min-h-7 w-full items-center justify-between">
 			<!-- Match indicator -->
 			<div class="min-w-0 flex-1">
 				{#if !showMatchIndicator}

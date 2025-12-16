@@ -14,7 +14,8 @@ Features:
 	import { onMount } from 'svelte';
 	import { logger } from '@utils/logger';
 	import WidgetCard from './WidgetCard.svelte';
-	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	// import { popup, type PopupSettings } from '@skeletonlabs/skeleton-svelte';
+	import { popup, type PopupSettings } from '@utils/popup';
 	import { widgetStoreActions } from '@stores/widgetStore.svelte';
 
 	// Props
@@ -386,7 +387,7 @@ Features:
 			</div>
 
 			<!-- Filters and Search -->
-			<div class="card variant-filled-surface mt-6 space-y-4 p-4">
+			<div class="card preset-filled-surface mt-6 space-y-4 p-4">
 				<!-- Search and Sync Button Row -->
 				<div class="flex flex-col gap-3 sm:flex-row sm:items-center">
 					<!-- Search -->
@@ -411,7 +412,7 @@ Features:
 					{#each [{ value: 'all' as const, label: 'All', count: stats.total, icon: 'mdi:widgets' }, { value: 'active' as const, label: 'Active', count: stats.active, icon: 'mdi:check-circle' }, { value: 'inactive' as const, label: 'Inactive', count: stats.inactive, icon: 'mdi:pause-circle' }, { value: 'core' as const, label: 'Core', count: stats.core, icon: 'mdi:puzzle' }, { value: 'custom' as const, label: 'Custom', count: stats.custom, icon: 'mdi:puzzle-plus' }] as filter}
 						<button
 							onclick={() => (activeFilter = filter.value)}
-							class="btn {activeFilter === filter.value ? 'variant-filled-tertiary text-white' : 'variant-ghost-secondary '}"
+							class="btn {activeFilter === filter.value ? 'preset-filled-tertiary text-white' : 'preset-ghost-secondary '}"
 							aria-label="{filter.label} widgets ({filter.count})"
 						>
 							<iconify-icon icon={filter.icon} class="text-lg"></iconify-icon>
@@ -433,7 +434,7 @@ Features:
 					<div
 						class="col-span-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-12 text-center dark:border-gray-600 dark:bg-gray-800"
 					>
-						<iconify-icon icon="mdi:package-variant-closed" class="mx-auto text-6xl text-gray-400"></iconify-icon>
+						<iconify-icon icon="mdi:package-preset-closed" class="mx-auto text-6xl text-gray-400"></iconify-icon>
 						<h3 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">No Widgets Found</h3>
 						<p class="mt-2 text-gray-600 dark:text-gray-400">
 							{#if searchQuery}
@@ -505,22 +506,22 @@ Features:
 </div>
 
 <!-- Tooltip Popups for Metric Cards - Uniform Dark/Light Theme -->
-<div class="card variant-filled z-50 max-w-xs p-3 shadow-xl" data-popup="totalTooltip">
+<div class="card preset-filled z-50 max-w-xs p-3 shadow-xl" data-popup="totalTooltip">
 	<p class="text-sm">All registered widgets in the system (core + custom)</p>
-	<div class="variant-filled arrow"></div>
+	<div class="preset-filled arrow"></div>
 </div>
 
-<div class="card variant-filled z-50 max-w-xs p-3 shadow-xl" data-popup="activeTooltip">
+<div class="card preset-filled z-50 max-w-xs p-3 shadow-xl" data-popup="activeTooltip">
 	<p class="text-sm">Widgets currently enabled and available for use in collections</p>
-	<div class="variant-filled arrow"></div>
+	<div class="preset-filled arrow"></div>
 </div>
 
-<div class="card variant-filled z-50 max-w-xs p-3 shadow-xl" data-popup="coreTooltip">
+<div class="card preset-filled z-50 max-w-xs p-3 shadow-xl" data-popup="coreTooltip">
 	<p class="text-sm">Essential system widgets that are always active and cannot be disabled</p>
-	<div class="variant-filled arrow"></div>
+	<div class="preset-filled arrow"></div>
 </div>
 
-<div class="card variant-filled z-50 max-w-xs p-3 shadow-xl" data-popup="customTooltip">
+<div class="card preset-filled z-50 max-w-xs p-3 shadow-xl" data-popup="customTooltip">
 	<p class="text-sm">Optional widgets that can be toggled on/off as needed</p>
-	<div class="variant-filled arrow"></div>
+	<div class="preset-filled arrow"></div>
 </div>

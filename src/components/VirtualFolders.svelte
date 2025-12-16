@@ -219,14 +219,14 @@
 	{:else if error}
 		<!-- Error State -->
 		<div class="w-full pt-4 text-center">
-			<p class="variant-outline-error btn w-full text-sm">{error}</p>
+			<p class="preset-outline-error btn w-full text-sm">{error}</p>
 		</div>
 	{:else if folders.length > 0}
 		<div class="relative flex flex-wrap">
 			{#each folders.filter((f) => !currentFolder || f.parentId === currentFolder?._id) as folder (folder._id)}
 				{#if uiStateManager.uiState.value.leftSidebar === 'full'}
 					<!-- Sidebar Expanded -->
-					<div class="nowrap variant-outline-surface flex w-full">
+					<div class="nowrap preset-outline-surface flex w-full">
 						<a
 							href={`/mediagallery?folderId=${folder._id}`}
 							onclick={handleMobileSidebarClose}
@@ -260,7 +260,7 @@
 	{:else}
 		<!-- No Folders Found Message -->
 		<div class="w-full pt-4 text-center">
-			<p class="variant-outline-secondary btn w-full text-sm text-warning-500">No folders</p>
+			<p class="preset-outline-secondary btn w-full text-sm text-warning-500">No folders</p>
 		</div>
 	{/if}
 </div>

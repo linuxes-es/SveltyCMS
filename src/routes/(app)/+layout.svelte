@@ -27,7 +27,7 @@
 
 <script lang="ts">
 	// Selected theme:
-	import '../../app.postcss';
+	import './app.css';
 
 	// Icons from https://icon-sets.iconify.design/
 	import 'iconify-icon';
@@ -44,8 +44,6 @@
 	// Utils
 	import { isSearchVisible } from '@utils/globalSearchIndex';
 	import { getTextDirection } from '@utils/utils';
-	import { setGlobalModalStore } from '@utils/modalUtils';
-	import { setGlobalToastStore } from '@utils/toast';
 
 	// Stores
 	import { setContentStructure, setCollection } from '@stores/collectionStore.svelte';
@@ -65,33 +63,7 @@
 	import SearchComponent from '@components/SearchComponent.svelte';
 	import FloatingNav from '@components/system/FloatingNav.svelte';
 
-	// Skeleton
-	import {
-		getModalStore,
-		getToastStore,
-		Modal,
-		setInitialClassState,
-		setModeCurrent,
-		setModeUserPrefers,
-		Toast,
-		storePopup
-	} from '@skeletonlabs/skeleton';
-
-	// Floating UI for Popups
-	import { arrow, autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
-
-	// Modal Components Registry
-	import ScheduleModal from '@components/collectionDisplay/ScheduleModal.svelte';
-	import MediaLibraryModal from '@components/MediaLibraryModal.svelte';
-
-	// Configure popup positioning
-	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
-
-	// Modal component registry for Skeleton UI
-	const modalComponentRegistry: Record<string, any> = {
-		scheduleModal: ScheduleModal,
-		mediaLibraryModal: MediaLibraryModal
-	};
+	// Dark mode handled by custom themeStore (initializeDarkMode)
 
 	// =============================================
 	// TYPE DEFINITIONS
@@ -118,8 +90,8 @@
 	const { children, data }: Props = $props();
 
 	// Initialize global stores
-	setGlobalModalStore(getModalStore());
-	setGlobalToastStore(getToastStore());
+	// setGlobalModalStore(getModalStore());
+	// setGlobalToastStore(getToastStore());
 
 	// Component State
 	const loadError = $state<Error | null>(null);
@@ -191,10 +163,7 @@
 
 		if (!userHasPreference) {
 			const prefersDarkMode = event.matches;
-			setModeUserPrefers(prefersDarkMode);
-			setModeCurrent(prefersDarkMode);
-
-			// Immediately apply theme to DOM
+			// Apply theme to DOM
 			if (prefersDarkMode) {
 				document.documentElement.classList.add('dark');
 			} else {
@@ -287,7 +256,7 @@
 <svelte:head>
 	<!-- Dark Mode Initialization (CSP-compliant with nonce) -->
 	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-	{@html '<script nonce="' + (data?.nonce || '') + '">(' + setInitialClassState.toString() + ')();</script>'}
+	<!-- Dark mode initialization handled by themeStore -->
 
 	<!-- Basic SEO -->
 	<meta name="description" content={seoDescription} />
@@ -328,9 +297,6 @@
 			<FloatingNav />
 		{/if}
 
-		<Toast />
-		<Modal components={modalComponentRegistry} />
-
 		{#if $isSearchVisible}
 			<SearchComponent />
 		{/if}
@@ -351,7 +317,7 @@
 					<aside
 						class="max-h-dvh {uiStateManager.uiState.value.leftSidebar === 'full'
 							? 'w-[220px]'
-							: 'w-fit'} relative border-r bg-white !px-2 text-center dark:border-surface-500 dark:bg-gradient-to-r dark:from-surface-700 dark:to-surface-900"
+							: 'w-fit'} relative border-r bg-white px-2! text-center dark:border-surface-500 dark:bg-linear-to-r dark:from-preset-700 dark:to-preset-900"
 						aria-label="Left sidebar navigation"
 					>
 						<LeftSidebar />
@@ -379,7 +345,7 @@
 
 					<!-- Page Footer / Mobile Nav -->
 					{#if uiStateManager.uiState.value.pagefooter !== 'hidden'}
-						<footer class="mt-auto w-full bg-surface-50 bg-gradient-to-b px-1 text-center dark:from-surface-700 dark:to-surface-900">
+						<footer class="mt-auto w-full bg-surface-50 bg-linear-to-b px-1 text-center dark:from-preset-700 dark:to-preset-900">
 							<PageFooter />
 						</footer>
 					{/if}
@@ -388,7 +354,7 @@
 				<!-- Right Sidebar -->
 				{#if uiStateManager.uiState.value.rightSidebar !== 'hidden'}
 					<aside
-						class="max-h-dvh w-[220px] border-l bg-white bg-gradient-to-r dark:border-surface-500 dark:from-surface-700 dark:to-surface-900"
+						class="max-h-dvh w-[220px] border-l bg-white bg-linear-to-r dark:border-surface-500 dark:from-preset-700 dark:to-preset-900"
 						aria-label="Right sidebar"
 					>
 						<RightSidebar />

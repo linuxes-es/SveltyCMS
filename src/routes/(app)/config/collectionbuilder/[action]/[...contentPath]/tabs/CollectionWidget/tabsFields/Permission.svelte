@@ -12,7 +12,7 @@ Features:
 	// Components
 	import PermissionsSetting from '@components/PermissionsSetting.svelte';
 	// Skeleton Stores
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	// getModalStore deprecated - use dialogState from @utils/dialogState.svelte;
 	import { targetWidget } from '@src/stores/collectionStore.svelte';
 
 	const modalStore = getModalStore();

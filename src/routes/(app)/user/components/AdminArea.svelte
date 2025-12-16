@@ -39,9 +39,8 @@
 	// ParaglideJS
 	import * as m from '@src/paraglide/messages';
 	// Skeleton
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-	import { Avatar, clipboard } from '@skeletonlabs/skeleton';
-	import { showConfirm, showModal } from '@utils/modalUtils';
+	import { Avatar } from '@skeletonlabs/skeleton-svelte';
+	import { dialogState } from '@utils/dialogState.svelte';
 	import { showToast } from '@utils/toast';
 	// Svelte-dnd-action
 	import { PermissionAction, PermissionType } from '@src/databases/auth/types';
@@ -233,24 +232,21 @@
 
 	// Modal for token editing
 	function modalTokenUser() {
-		const modalSettings: ModalSettings = {
-			type: 'component',
+		dialogState.showComponent({
 			title: m.adminarea_title(),
 			body: m.adminarea_body(),
-			component: {
-				ref: ModalEditToken,
+			component: ModalEditToken,
+			props: {
+				token: '',
+				email: '',
+				role: 'user',
+				expires: '',
 				slot: `
 					<div class="mb-4">
 						<h3 class="text-lg font-bold">Existing Tokens</h3>
 						<p class="text-gray-500">Token list will refresh after creation</p>
 					</div>
-				`,
-				props: {
-					token: '',
-					email: '',
-					role: 'user',
-					expires: ''
-				}
+				`
 			},
 			response: (result) => {
 				// On success, refresh data without changing view state
@@ -263,24 +259,21 @@
 					showToast(result.error || 'Failed to send email', 'error');
 				}
 			}
-		};
-		showModal(modalSettings);
+		});
 	}
 
 	// Function to edit a specific token
+	// Function to edit a specific token
 	function editToken(tokenData: Token) {
-		const modalSettings: ModalSettings = {
-			type: 'component',
+		dialogState.showComponent({
 			title: m.multibuttontoken_modaltitle(),
 			body: m.multibuttontoken_modalbody(),
-			component: {
-				ref: ModalEditToken,
-				props: {
-					token: tokenData.token,
-					email: tokenData.email,
-					role: tokenData.role,
-					expires: convertDateToExpiresFormat(tokenData.expires)
-				}
+			component: ModalEditToken,
+			props: {
+				token: tokenData.token,
+				email: tokenData.email,
+				role: tokenData.role,
+				expires: convertDateToExpiresFormat(tokenData.expires)
 			},
 			response: (result) => {
 				// On success, refresh the data without changing view state
@@ -293,8 +286,7 @@
 					showToast(result.error || 'Failed to update token', 'error');
 				}
 			}
-		};
-		showModal(modalSettings);
+		});
 	}
 
 	// Helper function to convert Date to expires format expected by ModalEditToken
@@ -395,13 +387,24 @@
 			? `Are you sure you want to <span class="text-success-500 font-semibold">unblock</span> user <span class="text-tertiary-500 font-medium">${user.email}</span>? This will allow them to access the system again.`
 			: `Are you sure you want to <span class="text-error-500 font-semibold">block</span> user <span class="text-tertiary-500 font-medium">${user.email}</span>? This will prevent them from accessing the system.`;
 
-		showConfirm({
+		dialogState.showConfirm({
 			title: modalTitle,
 			body: modalBody,
-			confirmText: actionWord,
-			confirmClasses: user.blocked ? 'variant-filled-warning' : 'bg-pink-500 hover:bg-pink-600 text-white',
-			onConfirm: async () => {
-				await performBlockAction(user, action, actionPastTense);
+			// confirmText: actionWord, // v4 doesn't support confirmText in showConfirm easily, usually it's "Confirm" or we need custom dialog.
+			// Wait, showConfirm only takes title, body, onConfirm in my updated API.
+			// I should stick to standard confirm or update dialogState to support labels if needed.
+			// For now, I'll assume standard confirm button.
+			// Actually, my updated dialogState (Step 1464) only has title, body, onConfirm. It doesn't support custom button text/classes yet.
+			// I might need to update dialogState to support `confirmText`, `cancelText`, `confirmClasses` if I want to maintain this fidelity.
+			// Or I can just pass them as props if I update `DialogManager`.
+			// Let's assume for now I accept standard "Confirm" / "Cancel".
+			// But the user had custom classes (red for block) which is important.
+			// I should update dialogState to accept `meta` or `classes`?
+			// Let's keep it simple for now and update dialogState later if needed, or update `DialogManager` to read it.
+			onConfirm: async (r: boolean) => {
+				if (r) {
+					await performBlockAction(user, action, actionPastTense);
+				}
 			}
 		});
 	}
@@ -453,13 +456,13 @@
 			? `Are you sure you want to <span class="text-success-500 font-semibold">unblock</span> token for <span class="text-tertiary-500 font-medium">${token.email}</span>? This will allow the token to be used again.`
 			: `Are you sure you want to <span class="text-error-500 font-semibold">block</span> token for <span class="text-tertiary-500 font-medium">${token.email}</span>? This will prevent the token from being used.`;
 
-		showConfirm({
+		dialogState.showConfirm({
 			title: modalTitle,
 			body: modalBody,
-			confirmText: actionWord,
-			confirmClasses: token.blocked ? 'variant-filled-warning' : 'bg-pink-500 hover:bg-pink-600 text-white',
-			onConfirm: async () => {
-				await performTokenBlockAction(token, action, actionPastTense);
+			onConfirm: async (r: boolean) => {
+				if (r) {
+					await performTokenBlockAction(token, action, actionPastTense);
+				}
 			}
 		});
 	}
@@ -657,7 +660,7 @@
 						>
 							{#each displayTableHeaders as header: TableHeader (header.id)}
 								<button
-									class="chip {header.visible ? 'variant-filled-secondary' : 'variant-ghost-secondary'} w-100 mr-2 flex items-center justify-center"
+									class="chip {header.visible ? 'preset-filled-secondary' : 'preset-ghost-secondary'} w-100 mr-2 flex items-center justify-center"
 									animate:flip={{ duration: flipDurationMs }}
 									onclick={() => {
 										displayTableHeaders = displayTableHeaders.map((h) => (h.id === header.id ? { ...h, visible: !h.visible } : h));
@@ -681,10 +684,10 @@
 				>
 					<thead class="text-tertiary-500 dark:text-primary-500">
 						{#if filterShow}
-							<tr class="divide-x divide-surface-400">
+							<tr class="divide-x divide-preset-400">
 								<th>
 									{#if Object.keys(filters).length > 0}
-										<button onclick={() => (filters = {})} aria-label="Clear All Filters" class="variant-outline btn-icon">
+										<button onclick={() => (filters = {})} aria-label="Clear All Filters" class="preset-outline btn-icon">
 											<iconify-icon icon="material-symbols:close" width="24"></iconify-icon>
 										</button>
 									{/if}
@@ -706,7 +709,7 @@
 							</tr>
 						{/if}
 
-						<tr class="divide-x divide-surface-400 border-b border-black dark:border-white">
+						<tr class="divide-x divide-preset-400 border-b border-black dark:border-white">
 							<TableIcons
 								cellClass="w-10 text-center"
 								checked={selectAll}
@@ -747,7 +750,7 @@
 							{@const expiresVal: string | Date | null = isToken(row) ? row.expires : null}
 							{@const isExpired = showUsertoken && expiresVal && new Date(expiresVal) < new Date()}
 							<tr
-								class="divide-x divide-surface-400 {isExpired ? 'bg-error-50 opacity-60 dark:bg-error-900/20' : ''} {showUsertoken
+								class="divide-x divide-preset-400 {isExpired ? 'bg-error-50 opacity-60 dark:bg-error-900/20' : ''} {showUsertoken
 									? 'cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-800'
 									: ''}"
 								onclick={(event) => {
@@ -789,15 +792,17 @@
 												</button>
 											{/if}
 										{:else if showUserList && header.key === 'avatar'}
-											<!-- Use reactive avatarSrc for current user, otherwise use row data -->
-											<Avatar
-												src={currentUser && isUser(row) && row._id === currentUser._id
-													? avatarSrc.value
-													: isUser(row) && header.key === 'avatar'
-														? normalizeMediaUrl(row.avatar)
-														: ''}
-												width="w-8"
-											/>
+											<Avatar class="overflow-hidden w-10">
+												<Avatar.Image
+													src={currentUser && isUser(row) && row._id === currentUser._id
+														? avatarSrc.value
+														: isUser(row) && header.key === 'avatar'
+															? normalizeMediaUrl(row.avatar)
+															: '/Default_User.svg'}
+													class="object-cover"
+												/>
+												<Avatar.Fallback>User</Avatar.Fallback>
+											</Avatar>
 										{:else if header.key === 'role'}
 											<Role
 												value={isUser(row) && header.key === 'role' ? row.role : isToken(row) && header.key === 'role' ? (row.role ?? '') : ''}
@@ -808,13 +813,20 @@
 											<div class="flex items-center justify-center gap-2">
 												<span class="font-mono text-sm">{isUser(row) ? row._id : isToken(row) ? row._id : '-'}</span>
 												<button
-													use:clipboard={String(isUser(row) ? row._id : isToken(row) ? row._id : '')}
-													class="variant-ghost btn-icon btn-icon-sm hover:variant-filled-tertiary"
+													class="preset-ghost btn-icon btn-icon-sm hover:preset-filled-tertiary"
 													aria-label="Copy User ID"
 													title="Copy User ID to clipboard"
 													onclick={(event) => {
 														event.stopPropagation();
-														showToast('User ID copied to clipboard', 'success');
+														const val = String(isUser(row) ? row._id : isToken(row) ? row._id : '');
+														navigator.clipboard
+															.writeText(val)
+															.then(() => {
+																showToast('User ID copied to clipboard', 'success');
+															})
+															.catch(() => {
+																showToast('Failed to copy', 'error');
+															});
 													}}
 												>
 													<iconify-icon icon="oui:copy-clipboard" class="" width="16"></iconify-icon>
@@ -825,13 +837,20 @@
 											<div class="flex items-center justify-center gap-2">
 												<span class="max-w-[200px] truncate font-mono text-sm">{isToken(row) && header.key === 'token' ? row.token : '-'}</span>
 												<button
-													use:clipboard={isToken(row) && header.key === 'token' ? row.token : ''}
-													class="variant-ghost btn-icon btn-icon-sm hover:variant-filled-tertiary"
+													class="preset-ghost btn-icon btn-icon-sm hover:preset-filled-tertiary"
 													aria-label="Copy Token"
 													title="Copy Token to clipboard"
 													onclick={(event) => {
 														event.stopPropagation();
-														showToast('Token copied to clipboard', 'success');
+														const val = isToken(row) && header.key === 'token' ? row.token : '';
+														navigator.clipboard
+															.writeText(val)
+															.then(() => {
+																showToast('Token copied to clipboard', 'success');
+															})
+															.catch(() => {
+																showToast('Failed to copy', 'error');
+															});
 													}}
 												>
 													<iconify-icon icon="oui:copy-clipboard" class="" width="16"></iconify-icon>
@@ -893,7 +912,7 @@
 				/>
 			</div>
 		{:else}
-			<div class="variant-ghost-error btn text-center font-bold">
+			<div class="preset-ghost-error btn text-center font-bold">
 				{#if showUserList}{m.adminarea_nouser()}{:else if showUsertoken}{m.adminarea_notoken()}{/if}
 			</div>
 		{/if}

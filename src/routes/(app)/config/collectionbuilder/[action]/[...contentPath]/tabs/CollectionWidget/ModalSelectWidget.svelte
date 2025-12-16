@@ -14,17 +14,21 @@
 	import * as m from '@src/paraglide/messages';
 
 	// Skeleton Stores
-	import { getModalStore, popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	const modalStore = getModalStore();
+	import { popup } from '@utils/popup';
+	import { dialogState } from '@utils/dialogState.svelte';
+	// const modalStore = getModalStore();
 
 	// Props
 	interface Props {
 		/** Exposes parent props to this component. */
-		parent: any;
+		parent?: any;
 		existingCategory?: any;
+		title?: string;
+		body?: string;
+		response?: (r: any) => void;
 	}
 
-	const { parent, existingCategory = { name: '', icon: '' } }: Props = $props();
+	const { parent, existingCategory = { name: '', icon: '' }, title, body, response }: Props = $props();
 
 	// Define the search term variable
 	let searchTerm: string = $state('');
@@ -45,14 +49,15 @@
 	});
 
 	// We've created a custom submit function to pass the response and close the modal.
+	// We've created a custom submit function to pass the response and close the modal.
 	function onFormSubmit(selected: any): void {
 		if (selected !== null) {
-			if ($modalStore[0].response) {
+			if (response) {
 				// Set the selected widget in the form data and update the modalStore
-				$modalStore[0].response({ selectedWidget: selected });
+				response({ selectedWidget: selected });
 			}
 			// close the modal
-			modalStore.close();
+			dialogState.close();
 		} else {
 			logger.error('No widget selected');
 		}
@@ -64,7 +69,8 @@
 	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token';
 
 	// Call tooltip
-	function getIconTooltip(item: string): PopupSettings {
+	// Call tooltip
+	function getIconTooltip(item: string): any {
 		return {
 			event: 'hover',
 			target: item,
@@ -73,12 +79,12 @@
 	}
 </script>
 
-{#if $modalStore[0]}
+{#if true}
 	<div class=" {cBase}">
 		<header class={`${cHeader}`}>
-			{$modalStore[0]?.title ?? '(title missing)'}
+			{title ?? '(title missing)'}
 		</header>
-		<article class="hidden text-center sm:block">{$modalStore[0].body ?? '(body missing)'}</article>
+		<article class="hidden text-center sm:block">{body ?? '(body missing)'}</article>
 		<!-- Enable for debugging: -->
 		<form class={cForm}>
 			<div class="mb-3 border-b text-center text-primary-500">Choose your Widget</div>
@@ -94,9 +100,9 @@
 								}}
 								aria-label={item}
 								data-testid="widget-select-{item}"
-								class="variant-outline-warning btn relative flex items-center justify-start gap-1 {selected === item
+								class="preset-outline-warning btn relative flex items-center justify-start gap-1 {selected === item
 									? 'bg-primary-500'
-									: ' variant-outline-warning hover:variant-ghost-warning'}"
+									: ' preset-outline-warning hover:preset-ghost-warning'}"
 							>
 								<iconify-icon icon={$widgets[item]?.Icon} width="22" class="mr-1 text-tertiary-500"></iconify-icon>
 								<span class="text-surface-700 dark:text-white">{item}</span>
@@ -110,9 +116,9 @@
 								></iconify-icon>
 							</button>
 							<!-- IconTooltip -->
-							<div class="card variant-filled-secondary z-50 max-w-sm p-4" data-popup={item}>
+							<div class="card preset-filled-secondary z-50 max-w-sm p-4" data-popup={item}>
 								<p>{$widgets[item]?.Description}</p>
-								<div class="variant-filled-secondary arrow"></div>
+								<div class="preset-filled-secondary arrow"></div>
 							</div>
 						{/if}
 					{/if}
@@ -120,9 +126,9 @@
 			</div>
 		</form>
 
-		<footer class="flex {existingCategory.name ? 'justify-between' : 'justify-end'} {parent.regionFooter}">
+		<footer class="flex {existingCategory.name ? 'justify-between' : 'justify-end'} {parent?.regionFooter}">
 			<div class="flex gap-2">
-				<button class="variant-outline-secondary btn" onclick={parent.onClose}>{m.button_cancel()}</button>
+				<button class="preset-outline-secondary btn" onclick={() => dialogState.close()}>{m.button_cancel()}</button>
 				<!-- <button class="btn {parent.buttonPositive}" on:click={onFormSubmit}>{m.button_save()}</button> -->
 			</div>
 		</footer>
