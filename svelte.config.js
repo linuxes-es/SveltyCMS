@@ -38,6 +38,7 @@ const config = {
 			'@content': './src/content',
 			'@databases': './src/databases',
 			'@hooks': './src/hooks',
+			'@config': './config',
 			'@root': '.',
 			'@services': './src/services',
 			'@src': './src',

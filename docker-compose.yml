@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - '5173:3000'
+    environment:
+      DB_TYPE: mongodb
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_NAME: sveltycms
+      DB_USER: svelty
+      DB_PASSWORD: svelty-password
+      JWT_SECRET_KEY: change-me-super-secret-key-change-me-please
+      ENCRYPTION_KEY: change-me-super-secret-key-change-me-please
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:7
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: svelty
+      MONGO_INITDB_ROOT_PASSWORD: svelty-password
+      MONGO_INITDB_DATABASE: sveltycms
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - '27017:27017'
+
+volumes:
+  mongo-data:

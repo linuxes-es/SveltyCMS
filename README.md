@@ -204,6 +204,25 @@ See our `package.json` for more information about development, build, preview, f
 - Development server runs on `localhost:5173`
 - Preview server runs on `localhost:4173`
 
+### Docker (app + MongoDB)
+
+A quick way to run the CMS together with MongoDB:
+
+```bash
+# Build and start
+docker compose up --build
+
+# Stop
+docker compose down
+```
+
+Services:
+
+- **App:** http://localhost:5173 (container listens on 3000)
+- **MongoDB:** localhost:27017
+
+Adjust environment values in `docker-compose.yml` (or override with `docker compose --env-file`) to match your deployment secrets.
+
 ## 🔒 Authentication & Security
 
 We want to keep your data Private and Secure.
