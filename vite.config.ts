@@ -12,7 +12,7 @@
 
 import { sveltekit } from '@sveltejs/kit/vite';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
-import { existsSync, promises as fs, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, promises as fs, readFileSync, writeFileSync } from 'fs';
 import { builtinModules } from 'module';
 import path from 'path';
 import type { Plugin, UserConfig, ViteDevServer } from 'vite';
@@ -46,26 +46,25 @@ function privateConfigFallbackPlugin(): Plugin {
 	const virtualTestModuleId = '@config/private.test';
 	const resolvedVirtualModuleId = '\0' + virtualModuleId;
 	const resolvedVirtualTestModuleId = '\0' + virtualTestModuleId;
+	const prodPath = path.resolve(CWD, 'config/private.ts');
+	const prodPathNoExt = prodPath.replace(/\.ts$/, '');
+	const testPath = path.resolve(CWD, 'config/private.test.ts');
+	const testPathNoExt = testPath.replace(/\.ts$/, '');
 
 	return {
 		name: 'private-config-fallback',
+		enforce: 'pre',
 		resolveId(id) {
-			if (id === virtualModuleId) {
-				// Check if actual file exists
-				const prodPath = path.resolve(CWD, 'config/private.ts');
+			if (id === virtualModuleId || id === prodPath || id === prodPathNoExt) {
 				if (existsSync(prodPath)) {
-					return prodPath; // Resolve to real file
+					return prodPath;
 				}
-				// File doesn't exist, use virtual module
 				return resolvedVirtualModuleId;
 			}
-			if (id === virtualTestModuleId) {
-				// Check if actual file exists
-				const testPath = path.resolve(CWD, 'config/private.test.ts');
+			if (id === virtualTestModuleId || id === testPath || id === testPathNoExt) {
 				if (existsSync(testPath)) {
-					return testPath; // Resolve to real file
+					return testPath;
 				}
-				// File doesn't exist, use virtual module
 				return resolvedVirtualTestModuleId;
 			}
 		},
@@ -85,7 +84,7 @@ export const privateEnv = {
 	GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
 	GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '',
 	MULTI_TENANT: process.env.MULTI_TENANT === 'true'
-} as const;
+};
 `;
 			}
 		}
@@ -150,7 +149,8 @@ function generateParaglideFallback() {
 
 		const moduleCode = `/* eslint-disable */\nconst dictionaries = ${JSON.stringify(dictionaries, null, 2)};\nlet currentLocale = process.env.SVELTY_LOCALE || '${fallbackLocale}';\nconst fallbackLocale = '${fallbackLocale}';\nconst isSupportedLanguageTag = (tag) => Object.prototype.hasOwnProperty.call(dictionaries, tag);\nconst getDictionary = () => (isSupportedLanguageTag(currentLocale) ? dictionaries[currentLocale] : dictionaries[fallbackLocale]);\nconst format = (key, params = {}) => { const dict = getDictionary(); const template = dict[key] ?? dictionaries[fallbackLocale][key] ?? key; return template.replace(/\\{([^}]+)\\}/g, (_, token) => { const cleaned = token.startsWith('$') ? token.slice(1) : token; return params[token] ?? params[cleaned] ?? '{' + token + '}'; }); };\n${formatters}\nexport const availableLanguageTags = Object.keys(dictionaries);\nexport const sourceLanguageTag = fallbackLocale;\nexport const setLanguageTag = (tag) => { currentLocale = isSupportedLanguageTag(tag) ? tag : fallbackLocale; return currentLocale; };\nexport const languageTag = () => currentLocale;\n`;
 
-		const targetPath = path.resolve(CWD, 'src/paraglide/messages/_index.js');
+		const targetPath = path.resolve(CWD, 'src/paraglide/messages.js');
+		mkdirSync(path.dirname(targetPath), { recursive: true });
 		const currentContents = existsSync(targetPath) ? readFileSync(targetPath, 'utf8') : '';
 		const isStub = !currentContents.trim() || !currentContents.includes('export const');
 

@@ -22,9 +22,6 @@
 		"allowArbitraryExtensions": true, // Important for Vite plugins that might use non-standard extensions
 		"resolveJsonModule": true, // Allow importing JSON files as modules
 		"allowImportingTsExtensions": true, // Allow importing TypeScript files with extensions
-		"paths": {
-			"@config/*": ["config/*"]
-		},
 		// --- Bun Runtime Types ---
 		"types": ["@types/bun"] // Include Bun's built-in module types (bun:test, bun:sqlite, etc.)
 	},
