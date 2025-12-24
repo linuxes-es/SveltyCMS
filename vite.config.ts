@@ -10,9 +10,9 @@
  * - Seamless integration with Paraglide for i18n and better-svelte-email for email templating.
  */
 
-import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { existsSync, promises as fs } from 'fs';
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
+import { existsSync, promises as fs, readFileSync, writeFileSync } from 'fs';
 import { builtinModules } from 'module';
 import path from 'path';
 import type { Plugin, UserConfig, ViteDevServer } from 'vite';
@@ -54,7 +54,7 @@ function privateConfigFallbackPlugin(): Plugin {
 				// Check if actual file exists
 				const prodPath = path.resolve(CWD, 'config/private.ts');
 				if (existsSync(prodPath)) {
-					return null; // Let Vite handle it normally
+					return prodPath; // Resolve to real file
 				}
 				// File doesn't exist, use virtual module
 				return resolvedVirtualModuleId;
@@ -63,7 +63,7 @@ function privateConfigFallbackPlugin(): Plugin {
 				// Check if actual file exists
 				const testPath = path.resolve(CWD, 'config/private.test.ts');
 				if (existsSync(testPath)) {
-					return null; // Let Vite handle it normally
+					return testPath; // Resolve to real file
 				}
 				// File doesn't exist, use virtual module
 				return resolvedVirtualTestModuleId;
@@ -119,6 +119,49 @@ const log = {
 	// Corresponds to 'error' level
 	error: (message: string, error?: unknown) => console.error(`${TAG} ${useColor ? `❌ \x1b[31m${message}\x1b[0m` : `❌ ${message}`}`, error ?? '')
 };
+
+/**
+ * Builds a local Paraglide messages module from the JSON dictionaries when the remote compiler is unavailable.
+ * This keeps builds working in offline/CI environments.
+ */
+function generateParaglideFallback() {
+	try {
+		const fallbackLocale = 'en';
+		const locales = ['en', 'de'];
+		const dictionaries = Object.fromEntries(
+			locales
+				.map((locale) => {
+					const localePath = path.resolve(CWD, 'src/messages', `${locale}.json`);
+					if (!existsSync(localePath)) return null;
+					return [locale, JSON.parse(readFileSync(localePath, 'utf8'))];
+				})
+				.filter(Boolean) as Array<[string, Record<string, string>]>
+		);
+
+		const baseDictionary = dictionaries[fallbackLocale];
+		if (!baseDictionary) {
+			log.warn('Paraglide fallback skipped: missing base locale file');
+			return;
+		}
+
+		const formatters = Object.keys(baseDictionary)
+			.map((key) => `export const ${key} = (params = {}) => format('${key}', params);`)
+			.join('\n');
+
+		const moduleCode = `/* eslint-disable */\nconst dictionaries = ${JSON.stringify(dictionaries, null, 2)};\nlet currentLocale = process.env.SVELTY_LOCALE || '${fallbackLocale}';\nconst fallbackLocale = '${fallbackLocale}';\nconst isSupportedLanguageTag = (tag) => Object.prototype.hasOwnProperty.call(dictionaries, tag);\nconst getDictionary = () => (isSupportedLanguageTag(currentLocale) ? dictionaries[currentLocale] : dictionaries[fallbackLocale]);\nconst format = (key, params = {}) => { const dict = getDictionary(); const template = dict[key] ?? dictionaries[fallbackLocale][key] ?? key; return template.replace(/\\{([^}]+)\\}/g, (_, token) => { const cleaned = token.startsWith('$') ? token.slice(1) : token; return params[token] ?? params[cleaned] ?? '{' + token + '}'; }); };\n${formatters}\nexport const availableLanguageTags = Object.keys(dictionaries);\nexport const sourceLanguageTag = fallbackLocale;\nexport const setLanguageTag = (tag) => { currentLocale = isSupportedLanguageTag(tag) ? tag : fallbackLocale; return currentLocale; };\nexport const languageTag = () => currentLocale;\n`;
+
+		const targetPath = path.resolve(CWD, 'src/paraglide/messages/_index.js');
+		const currentContents = existsSync(targetPath) ? readFileSync(targetPath, 'utf8') : '';
+		const isStub = !currentContents.trim() || !currentContents.includes('export const');
+
+		if (isStub) {
+			writeFileSync(targetPath, moduleCode);
+			log.info('Paraglide fallback messages generated from local JSON dictionaries.');
+		}
+	} catch (error) {
+		log.warn('Failed to generate Paraglide fallback messages', error);
+	}
+}
 
 /**
  * Ensures collection directories exist and performs an initial compilation if needed.
@@ -317,8 +360,10 @@ function cmsWatcherPlugin(): Plugin {
 }
 
 // --- Main Vite Configuration ---
+generateParaglideFallback();
 const setupComplete = isSetupComplete();
 const isBuild = process.env.NODE_ENV === 'production' || process.argv.includes('build');
+const enableParaglideCompile = process.env.PARAGLIDE_COMPILE === 'true';
 
 export default defineConfig((): UserConfig => {
 	// Only log during dev mode, not during builds
@@ -343,10 +388,14 @@ export default defineConfig((): UserConfig => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			sveltekit() as any,
 			!setupComplete ? setupWizardPlugin() : cmsWatcherPlugin(),
-			paraglideVitePlugin({
-				project: './project.inlang',
-				outdir: './src/paraglide'
-			})
+			...(enableParaglideCompile
+				? [
+						paraglideVitePlugin({
+							project: './project.inlang',
+							outdir: './src/paraglide'
+						})
+					]
+				: [])
 		],
 		server: {
 			fs: {
@@ -369,7 +418,7 @@ export default defineConfig((): UserConfig => {
 				'@components': path.resolve(CWD, './src/components'),
 				'@content': path.resolve(CWD, './src/content'),
 				'@databases': path.resolve(CWD, './src/databases'),
-				'@config': path.resolve(__dirname, 'config'),
+				'@config': path.resolve(CWD, './config'),
 				'@utils': path.resolve(CWD, './src/utils'),
 				'@stores': path.resolve(CWD, './src/stores'),
 				'@widgets': path.resolve(CWD, './src/widgets')
@@ -418,7 +467,7 @@ export default defineConfig((): UserConfig => {
 					// Show all other warnings
 					warn(warning);
 				},
-				external: [...builtinModules, ...builtinModules.map((m) => `node:${m}`), 'typescript', 'ts-node']
+				external: [...builtinModules, ...builtinModules.map((m) => `node:${m}`), 'typescript', 'ts-node', '@config/private.test', '@react-email/render']
 			}
 		},
 		optimizeDeps: {

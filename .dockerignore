@@ -1,0 +1,13 @@
+node_modules
+.svelte-kit
+build
+compiledCollections
+.git
+.github
+tests
+playwright-report
+bundle-report.json
+.bundle-history.json
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
